@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,user-scalable=no,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" name="viewport" />
+    <title>文物点详情页</title>
+    <link href="/static/css/style.css" type="text/css" rel="stylesheet"/>
+    <script src="/static/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fBdXTR51bqAmfP5taFKRcQv5"></script>
+    <script src="/static/js/swiper.min.js" type="text/javascript"></script>
+    <script src="/static/js/global.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div id="head">
+    <div class="head">
+        <a href="/index.php?s=home" class="logo"></a>
+        <div class="nav"></div>
+        <ul class="pief_xla">
+            <li><a href="/index.php?s=home">首页</a></li>
+            <li><a href="#" class="inactive">文物展示</a>
+                <ul class="pief_two">
+                    <li><a href="/index.php?s=point/list">历史建筑</a></li>
+                    <li><a href="#">任务点打卡</a></li>
+                    <li><a href="/index.php?s=route/list">推荐路线</a></li>
+                    <li><a href="certificate.html">任务点证书</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="inactive">文保志愿者</a>
+                <ul class="pief_two">
+                    <li><a href="login.html">个人注册</a></li>
+                    <li><a href="#">文物巡查</a></li>
+                    <li><a href="train.html">文物保护培训</a></li>
+                    <li><a href="Inspect.html">巡查反馈</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="inactive">活动与文创</a>
+                <ul class="pief_two">
+                    <li><a href="activity.html">活动报名</a></li>
+                    <li><a href="donate.html">我要捐款</a></li>
+                    <li><a href="product.html">文创产品购买</a></li>
+                    <li><a href="about.html">关于我们</a></li>
+                </ul>
+            </li>
+            <li><a href="user.html">个人中心</a></li>
+            <p>关注重庆的每一处历史遗迹<br/>关注重庆的每一条老街小巷</p>
+        </ul>
+    </div>
+</div>
+
+<!--地点详情-->
+<div class="address">
+    <div class="ground">
+        <b>
+            {switch name="base.level" }
+            {case value="1"}市宝{/case}
+            {case value="2"}区宝{/case}
+            {case value="3"}国宝{/case}
+            {case value="4"}文物点{/case}
+            {default /}文物点
+            {/switch}
+
+            ｜ </b>
+        <span>{$base.name}</span><dt>[{$base.zone}]</dt>
+    </div>
+    <p>地址：{$base.addr}</p>
+</div>
+<div class="partner">
+    <div class="partner_nei">
+        <ul class="swiper-wrapper">
+            {volist name="list" id="vo1"}
+            <li class="swiper-slide"><a href="{$vo1.url}"><img src="{$vo1.img}" width="100%"/><dt><span>{$vo1.des}</span></dt></a></li>
+            {/volist}
+            <!--<li class="swiper-slide"><a href="#"><img src="images/banner_02.jpg" width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>-->
+            <!--<li class="swiper-slide"><a href="#"><img src="images/banner_02.jpg"width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>-->
+            <!--<li class="swiper-slide"><a href="#"><img src="images/banner_02.jpg"width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>-->
+        </ul>
+        <!--结束切换内容-->
+        <div class="live_partner">
+            <div class="live_partn"></div>
+        </div>
+    </div>
+</div>
+</div>
+<!--内容-->
+<div class="tube">
+    <p>{$ext.des}</p>
+</div>
+<div class="tube_not">
+    <span></span>
+</div>
+<div id="allmap"></div>
+<div class="tube_rim">
+    <span>周边一公里范围内文物点｜</span><a href="#">各点位可点开查看详情</a>
+</div>
+<div class="tube_xq">
+    <a href="shove1.html">· 曾家岩50号<span>(距离0.45km)</span></a>
+    <a href="shove2.html">· 国民政府警察局旧址<span>(距离0.45km)</span></a>
+    <a href="shove.html">· 戴笠公馆旧址<span>(距离0.45km)</span></a>
+    <a href="shove3.html">· 潘文华旧居<span>(距离0.45km)</span></a>
+    <a href="shove4.html">· 蒋介石侍从室旧址<span>(距离0.45km)</span></a>
+    <a href="shove5.html">· 宋美龄旧居<span>(距离0.45km)</span></a>
+    <a href="shove6.html">· 康心远公馆旧址<span>(距离0.45km)</span></a>
+    <a href="shove7.html">· 李宗仁公馆旧址<span>(距离0.45km)</span></a>
+    <a href="shove8.html">· 国民政府行政院旧址<span>(距离0.45km)</span></a>
+    <a href="shove9.html">· 桂园（张治中公馆旧址）<span>(距离0.45km)</span></a>
+    <a href="shove10.html">· 中国国民党中央执行委员会旧址（原张骧公馆）<span>(距离0.45km)</span></a>
+    <a href="shove11.html">· 晋冀鲁豫军区子弟学校<span>(距离0.45km)</span></a>
+    <a href="shove12.html">· 民主党派陈列馆<span>(距离0.45km)</span></a>
+    <a href="shove13.html">· 嘉陵桥西村<span>(距离0.45km)</span></a>
+    <a href="shove14.html">· 怡园<span>(距离0.45km)</span></a>
+</div>
+<div class="tube_notr">
+    <span></span>
+</div>
+
+<!--底部-->
+<div id="bottom">
+    <div class="bottom">
+        <ul>
+            <li><a href="/index.php?s=home">首页</a></li>
+            <li><a href="tel:4008001234">联系电话</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="user.html">个人中心</a></li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        var gao=$(".partner ul li img").height();
+        if(gao!=0){
+            $(".partner").height(gao);
+            $(".partner_nei").height(gao);
+        }
+        var Swiper1 = $('.partner_nei').swiper({
+            loop: true,
+            slidesPerView : 1,
+            autoplay : 3000,//自动播放
+            speed:800,//切换速度
+            pagination : '.live_partner',//轮播分页
+            autoplayDisableOnInteraction : false
+        });
+        var tube=$(".tube").height();
+        if(tube>200){
+            $(".tube").css("height","200");
+        }
+        $(".tube_not").click(function(){
+            $(".tube").css("height","100%");
+            $(".tube_not").hide();
+        });
+        var tube=$(".tube_xq").height();
+        if(tube>150){
+            $(".tube_xq").css("height","150");
+        }
+        $(".tube_notr").click(function(){
+            $(".tube_xq").css("height","100%");
+            $(".tube_notr").hide();
+        });
+    })
+
+</script>
+</body>
+</html>
+<script type="text/javascript">
+    // 百度地图API功能
+    map = new BMap.Map("allmap");
+    map.centerAndZoom(new BMap.Point({$ext.x},{$ext.y}), 15);
+    var data_info = [[106.52693,29.579323,"地址：北京市东城区王府井大街88号乐天银泰百货八层 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.610119,106.5564&title=&output=html'>导航</a>"],
+        [106.525017,29.579221,"地址：北京市东城区东华门大街 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.567963,106.529872&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"],
+        [106.525799,29.580391,"地址：北京市东城区正义路甲5号<a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=39.916979519873,116.41004950566&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"]
+    ];
+    var opts = {
+        width : 250,     // 信息窗口宽度
+        height: 80,     // 信息窗口高度
+        title : "信息窗口" , // 信息窗口标题
+        enableMessage:true//设置允许信息窗发送短息
+    };
+    for(var i=0;i<data_info.length;i++){
+        var marker = new BMap.Marker(new BMap.Point(data_info[i][0],data_info[i][1]));  // 创建标注
+        var content = data_info[i][2];
+        map.addOverlay(marker);               // 将标注添加到地图中
+        addClickHandler(content,marker);
+    }
+    function addClickHandler(content,marker){
+        marker.addEventListener("click",function(e){
+            openInfo(content,e)}
+        );
+    }
+    function openInfo(content,e){
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
+        map.openInfoWindow(infoWindow,point); //开启信息窗口
+    }
+</script>
+

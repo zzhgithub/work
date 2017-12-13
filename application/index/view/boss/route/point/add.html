@@ -1,0 +1,47 @@
+{extend name="base" /}
+{block name="title"}{$title}{/block}
+{block name="content"}
+<!-- 修改添加页 关键是看有没有值传过来 -->
+<div class="container">
+    <div class="row" >
+        <div class="col-xs-6 col-md-offset-3">
+            <form class="center-block" role="form" enctype="multipart/form-data" id="datafrom">
+                <input type="hidden" id="rid" value="{$rid}">
+                <input type="hidden" id="id" value="{$data.id}">
+                <!-- 异步上传图片的按钮 和图片处理 -->
+                <div class="form-group">
+                    <label class="" for="pid">文物点id</label>
+                    <input type="text" value="{$data.pid}" class="form-control" id="pid" placeholder="请输入介绍">
+                </div>
+                <div class="for-group">
+                    <label class="" for="sort">排序</label>
+                    <input type="number" value="{$data.sort}" class="form-control" id="sort" placeholder="请输入跳转地址">
+                </div>
+
+                <button type="submit" class="btn btn-default" id="submit">继续</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+
+    $("#datafrom").submit(function () {
+        var formData = new FormData();
+        formData.append('id',$('#id').attr('value'));
+        formData.append('rid',$('#rid').attr('value'));
+        formData.append('pid',$("#pid")[0].value);
+        formData.append('sort',$("#sort")[0].value);
+        $.ajax({
+            url:"/index.php?s=boss/route/point/save",
+            type:"post",
+            data:formData,
+            processData:false,
+            contentType:false,
+            success:function (res){
+                alert(res);
+                window.history.back(-1);
+            }
+        });
+    });
+</script>
+{/block}

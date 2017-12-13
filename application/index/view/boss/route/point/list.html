@@ -1,0 +1,37 @@
+{extend name="base" /}
+{block name="title"}Boss 推荐路线文物 列表页{/block}
+{block name="content"}
+<table class="table table-striped">
+    <caption>Boss 推荐路线 列表页</caption>
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>rid</th>
+        <th>文物点pid</th>
+        <th>排序</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="list" id="vo"}
+    <tr>
+        <td>{$vo.id}</td>
+        <td>{$vo.rid}</td>
+        <td>{$vo.pid}</td>
+        <td>{$vo.sort}</td>
+        <td>
+            <a href="/index.php?s=boss/route/point/mod/{$vo.id}" class="btn btn-primary" role="button">
+                修改
+            </a>
+            <a href="/index.php?s=boss/route/point/add/{$vo.rid}" class="btn btn-primary" role="button">
+                添加
+            </a>
+            <a href="/index.php?s=boss/route/point/dell/{$vo.id}/rid/{$vo.rid}" class="btn btn-danger" role="button">
+                删除
+            </a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+{/block}

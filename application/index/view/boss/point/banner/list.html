@@ -1,0 +1,43 @@
+{extend name="base" /}
+{block name="title"}Boss 文物点详情 banner 列表页{/block}
+{block name="content"}
+<table class="table table-striped">
+    <caption>Boss 文物点详情 banner 列表页</caption>
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>banner图片</th>
+        <th>banner介绍</th>
+        <th>banner链接</th>
+        <th>排序</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="list" id="vo"}
+    <tr>
+        <td>{$vo.id}</td>
+        <td>
+            <div class="thumbnail">
+                <img src="{$vo.img}">
+            </div>
+        </td>
+        <td>{$vo.des}</td>
+        <td>{$vo.url}</td>
+        <td>{$vo.sort}</td>
+        <td>
+            <a href="/index.php?s=boss/point/banner/mod/{$vo.id}" class="btn btn-primary" role="button">
+                修改
+            </a>
+            <a href="/index.php?s=boss/point/banner/add/{$vo.pid}" class="btn btn-primary" role="button">
+                添加
+            </a>
+            <a href="/index.php?s=boss/point/banner/dell/{$vo.id}/pid/{$vo.pid}" class="btn btn-danger" role="button">
+                删除
+            </a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+{/block}

@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,user-scalable=no,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" name="viewport" />
+    <title>线路页</title>
+    <link href="/static/css/style.css" type="text/css" rel="stylesheet"/>
+    <script src="/static/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fBdXTR51bqAmfP5taFKRcQv5"></script>
+    <script src="/static/js/global.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div id="head">
+    <div class="head">
+        <a href="/index.php?s=home" class="logo"></a>
+        <div class="nav"></div>
+        <ul class="pief_xla">
+            <li><a href="/index.php?s=home">首页</a></li>
+            <li><a href="#" class="inactive">文物展示</a>
+                <ul class="pief_two">
+                    <li><a href="/index.php?s=point/list">历史建筑</a></li>
+                    <li><a href="#">任务点打卡</a></li>
+                    <li><a href="route.html">推荐路线</a></li>
+                    <li><a href="certificate.html">任务点证书</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="inactive">文保志愿者</a>
+                <ul class="pief_two">
+                    <li><a href="login.html">个人注册</a></li>
+                    <li><a href="#">文物巡查</a></li>
+                    <li><a href="train.html">文物保护培训</a></li>
+                    <li><a href="Inspect.html">巡查反馈</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="inactive">活动与文创</a>
+                <ul class="pief_two">
+                    <li><a href="activity.html">活动报名</a></li>
+                    <li><a href="donate.html">我要捐款</a></li>
+                    <li><a href="product.html">文创产品购买</a></li>
+                    <li><a href="about.html">关于我们</a></li>
+                </ul>
+            </li>
+            <li><a href="user.html">个人中心</a></li>
+            <p>关注重庆的每一处历史遗迹<br/>关注重庆的每一条老街小巷</p>
+        </ul>
+    </div>
+</div>
+
+<!--推荐路线-->
+<div class="router">
+    线路 <span>{$data.num}</span> ｜ {$data.name}
+</div>
+<div id="allmapr"></div>
+<!-- todo 地图图片 -->
+<div class="route_lou">{$data.cost}</div>
+<div class="route_tile">
+    <span>线路点位｜ </span><a href="#">各点位可点开查看详情</a>
+</div>
+<div class="item">
+    {volist name="list" id="vo"}
+    <a href="/index.php?s=point/detail/{$vo.pid}">{$vo.name}</a>
+    {/volist}
+</div>
+<div class="tube_not">
+    <span></span>
+</div>
+<div class="tube_mei">
+    美文
+</div>
+<div class="tube_nei">
+    {$data.des}
+</div>
+<div class="tube_notr">
+    <span></span>
+</div>
+<!--底部-->
+<div id="bottom">
+    <div class="bottom">
+        <ul>
+            <li><a href="/index.php?s=home">首页</a></li>
+            <li><a href="tel:4008001234">联系电话</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="user.html">个人中心</a></li>
+        </ul>
+    </div>
+</div>
+<script type="text/jscript">
+	var ite=$(".item").height();
+	if(ite>100){
+		$(".item").css("height","100");
+	}
+	$(".tube_not").click(function(){
+		$(".item").css("height","100%");
+		$(this).hide();
+	})
+
+	var ite=$(".tube_nei").height();
+	if(ite>100){
+		$(".tube_nei").css("height","141");
+	}
+	$(".tube_notr").click(function(){
+		$(".tube_nei").css("height","100%");
+		$(this).hide();
+	})
+</script>
+<script type="text/javascript">
+    // 百度地图API功能
+    map = new BMap.Map("allmapr");
+    map.centerAndZoom(new BMap.Point(106.526764,29.578561), 15);
+    var data_info = [[106.52693,29.579323,"地址：北京市东城区王府井大街88号乐天银泰百货八层 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.610119,106.5564&title=&output=html'>导航</a>"],
+        [106.525017,29.579221,"地址：北京市东城区东华门大街 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.567963,106.529872&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"],
+        [106.525799,29.580391,"地址：北京市东城区正义路甲5号<a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=39.916979519873,116.41004950566&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"]
+    ];
+    var opts = {
+        width : 250,     // 信息窗口宽度
+        height: 80,     // 信息窗口高度
+        title : "信息窗口" , // 信息窗口标题
+        enableMessage:true//设置允许信息窗发送短息
+    };
+    for(var i=0;i<data_info.length;i++){
+        var marker = new BMap.Marker(new BMap.Point(data_info[i][0],data_info[i][1]));  // 创建标注
+        var content = data_info[i][2];
+        map.addOverlay(marker);               // 将标注添加到地图中
+        addClickHandler(content,marker);
+    }
+    function addClickHandler(content,marker){
+        marker.addEventListener("click",function(e){
+            openInfo(content,e)}
+        );
+    }
+    function openInfo(content,e){
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
+        map.openInfoWindow(infoWindow,point); //开启信息窗口
+    }
+</script>
+</body>
+</html>

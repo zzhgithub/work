@@ -1,0 +1,45 @@
+{extend name="base" /}
+{block name="title"}Boss 推荐路线 列表页{/block}
+{block name="content"}
+<table class="table table-striped">
+    <caption>Boss 推荐路线 列表页</caption>
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>推荐路线编号</th>
+        <th>推荐路线图片</th>
+        <th>推荐介绍（美文）</th>
+        <th>推荐类型名称</th>
+        <th>排序</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="list" id="vo"}
+    <tr>
+        <td>{$vo.id}</td>
+        <td>{$vo.num}</td>
+        <td>
+            <div class="thumbnail">
+                <img src="{$vo.img}">
+            </div>
+        </td>
+        <td>{$vo.des}</td>
+        <td>{$vo.name}</td>
+        <td>{$vo.sort}</td>
+        <td>
+            <a href="/index.php?s=boss/route/mod/{$vo.id}" class="btn btn-primary" role="button">
+                修改
+            </a>
+            <a href="/index.php?s=boss/route/add" class="btn btn-primary" role="button">
+                添加
+            </a>
+            <a href="/index.php?s=boss/route/dell/{$vo.id}" class="btn btn-danger" role="button">
+                删除
+            </a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+{/block}

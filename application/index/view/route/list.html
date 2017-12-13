@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,user-scalable=no,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" name="viewport" />
+    <title>推荐路线</title>
+    <link href="/static/css/style.css" type="text/css" rel="stylesheet"/>
+    <script src="/static/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="/static/js/global.js" type="text/javascript"></script>
+</head>
+
+<body class="light">
+<div id="head">
+    <div class="head">
+        <a href="/index.php?s=home" class="logo"></a>
+        <div class="nav"></div>
+        <ul class="pief_xla">
+            <li><a href="/index.php?s=home">首页</a></li>
+            <li><a href="#" class="inactive">文物展示</a>
+                <ul class="pief_two">
+                    <li><a href="/index.php?s=point/list">历史建筑</a></li>
+                    <li><a href="#">任务点打卡</a></li>
+                    <li><a href="/index.php?s=route/list">推荐路线</a></li>
+                    <li><a href="certificate.html">任务点证书</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="inactive">文保志愿者</a>
+                <ul class="pief_two">
+                    <li><a href="login.html">个人注册</a></li>
+                    <li><a href="#">文物巡查</a></li>
+                    <li><a href="train.html">文物保护培训</a></li>
+                    <li><a href="Inspect.html">巡查反馈</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="inactive">活动与文创</a>
+                <ul class="pief_two">
+                    <li><a href="/index.php?s=act/list">活动报名</a></li>
+                    <li><a href="donate.html">我要捐款</a></li>
+                    <li><a href="product.html">文创产品购买</a></li>
+                    <li><a href="about.html">关于我们</a></li>
+                </ul>
+            </li>
+            <li><a href="user.html">个人中心</a></li>
+            <p>关注重庆的每一处历史遗迹<br/>关注重庆的每一条老街小巷</p>
+        </ul>
+    </div>
+</div>
+<!--搜索-->
+<div class="search">
+    <form method="post">
+        <input type="text" placeholder="请输入名称/级别/区位进行搜索"/>
+        <button type="submit"></button>
+    </form>
+</div>
+<!--推荐路线-->
+<div class="route">
+    <ul>
+        {volist name="list" id="vo"}
+        <li><a href="/index.php?s=route/detail/{$vo.id}"><img src="{$vo.img}"/><span>线路{$vo.num}   {$vo.name}</span></a></li>
+        {/volist}
+    </ul>
+</div>
+<!--底部-->
+<div id="bottom">
+    <div class="bottom">
+        <ul>
+            <li><a href="/index.php?s=home">首页</a></li>
+            <li><a href="tel:4008001234">联系电话</a></li>
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="user.html">个人中心</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

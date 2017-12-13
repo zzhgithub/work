@@ -1,0 +1,51 @@
+{extend name="base" /}
+{block name="title"}文物点列表页{/block}
+{block name="content"}
+<table class="table table-striped">
+    <caption>文物点列表</caption>
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>所在区</th>
+        <th>文物点名称</th>
+        <th>封面图片</th>
+        <th>文物点等级</th>
+        <th>文物点地址</th>
+        <th>排序</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="list" id="vo"}
+    <tr>
+        <td>{$vo.id}</td>
+        <td>{$vo.zone}</td>
+        <td>{$vo.name}</td>
+        <td>
+            <div class="thumbnail">
+                <img src="{$vo.img}">
+            </div>
+        </td>
+        <!-- todo 文物点等级 -->
+        <td>{$vo.level}</td>
+        <td>{$vo.addr}</td>
+        <td>{$vo.sort}</td>
+        <td>
+            <a href="/index.php?s=boss/point/mod/{$vo.id}" class="btn btn-primary" role="button">
+                修改
+            </a>
+            <a href="/index.php?s=boss/point/add" class="btn btn-primary" role="button">
+                添加
+            </a>
+            <a href="/index.php?s=boss/point/dell/{$vo.id}" class="btn btn-danger" role="button">
+                删除
+            </a>
+            <a href="/index.php?s=boss/point/detail/{$vo.id}" class="btn btn-primary" role="button">
+                编辑详情
+            </a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+{/block}
