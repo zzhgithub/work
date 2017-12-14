@@ -34,7 +34,7 @@ class Helper extends Controller
       }
     }
 
-
+    //登录测试
     public function sendTest(){
         try{
             $appid = "wxfcc662fea0340227";
