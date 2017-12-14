@@ -43,11 +43,11 @@ class Helper extends Controller
 
             $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
                 .$appid
-                ."&redirect\_uri="
+                ."&redirect_uri="
                 . urlencode($callbackurl)
-                ."&response\_type=code&scope="
+                ."&response_type=code&scope="
                 .$scope
-                ."&state=STATE#wechat\_redirect";
+                ."&state=STATE#wechat_redirect";
             header("Location:".$url);
         }catch (Exception $e){
             var_dump($e->getMessage());
