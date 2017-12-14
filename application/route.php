@@ -67,5 +67,5 @@ return [
      */
     'helper/upload' => 'index/helper/Upload',//上传图片
     'helper/test' => 'index/helper/sendTest',//获取微信测试地址
-    'helper/back' => 'index/helper/back',//微信测试回调地址
+    'helper/back' => 'index/helper/weixinBack',//微信测试回调地址
 ];
