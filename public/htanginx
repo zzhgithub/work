@@ -1,0 +1,6 @@
+#如果请求既不是一个文件，也不是一个目录，则执行一下重写规则
+
+if (!-e $request_filename){
+    #地址将作为参数rewrite到index.php上。
+    rewrite ^/(.*)$ /index.php/$1;
+}
