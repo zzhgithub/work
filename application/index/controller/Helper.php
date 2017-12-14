@@ -39,7 +39,7 @@ class Helper extends Controller
         try{
             $appid = "wxfcc662fea0340227";
             $callbackurl = "http://www.cqlaojie.com/index.php?s=helper/back";//暂时定位测试地址
-            $scope = "snsapi\_userinfo";
+            $scope = "snsapi_userinfo";
 
             $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
                 .$appid
