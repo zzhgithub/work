@@ -9,6 +9,7 @@ namespace app\index\controller;
  */
 
 use think\Controller;
+use think\Exception;
 
 
 class Helper extends Controller
@@ -31,5 +32,43 @@ class Helper extends Controller
           //上传失败
           echo $file->getError();
       }
+    }
+
+
+    public function sendTest(){
+        try{
+            $appid = "wxfcc662fea0340227";
+            $callbackurl = "http://cqlaojie.com/index.php?s=helper/back";//暂时定位测试地址
+            $scope = "snsapi\_userinfo";
+
+
+            $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
+                .$appid
+                ."&redirect\_uri="
+                . urlencode($callbackurl)
+                ."&response\_type=code&scope="
+                .$scope
+                ."&state=STATE#wechat\_redirect";
+            header("Location:".$url);
+        }catch (Exception $e){
+            var_dump($e->getMessage());
+        }
+    }
+
+    public function weixinBack(){
+        try{
+            $appid = "wxfcc662fea0340227";
+            $secret = "923658e6d9f6beee3eeacce5b940d9c1";
+            $code = $_GET["code"];
+            $get_token_url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$appid.'&secret='.$secret.'&code='.$code.'&grant_type=authorization_code';
+            $json_obj = json_decode(file_get_contents($get_token_url));
+            $access_token = $json_obj->access_token;
+            $openid = $json_obj->openid;
+            $get_user_info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+            $user_obj = json_decode(file_get_contents($get_user_info_url));
+            var_dump($user_obj);
+        }catch (Exception $e){
+            var_dump($e);
+        }
     }
 }
