@@ -8,7 +8,9 @@ namespace app\index\controller;
  * Time: 下午6:06
  */
 
+use app\index\model\User;
 use think\Controller;
+use think\Cookie;
 use think\Exception;
 
 
@@ -65,9 +67,18 @@ class Helper extends Controller
             $openid = $json_obj->openid;
             $get_user_info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
             $user_obj = json_decode(file_get_contents($get_user_info_url));
-            var_dump($user_obj);
-            //todo 获取user 数据 没有就报错
+            //var_dump($user_obj);
             //设置用的cookie
+            $client = new User();
+            $res = $client->where(['openid'=>$user_obj->openid])
+                ->find();
+            if(!isset($res->id) || $res->id == 0 || $res->id == null) {
+                //没有数据进行更新
+                $client->data($user_obj)->save();
+            }
+            //设置登录的cookie
+            Cookie::set("openid",$user_obj->openid);
+            $this->redirect("/index.php",['s'=>"/home"]);
         }catch (Exception $e){
             var_dump($e);
         }
