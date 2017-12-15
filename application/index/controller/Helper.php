@@ -70,11 +70,17 @@ class Helper extends Controller
             //var_dump($user_obj);
             //设置用的cookie
             $client = new User();
+            $user = new \stdClass();
+            $user->openid = $user_obj->openid;
+            $user->nickname = $user_obj->nickname;
+            $user->headimgurl = $user_obj->headimgurl;
+            $user->sex = $user_obj->sex;
+
             $res = $client->where(['openid'=>$user_obj->openid])
                 ->find();
-            if(!isset($res->id) || $res->id == 0 || $res->id == null) {
+            if($res == null ||!isset($res->id) || $res->id == 0 || $res->id == null) {
                 //没有数据进行更新
-                $client->data($user_obj)->save();
+                $client->data($user)->save();
             }
             //设置登录的cookie
             Cookie::set("openid",$user_obj->openid);
