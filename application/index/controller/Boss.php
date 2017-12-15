@@ -18,15 +18,18 @@ use think\Controller;
 use think\Exception;
 use think\Request;
 use think\View;
+use think\Config;
 
 class Boss extends Controller
 {
     protected $view;
+    protected $title;
 
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->view = new View();
+        $this->title = Config::get('boss_title');
     }
     //boss后台设计
 
@@ -472,4 +475,23 @@ class Boss extends Controller
         }
     }
 
+    // 捐款列表
+    public function donateList(Request $request)
+    {
+        $this->assign('title','捐款列表-'.$this->title);
+
+        return $this->view->fetch('boss/donate/list');
+    }
+
+    // 捐款添加和编辑
+    public function donateSave(Request $request)
+    {
+
+    }
+
+    // 删除捐款
+    public function donateDel($id)
+    {
+
+    }
 }

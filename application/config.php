@@ -238,4 +238,6 @@ return [
         'var_page'  => 'page',
         'list_rows' => 15,
     ],
+
+    'boss_title' => '重庆老街后台管理'
 ];

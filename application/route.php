@@ -26,7 +26,7 @@ return [
     'boss/banner/add'  => 'index/boss/bannerAddOrModify',//banner添加页
     'boss/banner/mod/:id'  => 'index/boss/bannerAddOrModify',//banner修改页
     'boss/banner/save' => 'index/boss/bannerSave',//banner的保存和更新
-    'boss/banner/dell/:id' => 'index/boss/bannerDel',//banner删除
+    'boss/banner/del/:id' => 'index/boss/bannerDel',//banner删除
 
     'boss/point/list' => 'index/boss/pointList',//文物点列表页
     'boss/point/add' => 'index/boss/pointAddOrModify',//添加文物点
@@ -41,7 +41,7 @@ return [
     'boss/point/banner/add/:pid' => 'index/boss/pointBannerAddOrSave', // 文物点banner 添加
     'boss/point/banner/mod/:id' => 'index/boss/pointBannerAddOrSave',  // 文物点banner 修改
     'boss/point/banner/save' => 'index/boss/pointBannerSave',//文物点banner ajax保存
-    'boss/point/banner/dell/:id/pid/:pid'=>'index/boss/pointBannerDell', // 文物点banner 删除
+    'boss/point/banner/del/:id/pid/:pid'=>'index/boss/pointBannerDell', // 文物点banner 删除
 
 
     //推荐路线
@@ -55,7 +55,7 @@ return [
     'boss/route/point/add/:rid' => 'index/boss/routePointAddOrSave',//推荐路线 添加文物点
     'boss/route/point/mod/:id' => 'index/boss/routePointAddOrSave',//推荐路线 修改文物点
     'boss/route/point/save' => 'index/boss/routePointSave',//ajax
-    'boss/route/point/dell/:id/rid/:rid' => 'index/boss/routepointDell',//删除推荐路线的文物点
+    'boss/route/point/del/:id/rid/:rid' => 'index/boss/routepointDell',//删除推荐路线的文物点
 
     //活动
     'boss/act/list' =>'index/boss/actList',
@@ -70,4 +70,12 @@ return [
     'helper/upload' => 'index/helper/Upload',//上传图片
     'helper/test' => 'index/helper/sendTest',//获取微信测试地址
     'helper/back' => 'index/helper/weixinBack',//微信测试回调地址
+
+    /**
+     * 捐款
+     */
+    'boss/donate/list' =>'index/boss/donateList',
+    'boss/donate/add' =>'index/boss/donateSave',
+    'boss/donate/mod' =>'index/boss/donateSave',
+
 ];
