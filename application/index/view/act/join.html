@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,user-scalable=no,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"
+          name="viewport"/>
+    <title>title</title>
+    <link href="/static/css/style.css" type="text/css" rel="stylesheet"/>
+    <script src="/static/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="/static/js/global.js" type="text/javascript"></script>
+</head>
+<body class="light">
+{include file="public/header" /}
+
+<!--活动报名-->
+<div class="activity_submit">
+    <div class="activity_title">
+        <dt><img src="{$data.img}"/></dt>
+        <h4>{$data.name}</h4>
+        <p>{$data.des|mb_substr=0,40,'UTF-8'}</p>
+    </div>
+    <div class="activity_inpu"><label>姓名：</label><input type="text" name="name" value=""/></div>
+    <div class="activity_inpu"><label>电话：</label><input type="text" name="phone" value=""/></div>
+    {:token()}
+    <input type="hidden" name="id" data-id="{$data.id}">
+    <input type="button" class="define" value="确定"/>
+</div>
+<!--layer-->
+<div id="layer">
+    {if condition="$data['isfree'] eq 1"}
+    <!--免费报名-->
+    <div class="layer">
+        <h4>提示<span></span></h4>
+        <p class="layer_m">恭喜你报名成功！</p>
+    </div>
+    {else/}
+    <!--支付报名-->
+    <div class="layer">
+        <h4>提示<span></span></h4>
+        <p class="layer_tow">恭喜你报名成功，<br/>请前往支付页面！</p>
+        <a href="/act/dojoin/">去支付</a>
+    </div>
+    {/if}
+</div>
+{include file="public/footer" /}
+<script>
+    function alertMsg(msg) {
+        var layer = $('.layer');
+        console.log(layer);
+        layer.find('p').addClass('layer_m').html(msg);
+        $('#layer').show();
+    }
+
+    $(function () {
+        $('.define').on('click', function () {
+            var id = $('input[name="id"]').data('id');
+            var name = $('input[name="name"]').val();
+            var phone = $('input[name="phone"]').val();
+            var token = $('input[name="__token__"]').val();
+            var chinese = /^[\u4E00-\u9FFF]+$/;
+
+            if (!token) {
+                alertMsg('页面异常');
+                return false;
+            }
+            if (!id) {
+                alertMsg('页面异常');
+                return false;
+            }
+            if (!name || !chinese.test(name) || name.length < 2) {
+                alertMsg('请输入正确的姓名');
+                return false;
+            }
+            if (!phone || phone.length != 11 || phone[0] != 1) {
+                alertMsg('请输入正确的手机号码');
+                return false;
+            }
+
+            //  提交表单信息
+            $.ajax({
+                type: 'post',
+                url: "/act/dojoin",
+                data: {'name': name, 'phone': phone, 'id': id, 'token': token},
+                dataType: "json",
+                success: function (data) {
+                    if(data.code > 0){
+
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 <?php
+
 namespace app\index\controller;
+
 /**
  * 活动于文创相关
  * Created by PhpStorm.
@@ -16,25 +18,32 @@ use think\View;
 class Activity extends Controller
 {
     protected $view;
+    protected $response;
 
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->view = new View();
+        $this->response = [
+            'code' => 200,
+            'message' => '',
+            'data' => []
+        ];
     }
 
     /**
      * 活动列表页
      */
-    public function activityList(){
-        try{
+    public function activityList()
+    {
+        try {
             //
             $client = new Act();
             $list = $client->order('sort')
                 ->select();
-            $this->assign('list',$list);
+            $this->assign('list', $list);
             return $this->view->fetch('act/list');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             var_dump($e->getMessage());
         }
     }
@@ -42,12 +51,16 @@ class Activity extends Controller
     /**
      * 活动详情页
      */
-    public function activityDetail($id){
-        try{
+    public function activityDetail($id)
+    {
+        if (!$id) {
+            return $this->redirect('/');
+        }
+        try {
             $data = Act::get($id);
-            $this->assign('data',$data);
+            $this->assign('data', $data);
             return $this->view->fetch('act/detail');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             var_dump($e->getMessage());
         }
     }
@@ -56,28 +69,72 @@ class Activity extends Controller
      * 活动报名页
      * @param $id
      */
-    public function joinActivity($id){
-        //
+    public function joinActivity($id)
+    {
+        if (!$id) {
+            return $this->redirect('/');
+        }
+        try {
+            $data = Act::get($id);
+            $this->assign('data', $data);
+            return $this->view->fetch('act/join');
+        } catch (Exception $e) {
+            var_dump($e->getMessage());
+        }
     }
 
     /**
      * 报名页表单处理
      */
-    public function doJoin(){
-        //
+    public function doJoin()
+    {
+        $data = Request::instance()->post();
+
+        if (empty($data)) {
+            $this->response['message'] = '非法请求';
+            $this->response['code'] = 400;
+            return json($this->response);
+        }
+        foreach ($data as $v) {
+            if (!$v) {
+                $this->response['message'] = '非法请求';
+                $this->response['code'] = 400;
+                return json($this->response);
+            }
+        }
+
+        try {
+            $data = Act::get($data['id']);
+            if (empty($data)){
+                $this->response['message'] = '非法请求';
+                $this->response['code'] = 400;
+                return json($this->response);
+            }
+            // 报名处理
+
+
+            $this->response['message'] = '报名成功';
+            $this->response['code'] = 200;
+        } catch (Exception $e) {
+            $this->response['code'] = 400;
+            $this->response['message'] = $e->getMessage();
+        }
+        return json($this->response);
     }
 
     /**
      * 捐款列表页
      */
-    public function DonteList(){
+    public function DonteList()
+    {
         //
     }
 
     /**
      * 捐款详情页
      */
-    public function DonteDetail($id){
+    public function DonteDetail($id)
+    {
 
     }
 
@@ -85,7 +142,8 @@ class Activity extends Controller
      * 捐款/文创 支付页
      * @param $id
      */
-    public function payPage($id,$type){
+    public function payPage($id, $type)
+    {
 
     }
 
@@ -95,21 +153,24 @@ class Activity extends Controller
     /**
      * 文创产品列表页
      */
-    public function productList(){
+    public function productList()
+    {
 
     }
 
     /**
      * 文创产品详情页
      */
-    public function productDetail(){
+    public function productDetail()
+    {
 
     }
 
     /**
      * 关于我们
      */
-    public function about(){
+    public function about()
+    {
 
     }
 }

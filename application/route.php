@@ -16,6 +16,8 @@ return [
     'route/detail/:id' => 'index/show/pathDetail',//推荐路线详情
     'act/list' => 'index/activity/activityList',//活动列表
     'act/detail/:id' => 'index/activity/activityDetail', //活动详情
+    'act/join/:id' => 'index/activity/joinActivity', //活动报名
+    'act/dojoin' => 'index/activity/doJoin', //活动报名
 
     /**
      * boss 后台相关功能
