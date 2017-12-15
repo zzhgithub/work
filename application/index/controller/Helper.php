@@ -66,6 +66,8 @@ class Helper extends Controller
             $get_user_info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
             $user_obj = json_decode(file_get_contents($get_user_info_url));
             var_dump($user_obj);
+            //todo 获取user 数据 没有就报错
+            //设置用的cookie
         }catch (Exception $e){
             var_dump($e);
         }

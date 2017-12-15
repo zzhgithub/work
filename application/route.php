@@ -11,7 +11,7 @@
 return [
     'home'=>'index/index/index',//首页入口
     'point/list' => 'index/show/historyStruct',//历史建筑 (文物点)
-    'point/d etail/:id' => 'index/show/ponitDetail',//文物点 详情
+    'point/detail/:id' => 'index/show/ponitDetail',//文物点 详情
     'route/list' => 'index/show/pathList',//推荐路线列表
     'route/detail/:id' => 'index/show/pathDetail',//推荐路线详情
     'act/list' => 'index/activity/activityList',//活动列表
