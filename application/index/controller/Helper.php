@@ -84,7 +84,7 @@ class Helper extends Controller
             }
             //设置登录的cookie
             Cookie::set("openid",$user_obj->openid);
-            $this->redirect("/index.php",['s'=>"/home"]);
+            $this->redirect("/");
         }catch (Exception $e){
             var_dump($e);
         }
