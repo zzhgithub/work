@@ -9,9 +9,12 @@ namespace app\index\controller;
  */
 use app\index\model\Act;
 use app\index\model\Banner;
+use app\index\model\Donate;
 use app\index\model\Point;
 use app\index\model\Pointbanner;
 use app\index\model\Pointdetail;
+use app\index\model\Product;
+use app\index\model\ProductContent;
 use app\index\model\Route;
 use app\index\model\Routepoint;
 use think\Controller;
@@ -478,28 +481,78 @@ class Boss extends Controller
     // 捐款列表
     public function donateList(Request $request)
     {
-        $this->assign('title','捐款列表-'.$this->title);
+        if ($request->isAjax()){
+            $limit = $request->request('limit');
+            $state = $request->request('state');
+            $state = intval($state) ?1:0;
+            $limit = $limit ? intval($limit):10;
+            $donate = new Donate();
+            $list = $donate->where(['state'=>$state])->order('sort asc,id desc')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg ='';
+            $response->data = array();
+            if (!empty($list)){
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
 
+        $this->assign('title','捐款列表-'.$this->title);
         return $this->view->fetch('boss/donate/list');
     }
 
     // 捐款添加和编辑
     public function donateSave(Request $request)
     {
-        if (Request::instance()->isPost()){
-
+        if ($request->isPost()){
+            $response = new \stdClass();
+            $response->code = 400;
+            $response->data = '';
+            $response->msg = '非法请求';
+            $data = $request->post();
+            if (empty($data)){
+                return json($response);
+            }
+            $donate = new Donate();
+            unset($data['file']);
+            if (isset($data['id'])&&intval($data['id'])){
+                $data['id'] = intval($data['id']);
+                $res = $donate->save($data, ['id'=>$data['id']]);
+            }else{
+                $donate->data($data);
+                $res = $donate->save();
+            }
+            if ($res){
+                $response->code = 0;
+                $response->msg = '操作成功';
+            }else{
+                $response->code = 400;
+                $response->msg = '操作失败';
+            }
+            return json($response);
         }else{
+            $detail = Donate::get(intval($request->param('id')));
             $this->assign('title','添加捐款项-'.$this->title);
-
+            $this->assign('detail',$detail);
             return $this->view->fetch('boss/donate/add');
         }
 
     }
 
     // 删除捐款
-    public function donateDel($id)
+    public function donateState()
     {
-
+        $id = intval($_POST['id']);
+        if ($id <= 0){
+            return $this->response(400,'非法请求');
+        }
+        $res = Donate::where('id', $id)->update(['state' => ['exp','1-state']]);
+        if ($res){
+            return $this->response(0,'操作成功');
+        }
+        return $this->response(400,'操作失败');
     }
 
     // 文件上传
@@ -516,8 +569,7 @@ class Boss extends Controller
             return json($response);
         }
         $type = Request::instance()->post('type');
-        if ($type == 'donate'){
-        }else{
+        if (!$type){
             $type = '';
         }
         // 获取表单上传文件 例如上传了001.jpg
@@ -541,5 +593,81 @@ class Boss extends Controller
             $response['msg'] = '上传失败';
         }
         return json($response);
+    }
+
+    private function response($code,$msg,$data=[])
+    {
+        $response = new \stdClass();
+        $response->code = $code;
+        $response->data = $data;
+        $response->msg = $msg;
+        return json($response);
+    }
+
+    // 产品列表
+    public function productList(Request $request)
+    {
+        if ($request->isAjax()){
+            $limit = $request->request('limit');
+            $state = $request->request('state');
+            $state = intval($state) ?1:0;
+            $limit = $limit ? intval($limit):10;
+            $donate = new Product();
+            $list = $donate->where(['state'=>$state])->order('id desc')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg ='';
+            $response->data = array();
+            if (!empty($list)){
+                $response->code = 400;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+
+        $this->assign('title','文创产品列表-'.$this->title);
+        return $this->view->fetch('boss/product/list');
+    }
+
+    // 捐款添加和编辑
+    public function productSave(Request $request)
+    {
+        if ($request->isAjax()){
+            echo 1222;die;
+            $data = $request->post();
+            if (empty($data)){
+                return $this->response(400,'非法请求');
+            }
+            $product = new Product();
+            $productContent = new ProductContent();
+            $content = $data['content'];
+            unset($data['file'],$data['content']);
+            if (isset($data['id'])&&intval($data['id'])){
+                $data['id'] = intval($data['id']);
+                $res = $product->save($data, ['id'=>$data['id']]);
+                if ($res){
+                    $res = $productContent->save(['content'=>$content],['id'=>$data['id']]);
+                }
+            }else{
+                $product->data($data);
+                $res = $product->save();
+                if ($res){
+                    $productContent->data(['id'=>$product->id,'content'=>$content]);
+                    $res = $productContent->save();
+                }
+            }
+            if ($res){
+                return $this->response(0,'操作成功');
+            }else{
+                return $this->response(400,'操作失败');
+            }
+        }else{
+            $detail = Donate::get(intval($request->param('id')));
+            $this->assign('title','添加产品-'.$this->title);
+            $this->assign('detail',$detail);
+            return $this->view->fetch('boss/product/add');
+        }
+
     }
 }

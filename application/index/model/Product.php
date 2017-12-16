@@ -8,7 +8,7 @@ namespace app\index\model;
  */
 use think\Model;
 
-class Donate extends Model{
+class Product extends Model{
     protected $dateFormat = 'Y-m-d H:i';
     protected $autoWriteTimestamp = 'datetime';
 }

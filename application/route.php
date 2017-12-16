@@ -74,10 +74,17 @@ return [
     /**
      * 捐款
      */
-
     'boss/donate/list' =>'index/boss/donateList',
     'boss/donate/add' =>'index/boss/donateSave',
-    'boss/donate/mod' =>'index/boss/donateSave',
+    'boss/donate/mod/:id' =>'index/boss/donateSave',
+    'boss/donate/state' =>'index/boss/donateState',
     'boss/upload' =>'index/boss/upload',
 
+    /**
+     * 文创产品
+     */
+    'boss/product/list' =>'index/boss/productList',
+    'boss/product/add' =>'index/boss/productSave',
+    'boss/product/mod/:id' =>'index/boss/productSave',
+    'boss/product/state' =>'index/boss/productState',
 ];

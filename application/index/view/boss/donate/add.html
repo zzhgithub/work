@@ -9,41 +9,45 @@
         <div class="layui-form-item">
             <label class="layui-form-label">捐款名称</label>
             <div class="layui-input-block">
-                <input type="text" name="name" lay-verify="title" autocomplete="off" placeholder="请输入捐款名称" class="layui-input">
+                <input type="text" name="name" lay-verify="title" autocomplete="off" placeholder="请输入捐款名称" class="layui-input" value="{$detail.name}">
             </div>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">上传封面</label>
             <div class="layui-input-block">
-                <input type="hidden" name="img" lay-verify="image" autocomplete="off" placeholder="" class="layui-input">
+                <input type="hidden" name="img" lay-verify="image" autocomplete="off" placeholder="" class="layui-input" value="{$detail.img}">
                 <button type="button" class="layui-btn" id="img">
                     <i class="layui-icon">&#xe67c;</i>上传封面
                 </button>
                 <span class="done"></span>
+                <div><img class="preview" src="{$detail.img}" style="width: 100px;"/></div>
             </div>
         </div>
 
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">捐款说明(简介)</label>
             <div class="layui-input-block">
-                <textarea placeholder="请输入内容" class="layui-textarea" name="des" lay-verify="required"></textarea>
+                <textarea placeholder="请输入内容" class="layui-textarea" name="des" lay-verify="required">{$detail.des}</textarea>
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
           <label class="layui-form-label">捐款详情</label>
           <div class="layui-input-block">
-              <textarea id="editor" style="display: none;" name="content"></textarea>
+              <textarea id="editor" style="display: none;" name="content" lay-verify="content">{$detail.content}</textarea>
           </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">排序</label>
             <div class="layui-input-block">
-                <input type="text" name="sort" lay-verify="sort" autocomplete="off" placeholder="排序" class="layui-input" style="width: 150px;">
+                <input type="text" name="sort" lay-verify="sort" autocomplete="off" placeholder="排序" class="layui-input" style="width: 150px;" value="{$detail.sort}">
             </div>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
+                {if condition="$detail.id gt 0"}
+                <input type="hidden" name="id" value="{$detail.id}">
+                {/if}
                 <button class="layui-btn" lay-submit="" lay-filter="*">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
@@ -59,6 +63,7 @@
         var upload = layui.upload;
         var layedit = layui.layedit;
         var form = layui.form;
+        var layer = layui.layer;
 
         layedit.set({
             uploadImage: {
@@ -67,7 +72,6 @@
             }
         });
         var editor = layedit.build('editor'); //建立编辑器
-
 
         //执行实例
         var uploadInst = upload.render({
@@ -80,6 +84,7 @@
                 if(res.code === 0){
                     $('input[name="img"]').val(res.data.src);
                     $('.done').css({"color":"green"}).text(res.msg);
+                    $('.preview').attr('src',res.data.src);
                 }else{
                     $('.done').css({"color":"red"}).text(res.msg);
                 }
@@ -113,12 +118,23 @@
                     return '请上传封面';
                 }
             }
+            ,content:function (value) {
+                layedit.sync(editor);
+                if (!value){
+                    return '请输入详细信息';
+                }
+            }
         });
 
         form.on('submit(*)', function(data){
-            console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
-            console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
-            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            $.post("/boss/donate/add",data.field,function(res){
+                layer.msg(res.msg);
+                if (res.code===0){
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
     });
