@@ -74,8 +74,10 @@ return [
     /**
      * 捐款
      */
+
     'boss/donate/list' =>'index/boss/donateList',
     'boss/donate/add' =>'index/boss/donateSave',
     'boss/donate/mod' =>'index/boss/donateSave',
+    'boss/upload' =>'index/boss/upload',
 
 ];

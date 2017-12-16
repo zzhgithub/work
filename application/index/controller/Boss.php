@@ -486,6 +486,13 @@ class Boss extends Controller
     // 捐款添加和编辑
     public function donateSave(Request $request)
     {
+        if (Request::instance()->isPost()){
+
+        }else{
+            $this->assign('title','添加捐款项-'.$this->title);
+
+            return $this->view->fetch('boss/donate/add');
+        }
 
     }
 
@@ -493,5 +500,46 @@ class Boss extends Controller
     public function donateDel($id)
     {
 
+    }
+
+    // 文件上传
+    public function upload(){
+        $response = [
+            'code' => 400,
+            'data' =>[
+                'src' => '',
+                'title' => ''
+            ],
+            'msg' => '非法请求'
+        ];
+        if (!Request::instance()->isPost()){
+            return json($response);
+        }
+        $type = Request::instance()->post('type');
+        if ($type == 'donate'){
+        }else{
+            $type = '';
+        }
+        // 获取表单上传文件 例如上传了001.jpg
+        $file = request()->file('file');
+        // 移动到框架应用根目录/public/uploads/ 目录下
+        $info = $file->validate(['ext'=>'jpg,png,gif,jpeg'])->move(ROOT_PATH . 'public' . DS . 'uploads'.  DS . $type);
+        if($info){
+            // 成功上传后 获取上传信息
+            $response['code'] = 0;
+            if ($type){
+                $response['data']['src'] = '/uploads'.  DS . $type . DS . $info->getSaveName();
+            }else{
+                $response['data']['src'] = '/uploads'.  DS . $info->getSaveName();
+            }
+            $response['data']['title'] = $info->getFilename();
+            $response['msg'] = '上传成功';
+        }else{
+            //上传失败
+            $response['code'] = 400;
+            $response['data'] = $file->getError();
+            $response['msg'] = '上传失败';
+        }
+        return json($response);
     }
 }
