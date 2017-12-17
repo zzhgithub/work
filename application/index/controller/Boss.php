@@ -47,7 +47,8 @@ class Boss extends Controller
                 throw new Exception($banners->getLastSql());
             }
             $this->assign('list',$res);
-            return $this->view->fetch('boss/banner/list');
+            $this->assign('title',"轮播图列表");
+            return $this->view->fetch('boss/banner/newlist');
         }catch (Exception $e){
             //
         }
