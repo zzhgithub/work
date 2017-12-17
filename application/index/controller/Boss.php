@@ -67,7 +67,7 @@ class Boss extends Controller
                 $res = Banner::get($id);
                 $this->assign('data',$res);
             }
-            return $this->view->fetch('boss/banner/add');
+            return $this->view->fetch('boss/banner/newadd');
         }catch (Exception $e){
             var_dump($e->getMessage());
         }
