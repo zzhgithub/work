@@ -50,9 +50,10 @@ class Boss extends Controller
             if ($res === false) {
                 throw new Exception($banners->getLastSql());
             }
-            $this->assign('list', $res);
-            return $this->view->fetch('boss/banner/list');
-        } catch (Exception $e) {
+            $this->assign('list',$res);
+            $this->assign('title',"轮播图列表");
+            return $this->view->fetch('boss/banner/newlist');
+        }catch (Exception $e){
             //
         }
     }
@@ -71,8 +72,8 @@ class Boss extends Controller
                 $res = Banner::get($id);
                 $this->assign('data', $res);
             }
-            return $this->view->fetch('boss/banner/add');
-        } catch (Exception $e) {
+            return $this->view->fetch('boss/banner/newadd');
+        }catch (Exception $e){
             var_dump($e->getMessage());
         }
     }

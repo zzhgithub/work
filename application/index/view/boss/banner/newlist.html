@@ -1,0 +1,46 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<table class="table layui-table">
+    <caption>Boss banner 列表页</caption>
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>banner图片</th>
+        <th>banner介绍</th>
+        <th>banner链接</th>
+        <th>排序</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="list" id="vo"}
+    <tr>
+        <td>{$vo.id}</td>
+        <td>
+            <div class="thumbnail" >
+                <img src="{$vo.img}">
+            </div>
+        </td>
+        <td>{$vo.des}</td>
+        <td>{$vo.url}</td>
+        <td>{$vo.sort}</td>
+        <td>
+            <a href="/index.php?s=boss/banner/mod/{$vo.id}" class="layui-btn layui-btn-primary" role="button">
+                修改
+            </a>
+            <a href="/index.php?s=boss/banner/add" class="layui-btn layui-btn-normal" role="button">
+                添加
+            </a>
+            <a href="/index.php?s=boss/banner/dell/{$vo.id}" class="layui-btn layui-btn-danger" role="button">
+                删除
+            </a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+{/block}
+
+{block name="javascript"}
+{/block}
