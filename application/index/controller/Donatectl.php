@@ -7,7 +7,7 @@ use think\Request;
 use think\View;
 use app\index\model\Donate;
 
-class DonateCtl extends Controller
+class Donatectl extends Controller
 {
 
     protected $view;

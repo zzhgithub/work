@@ -15,7 +15,7 @@ use \think\Request;
 use \app\index\model\Product;
 use \think\View;
 
-class ProductCtl extends Controller{
+class Productctl extends Controller{
     protected $view;
 
     public function __construct(Request $request = null)
