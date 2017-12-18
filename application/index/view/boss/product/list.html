@@ -5,48 +5,48 @@
     <div class="layui-tab">
     <div class="layui-tab layui-tab-card">
         <ul class="layui-tab-title">
-            <li class="layui-this">捐款列表</li>
-            <li>捐款列表回收站</li>
+            <li class="layui-this">上架产品</li>
+            <li>下架产品</li>
         </ul>
         <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
-                <table class="layui-table" lay-data="{ url:'/boss/donate/list?state=1',page:true,id:'idDonate'}" lay-filter="donete" >
+                <table class="layui-table" lay-data="{ url:'/boss/product/list?state=1',page:true,id:'idProduct'}" lay-filter="product" >
                     <thead>
                     <tr>
                         <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
                         <th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
-                        <th lay-data="{field:'name', width:160}">捐款名称</th>
-                        <th lay-data="{field:'img', width:160, sort: true}">封面</th>
-                        <th lay-data="{field:'sort', width:80}">排序</th>
-                        <th lay-data="{field:'create_time', width:160,sort: true}">添加时间</th>
-                        <th lay-data="{field:'update_time', width:160, sort: true}">更新时间</th>
-                        <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barDonate'}">操作</th>
+                        <th lay-data="{field:'name', width:160}">产品名称</th>
+                        <th lay-data="{field:'price', width:160, sort: true}">产品价格</th>
+                        <th lay-data="{field:'store', width:120}">产品库存</th>
+                        <th lay-data="{field:'create_time', width:150,sort: true}">添加时间</th>
+                        <th lay-data="{field:'update_time', width:150, sort: true}">更新时间</th>
+                        <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barProduct'}">操作</th>
                     </tr>
                     </thead>
                 </table>
-                <script type="text/html" id="barDonate">
+                <script type="text/html" id="barProduct">
                     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">下架</a>
                 </script>
             </div>
             <div class="layui-tab-item">
-                <table class="layui-table" lay-data="{ url:'/boss/donate/list?state=0',page:true,id:'idDonate2'}" lay-filter="donete" >
+                <table class="layui-table" lay-data="{ url:'/boss/product/list?state=0',page:true,id:'idProduct2'}" lay-filter="product" >
                     <thead>
                     <tr>
                         <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
                         <th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
-                        <th lay-data="{field:'name', width:160}">捐款名称</th>
-                        <th lay-data="{field:'img', width:160, sort: true}">封面</th>
-                        <th lay-data="{field:'sort', width:80}">排序</th>
-                        <th lay-data="{field:'create_time', width:160,sort: true}">添加时间</th>
-                        <th lay-data="{field:'update_time', width:160, sort: true}">更新时间</th>
-                        <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barDonate2'}">操作</th>
+                        <th lay-data="{field:'name', width:160}">产品名称</th>
+                        <th lay-data="{field:'price', width:160, sort: true}">产品价格</th>
+                        <th lay-data="{field:'store', width:120}">产品库存</th>
+                        <th lay-data="{field:'create_time', width:150,sort: true}">添加时间</th>
+                        <th lay-data="{field:'update_time', width:150, sort: true}">更新时间</th>
+                        <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barProduct'}">操作</th>
                     </tr>
                     </thead>
                 </table>
-                <script type="text/html" id="barDonate2">
+                <script type="text/html" id="barProduct2">
                     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="recovery">还原</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="recovery">上架</a>
                 </script>
             </div>
         </div>
@@ -61,15 +61,15 @@
         var table = layui.table;
         var $ = layui.jquery;
         //监听表格复选框选择
-        table.on('checkbox(donete)', function(obj){
+        table.on('checkbox(product)', function(obj){
             console.log(obj)
         });
         //监听工具条
-        table.on('tool(donete)', function(obj){
+        table.on('tool(product)', function(obj){
             var data = obj.data;
             if(obj.event === 'del'){
-                layer.confirm('真的删除行么', function(index){
-                    $.post("/boss/donate/state",{id:data.id},function(res){
+                layer.confirm('真的下架此产品吗', function(index){
+                    $.post("/boss/product/state",{id:data.id},function(res){
                         layer.msg(res.msg);
                         if (res.code===0){
                             obj.del();
@@ -78,7 +78,7 @@
                     layer.close(index);
                 });
             } else if(obj.event === 'recovery'){
-                $.post("/boss/donate/state",{id:data.id},function(res){
+                $.post("/boss/product/state",{id:data.id},function(res){
                     layer.msg(res.msg);
                     if (res.code===0){
                         obj.del();
@@ -86,7 +86,7 @@
                 });
                 layer.close(index);
             }else if(obj.event === 'edit'){
-                location.href = '/boss/donate/mod/' + data.id;
+                location.href = '/boss/product/mod/' + data.id;
             }
         });
     });

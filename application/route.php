@@ -20,6 +20,21 @@ return [
     'act/dojoin' => 'index/activity/doJoin', //活动报名
 
     /**
+     * 捐款
+     */
+    'donate/list' => 'index/donatectl/donateList',
+    'donate/detail/:id' => 'index/donatectl/donateDetail',
+    'donate/do/:id' => 'index/donatectl/donateDo',
+
+    /**
+     * 产品
+     */
+    'product/list' => 'index/productctl/productList',
+    'product/detail' => 'index/productctl/productDetail',
+
+
+
+    /**
      * boss 后台相关功能
      */
     'boss/banner/list' => 'index/boss/bannerList',//banner 列表
@@ -87,4 +102,5 @@ return [
     'boss/product/add' =>'index/boss/productSave',
     'boss/product/mod/:id' =>'index/boss/productSave',
     'boss/product/state' =>'index/boss/productState',
+    'boss/productimg/del' =>'index/boss/productImgDel',
 ];

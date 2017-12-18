@@ -1,0 +1,26 @@
+{extend name="public:layout"/}
+{block name="body"}
+<div class="donate_nei">
+    <img src="{$detail.img}" width="100%"/>
+    <h4 class="donate_biao">{$detail.name}</h4>
+    <div class="donate_text">
+        {$detail.content}
+    </div>
+    <div class="tube_not">
+        <span></span>
+    </div>
+    <a href="/donate/do/{$detail.id}" class="donate_me">我要捐款</a>
+</div>
+{/block}
+{block name="javascript"}
+<script type="text/javascript">
+    var tube = $(".donate_text").height();
+    if (tube > 132) {
+        $(".donate_text").css("height", "132");
+    }
+    $(".tube_not").click(function () {
+        $(".donate_text").css("height", "100%");
+        $(".tube_not").hide();
+    });
+</script>
+{/block}

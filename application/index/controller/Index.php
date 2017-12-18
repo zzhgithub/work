@@ -3,6 +3,7 @@ namespace app\index\controller;
 
 use app\index\model\Act;
 use app\index\model\Banner;
+use app\index\model\Product;
 use \think\Controller;
 use think\Request;
 use think\View;
@@ -18,7 +19,7 @@ class Index extends Controller
         $this->view = new View();
     }
 
-    public function index()
+    public function index(Request $request)
     {
         //获取首页的banner图
         $banner = new Banner();
@@ -31,7 +32,13 @@ class Index extends Controller
             ->order('sort')
             ->select();
         $this->assign('actlist',$res_act);
+
+        // product
+        $product = new Product();
+        $list = $product->where(['state' => 1])->order('id desc')->field('id,name,img,price,store')->paginate(6);
+        $items = $list->items();
+        $this->assign('curPage', 1);
+        $this->assign('productList', $items);
         return $this->view->fetch('index/index');
     }
-
 }

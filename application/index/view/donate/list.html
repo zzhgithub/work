@@ -1,0 +1,54 @@
+{extend name="public:layout"/}
+{block name="body"}
+<!--推荐路线-->
+<div class="donate">
+    <ul>
+        {volist name="list" id="vo"}
+        <li>
+            <img src="{$vo.img}" width="100%"/>
+            <div class="donate_tile"><h4>{$vo.name}</h4><a href="/donate/detail/{$vo.id}">我要捐款</a></div>
+            <p>{$vo.des}</p>
+        </li>
+        {/volist}
+    </ul>
+</div>
+{/block}
+{block name="javascript"}
+<script type="text/javascript">
+    var currentPage = parseInt({$curPage});
+    var flag = true;
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
+                if (!flag){
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'post',
+                    url: "/donate/list",
+                    data: {'page': currentPage - (-1)},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.code === 0){
+                            currentPage++;
+                            var str = '';
+                            for (var i = 0; i < data.data.length; i++) {
+                                str += '<li><img src="' + data.data[i].img + '" width="100%"/><div class="donate_tile"><h4>' + data.data[i].name + '</h4><a href="/donate/detail/' + data.data[i].id + '">我要捐款</a></div><p>' + data.data[i].des + '</p></li>';
+                            }
+                            console.log('currentPage:' + currentPage);
+                            $('.donate').find('ul').append(str);
+                            console.log(data);
+                        }else{
+                            flag = false;
+                        }
+                    },
+                    error:function (res) {
+                        alert('服务器开小差了');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{/block}

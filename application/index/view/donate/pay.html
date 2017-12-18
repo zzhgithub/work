@@ -1,0 +1,55 @@
+{extend name="public:layout"/}
+{block name="body"}
+<div class="donate_nei">
+    <div class="activity_title">
+        <dt>
+            <div style="width: 100%;height:75px;overflow: hidden;">
+                <img src="{$detail.img}" style="height: auto;"/>
+            </div>
+        </dt>
+        <h4>{$detail.name}</h4>
+        <p>{$detail.des}</p>
+    </div>
+    <div class="donate_sum">
+        <label>捐款金额：</label>
+        <span class="reduce">-</span>
+        <input class="amount" type="number" value="0" onkeyup="value=value.replace(/[^\d]/g,'')"
+               ng-pattern="/[^a-zA-Z]/"/>
+        <span class="plus">+</span>
+    </div>
+    <a href="javascript:void(0);" class="donate_sub">确定</a>
+</div>
+{/block}
+{block name="javascript"}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        //当input我空
+        $(".amount").blur(function () {
+            var amount = $(this).val();
+            if (amount == "") {
+                $(this).val("0");
+            }
+        });
+        //操作减
+        $(".reduce").click(function () {
+            if ($(".amount").val() < 1) {
+                $(".amount").val("0");
+                return false;
+            } else {
+                $(".amount").val(parseInt($(".amount").val()) - 1);
+            }
+        });
+        //操作加
+        $(".plus").click(function () {
+            $(".amount").val(parseInt($(".amount").val()) + 1);
+        });
+        $('.donate_sub').on('click', function () {
+            if ($(".amount").val() == '' || parseInt($(".amount").val()) <= 0) {
+                alert('请输入捐款金额');
+            }
+        });
+    });
+</script>
+{/block}
