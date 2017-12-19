@@ -32,6 +32,8 @@ return [
     'product/list' => 'index/productctl/productList',
     'product/detail/:id' => 'index/productctl/productDetail',
     'product/addcart' => 'index/productctl/productModCart',
+    'product/cart' => 'index/productctl/productCart',
+    'product/order' => 'index/productctl/productCart',
 
     /**
      * boss 后台相关功能

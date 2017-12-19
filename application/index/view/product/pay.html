@@ -1,0 +1,72 @@
+{extend name="public:layout"/}
+{block name="body"}
+<div class="product_sub">
+    <div class="product_clear">
+        <h4>产品清单：</h4>
+        <ul>
+            {volist name="carts" id="cart"}
+            <li data-id="{$cart.id}"><h5>{$cart.name}</h5><b>￥{$cart.price}</b><span>X{$cart.count}</span></li>
+            {$totalPrice = ($cart.price * $cart.count)}
+            {/volist}
+        </ul>
+        <div class="totalr">共￥{$totalPrice}</div>
+    </div>
+    <div class="product_info">
+        <div class="product_ls"><label>姓名：</label><input type="text" value="" name="name"/></div>
+        <div class="product_ls"> <label>电话：</label><input type="text" value="" name="phone"/></div>
+        <div class="product_ls"><label>地址：</label><input type="text" value="" name="address"/></div>
+        {:token()}
+    </div>
+    <button class="product_subm" type="button">确定</button>
+</div>
+{/block}
+{block name="javascript"}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.product_subm').on('click',function () {
+            var ids = [];
+            $('.product_clear').find('ul').find('li').each(function (index) {
+                ids.push($(this).data('id'));
+            });
+
+            var name = $('input[name="name"]').val();
+            var phone = $('input[name="phone"]').val();
+            var address = $('input[name="address"]').val();
+            var token = $('input[name="__token__"]').val();
+            var chinese = /^[\u4E00-\u9FFF]+$/;
+
+            if (!name || !chinese.test(name) || name.length < 2) {
+                alert('请输入正确的姓名');
+                return false;
+            }
+            if (!phone || phone.length != 11 || phone[0] != 1) {
+                alert('请输入正确的手机号码');
+                return false;
+            }
+            if (!address || address.length < 9) {
+                alert('请输入地址');
+                return false;
+            }
+            if (!token) {
+                alert('页面异常');
+                return false;
+            }
+            $.ajax({
+                type: 'post',
+                url: "/act/dojoin",
+                data: {'name': name, 'phone': phone, 'ids': ids, 'token': token,'address':address},
+                dataType: "json",
+                success: function (data) {
+                    if(data.code > 0){
+
+                    }
+                }
+            });
+        });
+
+
+
+
+    });
+</script>
+{/block}

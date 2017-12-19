@@ -15,20 +15,23 @@
         {volist name="list" id="product"}
         <li><a href="/product/detail/{$product.id}"><img src="{$product.img}" width="100%"/><h5>{$product.name}</h5></a>
             <b>￥{$product.price}</b>
-            <div class="count" data-store="{$product.store}">
-                <span class="count_ji" onclick="reduceCount(this)">-</span><i></i><span class="count_jia" onclick="addCount(this)">+</span>
+            <div class="count" data-count="{$product.count}" data-store="{$product.store}" data-id="{$product.id}" data-price="{$product.price}">
+                <span class="count_ji" onclick="reduceCart(this)">-</span><i></i><span class="count_jia" onclick="addCart(this)">+</span>
             </div>
         </li>
         {/volist}
     </ul>
 </div>
+
 <!--购物车-->
 <div id="shop">
     <div class="shop">
-        <div class="total">￥<span>267.00</span>
-            <p>共<b>3</b>件商品</p></div>
+        <div class="total">
+            ￥<span data-total="0.00">0.00</span>
+            <p>共<b data-count="0">0</b>件商品</p>
+        </div>
         <div class="shop_na"><b></b></div>
-        <a href="product_sub.html">选好了！</a>
+        <a href="/product/order">选好了！</a>
     </div>
 </div>
 <!--购物车商品列表-->
@@ -36,12 +39,6 @@
     <div class="shop_list">
         <div class="shop_title"><span>购物车</span><img src="/static/images/cqlj.png" width="45"/></div>
         <ul>
-            <li>
-                <dt><img src="images/sou_07.jpg"/></dt>
-                <div class="shop_nei"><h4>中国最美手工私游地</h4>
-                    <p>￥89.00</p></div>
-                <div class="count"><span class="count_ji">-</span><i>3</i><span class="count_jia">+</span></div>
-            </li>
         </ul>
     </div>
 </div>
@@ -49,29 +46,145 @@
 <script src="/static/js/global.js" type="text/javascript"></script>
 <script type="text/javascript" src="/static/js/jquery.nicescroll.js"></script>
 <script type="text/javascript">
+    var cartShow = false;
+    var totalPrice = 0;
+    var totalNum = 0;
     //添加操作
-    function addCount(obj) {
-        var zhi = $(obj).parent().parent("").find(".count i").html();
-        $(obj).parent().parent("").find(".count_ji").show();
-        if (zhi == "") {
-            var zhi = 0;
+    function addCart(obj) {
+        var countObj = $(obj).parent('.count');
+        var count = countObj.data('count');
+        countObj.find(".count_ji").show();
+        if (parseInt(count) >= countObj.data('store')) {
+            countObj.find("i").html(countObj.data('store'));
+            return false;
         }
-        var count = parseInt(zhi) + 1;
-        if (count >= $(obj).parents('.count').data('store')){
-            count = $(obj).parents('.count').data('store');
-        }
-        $(obj).parent().parent("").find(".count i").html(count);
+        // 请求服务
+        $.ajax({
+            type: 'post',
+            url: "/product/addcart",
+            data: {'id': countObj.data('id'), 'num': parseInt(count) + 1},
+            dataType: "json",
+            success: function (data) {
+                if (data.code === 0) {
+                    countObj.find("i").html(parseInt(count) + 1);
+                    countObj.data('count', parseInt(count) + 1);
+                    $('.count').each(function (index) {
+                        if ($(this).data('id') == countObj.data('id')){
+                            $(this).data('count',parseInt(count) + 1);
+                            $(this).find('i').html(parseInt(count) + 1);
+                        }
+                    });
+                    var totalObj = $('.total');
+                    var spanObj = totalObj.find('span'); // 总价
+                    var bObj = totalObj.find('b');       // 数量
+                    totalPrice = totalPrice + Number(countObj.data('price'));
+                    totalNum = totalNum + 1;
+                    spanObj.text(totalPrice.toFixed(2));
+                    bObj.text(totalNum);
+                }
+            },
+            error: function (res) {
+                alert('服务器开小差了');
+            }
+        });
     }
     //减操作
-    function reduceCount(obj) {
-        var zhi = $(obj).parent().parent("").find(".count i").html();
-        if (zhi <= 1) {
-            $(obj).parent().parent("").find(".count_ji").hide();
-            $(obj).parent().parent("").find(".count i").html("");
-        } else {
-            $(obj).parent().parent("").find(".count i").html(parseInt(zhi) - 1);
-        }
+    function reduceCart(obj) {
+        var countObj = $(obj).parent('.count');
+        var count = countObj.data('count');
+
+        // 请求服务
+        $.ajax({
+            type: 'post',
+            url: "/product/addcart",
+            data: {'id': countObj.data('id'), 'num': parseInt(count) - 1},
+            dataType: "json",
+            success: function (data) {
+                if (data.code === 0) {
+                    if (count <= 1) {
+                        countObj.find(".count_ji").hide();
+                        countObj.find("i").html("");
+                        count = 1;
+                    } else {
+                        countObj.find("i").html(parseInt(count) - 1);
+                    }
+                    $('.count').each(function (index) {
+                        if ($(this).data('id') == countObj.data('id')){
+                            $(this).data('count',parseInt(count) - 1);
+                            $(this).find('i').html(parseInt(count) - 1);
+                        }
+                    });
+                    countObj.data('count', parseInt(count) - 1);
+
+                    var totalObj = $('.total');
+                    var spanObj = totalObj.find('span');
+                    var bObj = totalObj.find('b');
+                    totalPrice = totalPrice - Number(countObj.data('price'));
+                    totalNum = totalNum - 1;
+                    spanObj.text(totalPrice.toFixed(2));
+                    bObj.text(totalNum);
+                }
+            },
+            error: function (res) {
+                alert('服务器开小差了');
+            }
+        });
     }
+    function getCart(show) {
+        $.ajax({
+            type: 'post',
+            url: "/product/cart",
+            dataType: "json",
+            success: function (data) {
+                cartShow = true;
+                totalNum = 0;
+                totalPrice = 0;
+                if (data.code === 0) {
+                    var str = '';
+                    for (var i = 0; i < data.data.length; i++) {
+                        str += '<li>' +
+                            '<dt><img src="' + data.data[i].img + '"/></dt>' +
+                            '<div class="shop_nei">' +
+                            '<h4>' + data.data[i].name + '</h4>' +
+                            '<p>￥' + data.data[i].price + '</p>' +
+                            '</div>' +
+                            '<div class="count" data-count="' + data.data[i].count + '" data-store="' + data.data[i].store + '" data-id="' + data.data[i].id + '" data-price="'+data.data[i].price+'">' +
+                            '<span class="count_ji" onclick="reduceCart(this)">-</span>' +
+                            '<i>' + data.data[i].count + '</i>' +
+                            '<span class="count_jia" onclick="addCart(this)">+</span>' +
+                            '</div>' +
+                            '</li>';
+                        totalNum += Number(data.data[i].count);
+                        totalPrice += Number(data.data[i].count * data.data[i].price);
+                    }
+                    $('#shop_list').find('ul').html(str);
+                    var totalObj = $('.total');
+                    totalObj.find('span').text(totalPrice.toFixed(2));
+                    totalObj.find('b').text(totalNum);
+                } else {
+                    $('#shop_list').find('ul').html('<li>购物车还是空的~</li>');
+                }
+                if (show){
+                    $("#shop_list").show();
+                }
+            },
+            error: function (res) {
+                alert('服务器开小差了');
+            }
+        });
+    }
+    //显示购物列表
+
+    $(".shop_na").click(function () {
+        if (cartShow) {
+            cartShow = false;
+            $("#shop_list").hide();
+            return false;
+        }
+        if (!cartShow) {
+            getCart(true);
+        }
+    });
 
     var flag = true;
     var currentPage = parseInt({$curPage});
@@ -84,10 +197,6 @@
             cursorborder: "0", // 	游标边框css定义
             cursorborderradius: "5px",//以像素为光标边界半径
             autohidemode: false, //是否隐藏滚动条
-        });
-        //显示购物列表
-        $(".shop_na").click(function () {
-            $("#shop_list").toggle();
         });
         $(window).scroll(function () {
             if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
@@ -104,7 +213,7 @@
                             currentPage++;
                             var str = '';
                             for (var i = 0; i < data.data.length; i++) {
-                                str += '<li><a href="/product/detail/'+data.data[i].id+'"><img src="'+data.data[i].img+'" width="100%"/><h5>'+data.data[i].name+'</h5></a><b>￥'+data.data[i].price+'</b><div class="count" data-store="'+data.data[i].store+'"><span class="count_ji" onclick="reduceCount(this)">-</span><i></i><span class="count_jia" onclick="addCount(this)">+</span></div></li>';
+                                str += '<li><a href="/product/detail/'+data.data[i].id+'"><img src="'+data.data[i].img+'" width="100%"/><h5>'+data.data[i].name+'</h5></a><b>￥'+data.data[i].price+'</b><div class="count" data-store="'+data.data[i].store+'" data-count="'+data.data[i].count+'" data-id="'+data.data[i].id+'" data-price="'+data.data[i].price+'" ><span class="count_ji" onclick="reduceCart(this)">-</span><i></i><span class="count_jia" onclick="addCart(this)">+</span></div></li>';
                             }
                             $('.product').find('ul').append(str);
                         }else{
@@ -117,6 +226,7 @@
                 });
             }
         });
+        getCart(false);
     });
 </script>
 </body>

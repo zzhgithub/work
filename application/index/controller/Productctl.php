@@ -33,6 +33,21 @@ class Productctl extends Controller
         $product = new Product();
         $list = $product->where(['state' => 1])->order('id desc')->field('id,name,img,price,store')->paginate(4);
         $items = $list->items();
+        $cart = Session::get('cart');
+        $cartArr = $cart != null ? explode(',', $cart) : [];
+        $count = [];
+        if ($cartArr) {
+            foreach ($cartArr as $cart) {
+                $index = strpos($cart, ':');
+                $count[substr($cart, 0, $index)] = intval(substr($cart, $index + 1));
+            }
+        }
+        if ($items) {
+            foreach ($items as &$item) {
+                $item->count = isset($count[$item->id]) ? $count[$item->id] : 0;
+            }
+        }
+
         if ($request->isAjax()) {
             if (!empty($items)) {
                 return self::response(0, 'success', $items);
@@ -57,7 +72,6 @@ class Productctl extends Controller
         // 购物车信息
         $cartCount = self::getCart($id);
         $this->assign('cartCount', $cartCount);
-
         // 产品信息
         $productCon = new ProductContent();
         $productContent = $productCon->where(['id' => $id])->field('id,content')->find();
@@ -69,6 +83,11 @@ class Productctl extends Controller
         return $this->fetch('product/detail');
     }
 
+    /**
+     * 加入购物车
+     * @param Request $request
+     * @return \think\response\Json
+     */
     public function productModCart(Request $request)
     {
         $id = (int)$request->param('id');
@@ -92,13 +111,12 @@ class Productctl extends Controller
                 }
             }
             if ($cartArr) {
-                foreach ($cartArr as $value) {
-                    $index = strpos($value, ':');
-                    $ids[] = substr($value, 0, $index);
+                foreach ($cartArr as $v) {
+                    $index = strpos($v, ':');
+                    $ids[] = substr($v, 0, $index);
                 }
             }
         }
-
         if (!in_array($id, $ids) && $num > 0) {
             array_push($cartArr, $id . ':' . $num);
         }
@@ -106,12 +124,43 @@ class Productctl extends Controller
         return self::response(0, 'success');
     }
 
+    /**
+     * 获取购物车信息
+     * @param int $id
+     * @return array|int
+     */
     private static function getCart($id = 0)
     {
         $cart = Session::get('cart');
         $cartArr = $cart != null ? explode(',', $cart) : [];
         if (!$id) {
-            return $cartArr;
+            if ($cartArr) {
+                $ids = $count = [];
+                foreach ($cartArr as $cart) {
+                    $index = strpos($cart, ':');
+                    $_id = substr($cart, 0, $index);
+                    $ids[] = $_id;
+                    $count[$_id] = intval(substr($cart, $index + 1));
+                }
+
+                if (empty($ids)) {
+                    return [];
+                }
+                // 查询产品信息
+                $product = new Product();
+                $products = $product->where('id', 'exp', ' IN (' . implode(',',
+                        $ids) . ') ')->where(['state' => 1])->field('id,name,img,price,store')->select();
+                if ($products) {
+                    foreach ($products as &$product) {
+                        $product->count = $count[$product->id];
+                    }
+                    return $products;
+                } else {
+                    return [];
+                }
+            } else {
+                return $cartArr;
+            }
         }
         if (empty($cartArr)) {
             return 0;
@@ -125,6 +174,21 @@ class Productctl extends Controller
             }
         }
         return $count;
+    }
+
+    public function productCart(Request $request)
+    {
+        $carts = self::getCart();
+        if ($request->isGet()) {
+            $this->assign('carts', $carts);
+            return $this->fetch('product/pay');
+        }
+        // 异步请求
+        if ($carts) {
+            return self::response(0, 'success', $carts);
+        } else {
+            return self::response(400, 'no data');
+        }
     }
 
     private static function response($code, $msg = '', $data = [])

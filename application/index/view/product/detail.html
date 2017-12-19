@@ -30,10 +30,11 @@
 </div>
 </div>
 
-<!--产品列表内容-->
+<!--产品内容-->
 <div class="product_nei">
     <div class="product_title"><h4>{$product.name}</h4><b>￥{$product.price}</b></div>
-    <div class="count" data-count="{$cartCount}" data-store="{$product.store}" data-id="{$product.id}"><span class="count_ji">-</span><i></i><span class="count_jia">+</span>
+    <div class="count" data-count="{$cartCount}" data-store="{$product.store}" data-id="{$product.id}" data-price="{$product.price}"><span
+            class="count_ji" onclick="reduceCart(this)">-</span><i></i><span class="count_jia" onclick="addCart(this)">+</span>
     </div>
 </div>
 <div class="product_text">
@@ -42,10 +43,12 @@
 <!--购物车-->
 <div id="shop">
     <div class="shop">
-        <div class="total">￥<span>267.00</span>
-            <p>共<b>3</b>件商品</p></div>
+        <div class="total">
+            ￥<span data-total="0.00">0.00</span>
+            <p>共<b data-count="0">0</b>件商品</p>
+        </div>
         <div class="shop_na"><b></b></div>
-        <a href="product_sub.html">选好了！</a>
+        <a href="/product/order">选好了！</a>
     </div>
 </div>
 <!--购物车商品列表-->
@@ -53,12 +56,6 @@
     <div class="shop_list">
         <div class="shop_title"><span>购物车</span><img src="/static/images/cqlj.png" width="45"/></div>
         <ul>
-            <li>
-                <dt><img src="images/sou_07.jpg"/></dt>
-                <div class="shop_nei"><h4>中国最美手工私游地</h4>
-                    <p>￥89.00</p></div>
-                <div class="count"><span class="count_ji">-</span><i>3</i><span class="count_jia">+</span></div>
-            </li>
         </ul>
     </div>
 </div>
@@ -90,12 +87,15 @@
         autoplayDisableOnInteraction: false
     });
 
+    var cartShow = false;
+    var totalPrice = 0;
+    var totalNum = 0;
     //添加操作
-    $(".count_jia").click(function () {
-        var countObj = $(this).parent('.count');
+    function addCart(obj) {
+        var countObj = $(obj).parent('.count');
         var count = countObj.data('count');
         countObj.find(".count_ji").show();
-        if (parseInt(count) + 1 > countObj.data('store')){
+        if (parseInt(count) >= countObj.data('store')) {
             countObj.find("i").html(countObj.data('store'));
             return false;
         }
@@ -103,50 +103,129 @@
         $.ajax({
             type: 'post',
             url: "/product/addcart",
-            data: {'id': countObj.data('id'),'num':parseInt(count) + 1},
+            data: {'id': countObj.data('id'), 'num': parseInt(count) + 1},
             dataType: "json",
             success: function (data) {
                 if (data.code === 0) {
                     countObj.find("i").html(parseInt(count) + 1);
                     countObj.data('count', parseInt(count) + 1);
+                    if (countObj.data('id') == $('.product_nei .count').data('id')){
+                        $('.product_nei .count').data('count',parseInt(count) + 1);
+                        $('.product_nei .count').find('i').html(parseInt(count) + 1);
+                    }
+                    var totalObj = $('.total');
+                    var spanObj = totalObj.find('span'); // 总价
+                    var bObj = totalObj.find('b');       // 数量
+                    totalPrice = totalPrice + Number(countObj.data('price'));
+                    totalNum = totalNum + 1;
+                    spanObj.text(totalPrice.toFixed(2));
+                    bObj.text(totalNum);
                 }
             },
-            error:function (res) {
+            error: function (res) {
                 alert('服务器开小差了');
             }
         });
-    });
+    }
     //减操作
-    $(".count_ji").click(function () {
-        var countObj = $(this).parent('.count');
+    function reduceCart(obj) {
+        var countObj = $(obj).parent('.count');
         var count = countObj.data('count');
 
         // 请求服务
         $.ajax({
             type: 'post',
             url: "/product/addcart",
-            data: {'id': countObj.data('id'),'num':parseInt(count) - 1},
+            data: {'id': countObj.data('id'), 'num': parseInt(count) - 1},
             dataType: "json",
             success: function (data) {
                 if (data.code === 0) {
                     if (count <= 1) {
                         countObj.find(".count_ji").hide();
                         countObj.find("i").html("");
+                        $('.product_nei .count .count_ji').hide();
+                        $('.product_nei .count i').html("");
                         count = 1;
-                    }else{
+                    } else {
                         countObj.find("i").html(parseInt(count) - 1);
-                        countObj.data('count', parseInt(count) - 1);
                     }
+                    if (countObj.data('id') == $('.product_nei .count').data('id')){
+                        $('.product_nei .count').data('count',parseInt(count) - 1);
+                        $('.product_nei .count').find('i').html(parseInt(count) - 1);
+                    }
+                    countObj.data('count', parseInt(count) - 1);
+
+                    var totalObj = $('.total');
+                    var spanObj = totalObj.find('span');
+                    var bObj = totalObj.find('b');
+                    totalPrice = totalPrice - Number(countObj.data('price'));
+                    totalNum = totalNum - 1;
+                    spanObj.text(totalPrice.toFixed(2));
+                    bObj.text(totalNum);
                 }
             },
-            error:function (res) {
+            error: function (res) {
                 alert('服务器开小差了');
             }
         });
-    });
+    }
+    function getCart(show) {
+        $.ajax({
+            type: 'post',
+            url: "/product/cart",
+            dataType: "json",
+            success: function (data) {
+                cartShow = true;
+                totalNum = 0;
+                totalPrice = 0;
+                if (data.code === 0) {
+                    var str = '';
+                    for (var i = 0; i < data.data.length; i++) {
+                        str += '<li>' +
+                            '<dt><img src="' + data.data[i].img + '"/></dt>' +
+                            '<div class="shop_nei">' +
+                            '<h4>' + data.data[i].name + '</h4>' +
+                            '<p>￥' + data.data[i].price + '</p>' +
+                            '</div>' +
+                            '<div class="count" data-count="' + data.data[i].count + '" data-store="' + data.data[i].store + '" data-id="' + data.data[i].id + '" data-price="'+data.data[i].price+'">' +
+                            '<span class="count_ji" onclick="reduceCart(this)">-</span>' +
+                            '<i>' + data.data[i].count + '</i>' +
+                            '<span class="count_jia" onclick="addCart(this)">+</span>' +
+                            '</div>' +
+                            '</li>';
+                        totalNum += Number(data.data[i].count);
+                        totalPrice += Number(data.data[i].count * data.data[i].price);
+                    }
+                    $('#shop_list').find('ul').html(str);
+                    var totalObj = $('.total');
+                    totalObj.find('span').text(totalPrice.toFixed(2));
+                    totalObj.find('b').text(totalNum);
+                } else {
+                    $('#shop_list').find('ul').html('<li>购物车还是空的~</li>');
+                }
+                if (show){
+                    $("#shop_list").show();
+                }
+            },
+            error: function (res) {
+                alert('服务器开小差了');
+            }
+        });
+    }
     //显示购物列表
+
     $(".shop_na").click(function () {
-        $("#shop_list").toggle();
+        if (cartShow) {
+            cartShow = false;
+            $("#shop_list").hide();
+            return false;
+        }
+        if (!cartShow) {
+            getCart(true);
+        }
+    });
+    $(document).ready(function () {
+        getCart(false);
     });
 </script>
 </body>
