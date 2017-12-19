@@ -6,7 +6,6 @@
         <ul>
             {volist name="carts" id="cart"}
             <li data-id="{$cart.id}"><h5>{$cart.name}</h5><b>￥{$cart.price}</b><span>X{$cart.count}</span></li>
-            {$totalPrice = ($cart.price * $cart.count)}
             {/volist}
         </ul>
         <div class="totalr">共￥{$totalPrice}</div>
@@ -54,7 +53,7 @@
             $.ajax({
                 type: 'post',
                 url: "/act/dojoin",
-                data: {'name': name, 'phone': phone, 'ids': ids, 'token': token,'address':address},
+                data: {'name': name, 'phone': phone, 'ids': ids.join(), 'token': token,'address':address},
                 dataType: "json",
                 success: function (data) {
                     if(data.code > 0){

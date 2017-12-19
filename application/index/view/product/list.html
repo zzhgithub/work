@@ -101,6 +101,12 @@
             dataType: "json",
             success: function (data) {
                 if (data.code === 0) {
+                    $('.count').each(function (index) {
+                        if ($(this).data('id') == countObj.data('id')){
+                            $(this).data('count',parseInt(count) - 1);
+                            $(this).find('i').html(parseInt(count) - 1);
+                        }
+                    });
                     if (count <= 1) {
                         countObj.find(".count_ji").hide();
                         countObj.find("i").html("");
@@ -108,12 +114,6 @@
                     } else {
                         countObj.find("i").html(parseInt(count) - 1);
                     }
-                    $('.count').each(function (index) {
-                        if ($(this).data('id') == countObj.data('id')){
-                            $(this).data('count',parseInt(count) - 1);
-                            $(this).find('i').html(parseInt(count) - 1);
-                        }
-                    });
                     countObj.data('count', parseInt(count) - 1);
 
                     var totalObj = $('.total');

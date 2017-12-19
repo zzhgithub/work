@@ -97,11 +97,12 @@ class Productctl extends Controller
         }
         $cart = Session::get('cart');
         $cartArr = $cart != null ? explode(',', $cart) : [];
+        $product = Product::get($id);
         $ids = [];
         if (!empty($cartArr)) {
             foreach ($cartArr as $k => &$value) {
                 $index = strpos($value, ':');
-                if (substr($value, 0, $index) == $id) {
+                if (substr($value, 0, $index) == $id && $product->state == 1 && $product->store >= $num) {
                     if ($num === 0) {
                         unset($cartArr[$k]);
                     } else {
@@ -117,7 +118,7 @@ class Productctl extends Controller
                 }
             }
         }
-        if (!in_array($id, $ids) && $num > 0) {
+        if (!in_array($id, $ids) && $num > 0 && $product->state == 1 && $product->store >= $num) {
             array_push($cartArr, $id . ':' . $num);
         }
         Session::set('cart', implode(',', $cartArr));
@@ -180,7 +181,14 @@ class Productctl extends Controller
     {
         $carts = self::getCart();
         if ($request->isGet()) {
+            $totalPrice = 0.00;
+            if ($carts) {
+                foreach ($carts as $cart) {
+                    $totalPrice += sprintf("%.2f", $cart->count * $cart->price);
+                }
+            }
             $this->assign('carts', $carts);
+            $this->assign('totalPrice', sprintf("%.2f", $totalPrice));
             return $this->fetch('product/pay');
         }
         // 异步请求

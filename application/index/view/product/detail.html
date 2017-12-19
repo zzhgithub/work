@@ -140,6 +140,10 @@
             dataType: "json",
             success: function (data) {
                 if (data.code === 0) {
+                    if (countObj.data('id') == $('.product_nei .count').data('id')){
+                        $('.product_nei .count').data('count',parseInt(count) - 1);
+                        $('.product_nei .count i').find('i').html(parseInt(count) - 1);
+                    }
                     if (count <= 1) {
                         countObj.find(".count_ji").hide();
                         countObj.find("i").html("");
@@ -148,10 +152,6 @@
                         count = 1;
                     } else {
                         countObj.find("i").html(parseInt(count) - 1);
-                    }
-                    if (countObj.data('id') == $('.product_nei .count').data('id')){
-                        $('.product_nei .count').data('count',parseInt(count) - 1);
-                        $('.product_nei .count').find('i').html(parseInt(count) - 1);
                     }
                     countObj.data('count', parseInt(count) - 1);
 
