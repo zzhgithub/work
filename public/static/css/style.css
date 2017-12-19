@@ -334,14 +334,7 @@ border-radius: 5px;display: inline-block;position: relative;  margin-bottom:0px;
 .donate_user ul li h5{ float:left;font-weight:500; width:43%; text-align:center; height:35px;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;}
 .donate_user ul li span{ float:right;}
 .donate_user ul li:last-child{ border-bottom:none;}
-
-
-
-
-
-
-
-
-
-
-
+/* 后端添加 */
+.product_text img{
+    width: 100%;
+}

@@ -30,9 +30,8 @@ return [
      * 产品
      */
     'product/list' => 'index/productctl/productList',
-    'product/detail' => 'index/productctl/productDetail',
-
-
+    'product/detail/:id' => 'index/productctl/productDetail',
+    'product/addcart' => 'index/productctl/productModCart',
 
     /**
      * boss 后台相关功能
