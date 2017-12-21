@@ -9,6 +9,7 @@ namespace app\index\controller;
  * Date: 2017/11/19
  * Time: 下午5:06
  */
+use app\index\model\Inspect;
 use app\index\model\Point;
 use app\index\model\Pointbanner;
 use app\index\model\Pointdetail;
@@ -146,6 +147,12 @@ function ponitDetail($id)
         $client = new Pointbanner();
         $list = $client->where(['pid' => $id])->select();
         $this->assign('list', $list);
+
+        $inspect = new Inspect();
+        $inspect_list = $inspect->where(['pid'=>$id])
+            ->select();
+
+        $this->assign('inspect',$inspect_list);
 
         return $this->view->fetch('point/detail');
     } catch (Exception $e) {

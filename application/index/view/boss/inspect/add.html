@@ -1,0 +1,261 @@
+{extend name="boss/public/layout"/}
+
+{block name="css"}
+<style>
+    .img_box{
+        display: inline-block;position: relative;margin-left: 5px;
+    }
+    .img_preview{
+        height: 100px;width: 100px;line-height:100px;overflow: hidden;
+    }
+    .img_preview .img{
+        width: 100px;
+    }
+    .spandel{
+        position: absolute;
+        bottom: -20px;
+        text-align: right;
+        font-size: 12px;
+        background: #009688;
+        display: block;
+        width: 100px;
+        height: 20px;
+        opacity:0.6;
+    }
+    .spandel a{
+        color: #fff;
+        cursor: pointer;
+    }
+    .spandel a:hover{
+        text-decoration: underline;
+    }
+</style>
+{/block}
+{block name="body"}
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>添加/编辑反馈</legend>
+    </fieldset>
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-block">
+                <input type="text" name="nickname" lay-verify="nickname" autocomplete="off" placeholder="请输入产品名称"
+                       class="layui-input" value="{inspect.nickname}" style="width: 300px;">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传头像</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="img" lay-verify="img" autocomplete="off" placeholder="" class="layui-input" value="{$product.img}">
+                <button type="button" class="layui-btn" id="img">
+                    <i class="layui-icon">&#xe67c;</i>上传头像
+                </button>
+                <span class="done"></span>
+                <div><img class="preview" src="{$inspect.img}" style="width: 100px;"/></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">介绍</label>
+            <div class="layui-input-block">
+                <input type="text" name="des" lay-verify="des" autocomplete="off" placeholder="请输入产品价格" class="layui-input" value="{$inspect.price}" style="width: 200px;" onkeypress="return noNumbers(event)" onblur="return checkNumber(event,2)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">文物点id</label>
+            <div class="layui-input-block">
+                <input type="number" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入产品库存" class="layui-input" value="{$inspect.pid}" style="width: 200px;" onkeypress="return noNumbers(event)" onblur="return checkNumber(event,0)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {if condition="$inspect.id gt 0"}
+                <input type="hidden" name="id" value="{$inspect.id}">
+                {/if}
+                <button class="layui-btn" lay-submit="" lay-filter="go">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    function noNumbers(e) {
+        var keynum;
+        var keychar;
+        if (window.event) // IE
+        {
+            keynum = e.keyCode
+        }
+        else if (e.which) // Netscape/Firefox/Opera
+        {
+            keynum = e.which
+        }
+        keychar = String.fromCharCode(keynum);
+        //判断是数字,且小数点后面只保留两位小数
+        if (!isNaN(keychar)) {
+            var index = e.currentTarget.value.indexOf(".");
+            if (index >= 0 && e.currentTarget.value.length - index > 2) {
+                return false;
+            }
+            return true;
+        }
+        //如果是小数点 但不能出现多个 且第一位不能是小数点
+        if ("." == keychar) {
+            if (e.currentTarget.value == "") {
+                return false;
+            }
+            if (e.currentTarget.value.indexOf(".") >= 0) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    function checkNumber(e, len) {
+        var val = e.currentTarget.value;
+        if (!val) {
+            return false;
+        }
+        var b = parseFloat(val);
+
+        e.currentTarget.value = Number(b).toFixed(len);
+    }
+    var $;
+    layui.use(['jquery'], function () {
+        $ = layui.jquery;
+    });
+    // 删除图片
+    function delImg(obj) {
+        var id = $(obj).data('id');
+        if (Number(id) > 0){
+            $.post("/boss/productimg/del", {id:id}, function (res) {
+                layer.msg(res.msg);
+                if (res.code === 0) {
+                    $(obj).parents('.img_box').remove();
+                }
+            });
+        }else {
+            $(obj).parents('.img_box').remove();
+        }
+    }
+    layui.use(['form', 'layedit', 'layer', 'upload'], function () {
+        var upload = layui.upload;
+        var layedit = layui.layedit;
+        var form = layui.form;
+        var layer = layui.layer;
+
+        layedit.set({
+            uploadImage: {
+                url: '/boss/upload?type=product' //接口url
+                , type: 'post' //默认post
+            }
+        });
+        var editor = layedit.build('editor'); //建立编辑器
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#img' //绑定元素
+            , url: '/boss/upload' //上传接口
+            , data: {type: 'product'}
+            , done: function (res) {
+                $('.done').css({"color": "#000"}).text('');
+                //上传完毕回调
+                if (res.code === 0) {
+                    $('input[name="img"]').val(res.data.src);
+                    $('.done').css({"color": "green"}).text(res.msg);
+                    $('.preview').attr('src', res.data.src);
+                } else {
+                    $('.done').css({"color": "red"}).text(res.msg);
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                $('.done').css({"color": "red"}).text('服务异常');
+            }
+        });
+
+        //多图片上传
+        upload.render({
+            elem: '#multiUpload'
+            ,url: '/boss/upload/'
+            ,data:{type: 'product'}
+            ,multiple: true
+            ,before: function(obj){
+            }
+            ,done: function(res, index, upload){
+                if (res.code === 0){
+                    var str = '<div class="img_box"><div class="img_preview"><img src="'+res.data.src+'" class="layui-upload-img img"></div><span class="spandel"><a data-id onclick="delImg(this)">删除</a></span></div>';
+                    $('#multiPreview').append(str);
+                    var imgs = $('#imgs');
+                    var imgsPath = imgs.val();
+                    imgs.val(imgsPath + '|' + res.data.src);
+                }
+            }
+        });
+
+        form.verify({
+            name: function (value) { //value：表单的值、item：表单的DOM对象
+                if (/^\d+\d+\d$/.test(value)) {
+                    return '产品名称不能全为数字';
+                }
+                if (value.length < 3) {
+                    return '产品名称至少得4个字符啊';
+                }
+            }
+            , img: function (value) {
+                if (value === '' || value.length === 0) {
+                    return '请上传封面';
+                }
+            }
+            , productPrice: function (value) {
+                if (!value || Number(value).toFixed(2) <= 0.00) {
+                    return '请输入价格';
+                }
+            }
+            , number: function (value) {
+                if (value == '' || value == 'undefined' || parseInt(value) < 0) {
+                    return '请输入库存';
+                }
+            }
+            , summary: function (value) {
+                if (!value) {
+                    return '请输入产品描述';
+                }
+                if (value.length < 20) {
+                    return '产品描述不能少于20字';
+                }
+            }
+            , content: function (value) {
+                layedit.sync(editor);
+                if (!value) {
+                    return '请输入详细信息';
+                }
+            }
+            , imgs: function (value) {
+                if (value === '' || value.length === 0) {
+                    return '请上传产品图片';
+                }
+            }
+        });
+
+        form.on('submit(go)', function (data) {
+            layedit.sync(editor);
+            $.post("/boss/inspect/add", data.field, function (res) {
+                layer.msg(res.msg);
+                if (res.code === 0) {
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+{/block}

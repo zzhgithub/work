@@ -11,6 +11,8 @@ namespace app\index\controller;
  */
 use app\index\model\Member;
 use app\index\model\Point;
+use app\index\model\Pointbanner;
+use app\index\model\Pointdetail;
 use think\Exception;
 use \think\Request;
 use \think\Controller;
@@ -138,11 +140,20 @@ class Volunteer extends Controller
      * 巡查反馈详情页
      * @param $id
      */
-    public function inspectBackDetail()
+    public function inspectBackDetail($id)
     {
-        //todo
-        return $this->fetch('volunteer/inspect_back_detail');
+        $base = Point::get($id);
+        $this->assign('base', $base);
 
+        $ext = Pointdetail::get($id);
+        $this->assign('ext', $ext);
+
+        $client = new Pointbanner();
+        $list = $client->where(['pid' => $id])->select();
+        $this->assign('list', $list);
+        //巡查反馈页
+
+        return $this->fetch('volunteer/inspect_back_detail');
     }
 
     public function certificate()

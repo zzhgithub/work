@@ -12,6 +12,7 @@ namespace app\index\controller;
 use app\index\model\Act;
 use app\index\model\Banner;
 use app\index\model\Donate;
+use app\index\model\Inspect;
 use app\index\model\Point;
 use app\index\model\Pointbanner;
 use app\index\model\Pointdetail;
@@ -814,6 +815,59 @@ class Boss extends Controller
             $this->assign('news', $news);
             $this->assign('title', '添加/修改公告-' . $this->title);
             return $this->view->fetch('boss/news/add');
+        }
+    }
+
+    //后台反馈列表
+    public function InspectList(Request $request){
+        if ($request->isAjax()) {
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $news = new Inspect();
+            $list = $news->order('id desc')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '反馈管理-' . $this->title);
+        return $this->view->fetch('boss/news/list');
+    }
+
+    //添加反馈
+    public function inspectSave(Request $request)
+    {
+        if ($request->isAjax()) {
+            $data = $request->post();
+            if (empty($data)) {
+                return $this->response(400, '非法请求');
+            }
+            $news = new Inspect();
+            unset($data['file'], $data['content'], $data['imgs']);
+            if (isset($data['id']) && intval($data['id'])) { // 修改
+                $data['id'] = intval($data['id']);
+                $res = $news->save($data, ['id' => $data['id']]);
+            } else {              //添加
+                $news->data($data);
+                $res = $news->save();
+            }
+            if ($res) {
+                return $this->response(0, '操作成功');
+            } else {
+                return $this->response(400, '操作失败');
+            }
+        } else {
+            $id = intval($request->param('id'));
+            $news = Inspect::get($id);
+            $this->assign('inspect', $news);
+            $this->assign('title', '添加/修改反馈-' . $this->title);
+            return $this->view->fetch('boss/inspect/add');
         }
     }
 }

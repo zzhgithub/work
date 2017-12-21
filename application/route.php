@@ -121,4 +121,10 @@ return [
      */
     'boss/news/list' =>'index/boss/newsList',
 
+    /**
+     * 反馈管理
+     */
+    'boss/inspect/list' => 'index/boss/InspectList',
+    'boss/inspect/add' =>'index/boss/inspectSave',
+    'boss/inspect/mod/:id' =>'index/boss/inspectSave',
 ];
