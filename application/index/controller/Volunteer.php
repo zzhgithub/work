@@ -16,6 +16,7 @@ class Volunteer extends Controller
      * 文物注册页
      */
     public function register(){
+        return $this->fetch('volunteer/register');
 
     }
 
@@ -32,38 +33,51 @@ class Volunteer extends Controller
      */
     public function inspect(){
         //todo
+        return $this->fetch('volunteer/inspect');
     }
 
     /**
      * 文物保护培训列表页
      * @param $query
      */
-    public function trainList($query){
+    public function trainList(){
         //todo
+        return $this->fetch('volunteer/train_list');
+
     }
 
     /**
      * 培训详情页
      * @param $id
      */
-    public function trainDetail($id){
+    public function trainDetail(){
         //todo
+        return $this->fetch('volunteer/train_detail');
+
     }
 
     /**
      * 巡查反馈列表页
      * @param $query
      */
-    public function inspectBackList($query){
+    public function inspectBackList(){
         //todo
+        return $this->fetch('volunteer/inspect_back_list');
+
     }
 
     /**
      * 巡查反馈详情页
      * @param $id
      */
-    public function inspectBackDetail($id){
+    public function inspectBackDetail(){
         //todo
+        return $this->fetch('volunteer/inspect_back_detail');
+
     }
-    //todo 这里的数据哪里来 还有为什么不显示登录状态
+
+    public function certificate()
+    {
+        return $this->fetch('volunteer/certificate');
+    }
 }

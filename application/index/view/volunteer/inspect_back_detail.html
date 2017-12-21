@@ -1,0 +1,81 @@
+{extend name="public:layout"/}
+{block name="body"}
+<!--地点详情-->
+<div class="address">
+    <div class="ground">
+        <b>市保 ｜ </b><span>戴笠公馆</span><dt>[渝中区]</dt>
+    </div>
+    <p>地址：渝中区中山四路周公馆一侧巴渝文化馆内</p>
+</div>
+<div class="partner">
+    <div class="partner_nei">
+        <ul class="swiper-wrapper">
+            <li class="swiper-slide"><a href="#"><img src="/static/images/banner_02.jpg" width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>
+            <li class="swiper-slide"><a href="#"><img src="/static/images/banner_02.jpg"width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>
+            <li class="swiper-slide"><a href="#"><img src="/static/images/banner_02.jpg"width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>
+        </ul>
+        <!--结束切换内容-->
+        <div class="live_partner">
+            <div class="live_partn"></div>
+        </div>
+    </div>
+</div>
+</div>
+<!--内容-->
+<div class="tube">
+    <p>戴笠公馆旧址，坐南朝北，砖木结构，两楼一底。戴笠（1897-1946），浙江江山人，字雨农，名春风。早年好赌博，结交青帮。1926年考取黄埔军校六期，1932年被蒋介石任命为国民党特务机关“中华复兴社”（简称“蓝衣社”）所属特务处处长。1938年担任国民政府“军事委员会统计调查局”（简称“军统”）副局长，后又被任命为中美特种技术合作所主任。戴笠被称为“蒋介石的佩剑”，行踪不定、神出鬼没，其谍报功绩在1941年达到了顶峰，他的谍报网络率先破译日本将袭击珍珠港的情报，但被美军海军部一笑置之。1946年3月，他在从北平飞往上海转南京途中，因飞机失事死亡。蒋介石为此曾痛心疾首，称“若雨农不死，不至失大陆！” 与其交锋多次的周恩来也曾在中共的会议上说：“戴笠之死，共产党的革命，可以提前十年成功。”该公馆设在中共中央南方局重庆驻地“周公馆”右侧，在此专设 “特侦组”，用以监视“周公馆”一切动静。
+        忽然觉得，这座城被山山水水环绕着，热情一点，任性一点，也不是那么难以包容。她为你我缓慢滋长的爱情埋下了浓重的伏笔，绵绵延延，就像深处山城街道里，抬眼望不尽的高楼丛林，重叠交错，明灭难尽；更像中山四路上陡峭环绕的支路与建筑，在江边，在山崖，在一切险峻或平坦的地面，绵延向前，有限无期……
+        好的地方，还没有离开，便想再来。感谢你我在最美的年华，相遇在山城！</p>
+</div>
+<div class="tube_not">
+    <span></span>
+</div>
+<!--巡查反馈-->
+<div class="inspect_nei">
+    <h4>巡查反馈：</h4>
+    <div class="inspect_list">
+        <dt><img src="/static/images/inspect_03.jpg"/><em>重庆老街</em></dt>
+        <p>完善建档立卡，做好数据录入。对5件文物进行了文物信息数据库录入，对上半年鉴定的150件藏品建档立卡。</p>
+    </div>
+    <div class="inspect_list">
+        <dt><img src="/static/images/inspect_03.jpg"/><em>重庆老街</em></dt>
+        <p>完善建档立卡，做好数据录入。对5件文物进行了文物信息数据库录入，对上半年鉴定的150件藏品建档立卡。</p>
+    </div>
+    <div class="inspect_list">
+        <dt><img src="/static/images/inspect_03.jpg"/><em>重庆老街</em></dt>
+        <p>完善建档立卡，做好数据录入。对5件文物进行了文物信息数据库录入，对上半年鉴定的150件藏品建档立卡。</p>
+    </div>
+    <div class="inspect_list">
+        <dt><img src="/static/images/inspect_03.jpg"/><em>重庆老街</em></dt>
+        <p>完善建档立卡，做好数据录入。对5件文物进行了文物信息数据库录入，对上半年鉴定的150件藏品建档立卡。</p>
+    </div>
+</div>
+{/block}
+{block name="javascript"}
+<script type="text/javascript">
+    $(function(){
+        var gao=$(".partner ul li img").height();
+        if(gao!=0){
+            $(".partner").height(gao);
+            $(".partner_nei").height(gao);
+        }
+        var Swiper1 = $('.partner_nei').swiper({
+            loop: true,
+            slidesPerView : 1,
+            autoplay : 3000,//自动播放
+            speed:800,//切换速度
+            pagination : '.live_partner',//轮播分页
+            autoplayDisableOnInteraction : false
+        });
+        //更多
+        var tube=$(".tube").height();
+        if(tube>200){
+            $(".tube").css("height","200");
+        }
+        $(".tube_not").click(function(){
+            $(".tube").css("height","100%");
+            $(".tube_not").hide();
+        });
+    })
+</script>
+{/block}

@@ -18,6 +18,17 @@ return [
     'act/detail/:id' => 'index/activity/activityDetail', //活动详情
     'act/join/:id' => 'index/activity/joinActivity', //活动报名
     'act/dojoin' => 'index/activity/doJoin', //活动报名
+    'ucenter' => 'index/person/index', //个人中心
+    'register' => 'index/volunteer/register', //信息提交
+    'train/list' => 'index/volunteer/trainlist', //培训列表
+    'train/detail/:id' => 'index/volunteer/trainDetail', //培训详情
+    'inspect/back/list' => 'index/volunteer/inspectbacklist', //巡查反馈列表
+    'inspect/back/detail/:id' => 'index/volunteer/inspectbackdetail', //巡查反馈详情
+    'inspect' => 'index/volunteer/inspect', //文物巡查
+
+    'about' => 'index/about/index', //关于我们
+    'certificate' => 'index/volunteer/certificate', //任务点证书
+
 
     /**
      * 捐款

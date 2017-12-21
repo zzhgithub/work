@@ -46,8 +46,10 @@
 <script>
     function alertMsg(msg) {
         var layer = $('.layer');
-        console.log(layer);
-        layer.find('p').addClass('layer_m').html(msg);
+        var is_free = {$data['isfree']};
+        var className = is_free ? 'layer_m':'layer_tow';
+        layer.find('p').addClass(className).html(msg);
+        layer.find('a').hide();
         $('#layer').show();
     }
 

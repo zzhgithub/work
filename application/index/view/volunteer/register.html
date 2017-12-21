@@ -1,0 +1,53 @@
+{extend name="public:layout"/}
+{block name="body"}
+<div class="login">
+    <form id="login">
+        <ul>
+            <li>
+                <dt>姓名<b>*</b></dt>
+                <input type="text" name="name" value=""/>
+            </li>
+            <li>
+                <dt>姓别<b>*</b></dt>
+                <div class="sex">
+                    <label class="radio-inline"><input name="sex" value="1" type="radio" id="1" checked="checked"><ins for="1"></ins><div class="opt">男</div></label>
+                    <label class="radio-inline"><input name="sex" value="0" type="radio" id="2"><ins for="2"></ins><div class="opt">女</div></label>
+                </div>
+            </li>
+            <li>
+                <dt>身份证号码<b>*</b></dt>
+                <input type="text" name="card" value=""/>
+            </li>
+            <li><dt>邮箱 <b>*</b></dt><p>活动通知主要通过邮箱发送，请仔细核对</p><input name="mail" type="text" value=""/></li>
+            <li><dt>联系方式 <b>*</b></dt><input type="text" name="phone" value=""/></li>
+            <li><dt>职业 <b>*</b></dt><input type="text" name="industry" value=""/></li>
+            <li><p class="cause">请问是什么原因使得你期望加入我们？<b>*</b></p><textarea name="cause"></textarea></li>
+            <li>
+                <p>请问您是从何处知晓我们？<b>*</b></p>
+                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a1"><label for="checkbox_a1"></label>网站</div>
+                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a2"><label for="checkbox_a2"></label>报纸、杂志</div>
+                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a3"><label for="checkbox_a3"></label>微博</div>
+                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a4"><label for="checkbox_a4"></label>微信朋友圈</div>
+                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a5"><label for="checkbox_a5"></label>微信群</div>
+                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a6"><label for="checkbox_a6"></label>朋友推荐</div>
+                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a7"><label for="checkbox_a7"></label>其他</div>
+                <input class="enter" name="know" type="" value=""/>
+            </li>
+        </ul>
+        <input class="loginsub" type="submit" value="注册"/>
+    </form>
+</div>
+{/block}
+{block name="javascript"}
+<script src="/static/js/layer/layer.js"></script>
+<script type="text/javascript">
+    $(".loginsub").click(function(){
+        if($("input[name='know']:checked").size()==0){
+            if($(".enter").val()==""){
+                parent.layer.alert("姓名不能为空",{icon: 5});
+                return false;
+            }
+        }
+    });
+</script>
+{/block}

@@ -1,0 +1,66 @@
+{extend name="public:layout"/}
+{block name="body"}
+<!--关于我们-->
+<div class="about">
+    <img src="/static/images/activity_03.jpg" width="100%"/>
+    <h4 class="about_title">重庆老街</h4>
+
+    <div class="about_nei">
+        我们的组织名称：重庆市南岸区巴渝公益发展中心<br/>我们的平台：重庆市文物保护志愿者服务队<br/>重庆老街历史文化总群<br/>古村之友（重庆）<br/>我们的由来：重庆市南岸区巴渝公益发展中心，是重庆...
+    </div>
+    <div class="tube_not">
+        <span></span>
+    </div>
+    <!--联系电话-->
+    <div class="tube_link">
+        联系电话：023-12345678<br/>地址：重庆市……………………………………
+    </div>
+    <div id="allmapt"></div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fBdXTR51bqAmfP5taFKRcQv5"></script>
+<script type="text/javascript">
+
+    // 百度地图API功能
+    map = new BMap.Map("allmapt");
+    map.centerAndZoom(new BMap.Point(106.526764,29.578561), 15);
+    var data_info = [[106.52693,29.579323,"地址：北京市东城区王府井大街88号乐天银泰百货八层 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.610119,106.5564&title=&output=html'>导航</a>"],
+        [106.525017,29.579221,"地址：北京市东城区东华门大街 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.567963,106.529872&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"],
+        [106.525799,29.580391,"地址：北京市东城区正义路甲5号<a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=39.916979519873,116.41004950566&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"]
+    ];
+    var opts = {
+        width : 250,     // 信息窗口宽度
+        height: 80,     // 信息窗口高度
+        title : "信息窗口" , // 信息窗口标题
+        enableMessage:true//设置允许信息窗发送短息
+    };
+    for(var i=0;i<data_info.length;i++){
+        var marker = new BMap.Marker(new BMap.Point(data_info[i][0],data_info[i][1]));  // 创建标注
+        var content = data_info[i][2];
+        map.addOverlay(marker);               // 将标注添加到地图中
+        addClickHandler(content,marker);
+    }
+    function addClickHandler(content,marker){
+        marker.addEventListener("click",function(e){
+            openInfo(content,e)}
+        );
+    }
+    function openInfo(content,e){
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
+        map.openInfoWindow(infoWindow,point); //开启信息窗口
+    }
+
+    var tube=$(".about_nei").height();
+    if(tube>110){
+        $(".about_nei").css("height","110");
+    }
+    $(".tube_not").click(function(){
+        $(".about_nei").css("height","100%");
+        $(".tube_not").hide();
+    });
+</script>
+{/block}

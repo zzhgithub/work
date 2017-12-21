@@ -1,0 +1,53 @@
+{extend name="public:layout"/}
+{block name="body"}
+
+<!--个人中心-->
+<div class="user_roar">
+    <img src="/static/images/top_03.jpg" width="65"/>
+    <dt>微信昵称<br/>微信号：</dt>
+</div>
+<!--我参与的活动-->
+<div class="doing">
+    <div class="doing_gd">我参与的活动</div>
+    <ul>
+        <li>
+            <a href="activity_nei.html"><img src="/static/images/activity_03.jpg"/><h4>去探索重庆城</h4></a>
+            <p>青年之声·渝中共青团1+100线下活动—母城说2017.9.17  贰厂、鹅岭公园圆满结束</p>
+        </li>
+    </ul>
+</div>
+<!--我的订单-->
+<div class="order">
+    <div class="doing_gd">我的订单</div>
+    <ul>
+        <li><a href="product_nei.html"><dt><img src="/static/images/sou_09.jpg"/></dt> <div class="shop_nei"><h4>中国最美手工私游地</h4><p>￥89.00</p></div> <span>x1</span></a></li>
+        <li><a href="product_nei.html"><dt><img src="/static/images/sou_09.jpg"/></dt> <div class="shop_nei"><h4>中国最美手工私游地</h4><p>￥89.00</p></div> <span>x1</span></a></li>
+
+    </ul>
+</div>
+<!--我的捐款-->
+<div class="donate_user">
+    <div class="doing_gd">我的捐款</div>
+    <ul>
+        <li><b>2017-10-25</b><h5>所捐款的项目名</h5><span>金额：￥10.00</span></li>
+        <li><b>2017-10-25</b><h5>所捐款的项目名</h5><span>金额：￥10.00</span></li>
+        <li><b>2017-10-25</b><h5>所捐款的项目名</h5><span>金额：￥10.00</span></li>
+    </ul>
+</div>
+{/block}
+
+{block name="javascript"}
+<script type="text/javascript">
+    var tube=$(".about_nei").height();
+    if(tube>110){
+        $(".about_nei").css("height","110");
+    }
+    $(".tube_not").click(function(){
+        $(".about_nei").css("height","100%");
+        $(".tube_not").hide();
+    });
+    $(".doing_gd").click(function(){
+        $(this).parent().find("ul").toggle();
+    });
+</script>
+{/block}
