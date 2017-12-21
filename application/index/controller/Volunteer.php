@@ -10,6 +10,8 @@ namespace app\index\controller;
  * Time: 下午5:24
  */
 use app\index\model\Member;
+use app\index\model\Point;
+use think\Exception;
 use \think\Request;
 use \think\Controller;
 use \think\Validate;
@@ -99,11 +101,37 @@ class Volunteer extends Controller
      * 巡查反馈列表页
      * @param $query
      */
-    public function inspectBackList()
+    public function inspectBackList($query = null)
     {
-        //todo
-        return $this->fetch('volunteer/inspect_back_list');
-
+        try {
+            $search = Request::instance()->param('search', null, 'stripslashes');
+            if ($search) {
+                $levelArr = [
+                    '市宝' => 1,
+                    '区宝' => 2,
+                    '国宝' => 3,
+                    '文物点' => 4
+                ];
+                if (key_exists($search, $levelArr)) {
+                    $point = new Point();
+                    $list = $point->where('name', 'like', '%' . $search)
+                        ->whereOr('zone', 'like', '%' . $search)
+                        ->whereOr('level', $levelArr[$search])
+                        ->select();
+                } else {
+                    $point = new Point();
+                    $list = $point->where('name', 'like', '%' . $search)
+                        ->whereOr('zone', 'like', '%' . $search)
+                        ->select();
+                }
+            } else {
+                $list = Point::all();
+            }
+            $this->assign('list', $list);
+            return $this->fetch('volunteer/inspect_back_list');
+        } catch (Exception $e) {
+            var_dump($e->getMessage());
+        }
     }
 
     /**

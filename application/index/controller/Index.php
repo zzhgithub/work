@@ -6,6 +6,7 @@ use app\index\model\Banner;
 use app\index\model\Product;
 use \think\Controller;
 use think\Request;
+use think\Session;
 use think\View;
 
 class Index extends Controller
@@ -21,6 +22,11 @@ class Index extends Controller
 
     public function index(Request $request)
     {
+        //获取session登录信息
+        if(Session::get("openid") == null){
+            $helper = new Helper();
+            $helper->sendTest();
+        }
         //获取首页的banner图
         $banner = new Banner();
         $res_banner = $banner->limit(3)->order('sort')->select();

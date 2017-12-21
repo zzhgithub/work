@@ -12,6 +12,7 @@ use app\index\model\User;
 use think\Controller;
 use think\Cookie;
 use think\Exception;
+use think\Session;
 
 
 class Helper extends Controller
@@ -83,7 +84,7 @@ class Helper extends Controller
                 $client->data($user)->save();
             }
             //设置登录的cookie
-            Cookie::set("openid",$user_obj->openid);
+            Session::set("openid",$user_obj->openid);
             $this->redirect("/");
         }catch (Exception $e){
             var_dump($e);
