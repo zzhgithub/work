@@ -44,7 +44,7 @@ a{text-decoration: none;color:#656565;}
 .partner{ width:100%; height:251px; min-width:251px; overflow:hidden; background:#FFF; position:relative;}
 .partner_nei{ width:100%;position: relative;overflow:hidden; height:251px; min-width:251px;}
 .partner_nei ul li{ float:left; position:relative; overflow:hidden; }
-.partner_nei ul li dt{ position:absolute; left:0px; bottom:0px; display:block; text-indent:3mm; color:#FFF; z-index:999; width:100%;; height:30px; background:rgba(0,0,0,0.8); line-height:30px;} 
+.partner_nei ul li dt{ position:absolute; left:0px; bottom:0px; display:block; text-indent:3mm; color:#FFF; z-index:8; width:100%;; height:30px; background:rgba(0,0,0,0.8); line-height:30px;} 
 .partner_nei dt span{ width:40%; font-weight:500; overflow:hidden; height:30px; display:block; float:left;white-space: nowrap;text-overflow:ellipsis;}
 .live_partner{ position:absolute; text-align:center; bottom:8px; left:50%; margin-left:-6%; overflow:hidden;}
 .live_partner span{  overflow:hidden; border-radius:50%; background:#bfbfbf; display:block; width:10px; height:10px; float:left; margin-right:5px;}
@@ -67,6 +67,7 @@ a{text-decoration: none;color:#656565;}
 .activity h4{ height:35px; background:#e4e4d6;font-size:14px; width:100%; line-height:35px; font-weight:500; padding:0 3% 0 3%;}
 .activity h4 a{ float:right;  color:#47260e;}
 .activity_nei{ padding:2% 3%; width:100%; overflow:hidden;}
+.activity_nei img{ height:130px;object-fit: cover;}
 .activity_bao{ height:40px; overflow:hidden; width:100%; padding-top:7px; line-height:25px; font-size:14px;}
 .activity_bao span{ display:block; width:70%; height:25px; float:left; overflow:hidden;white-space: nowrap;text-overflow:ellipsis;}
 .activity_bao a{ height:25px; display:block; width:65px; text-align:center; float:right;font-size:12px; border-radius:5px; background:#ffa134; line-height:25px; color:#FFF;}
@@ -76,9 +77,9 @@ a{text-decoration: none;color:#656565;}
 .buy h4{ height:35px; background:#e4e4d6;font-size:14px; width:100%; line-height:35px; font-weight:500; padding:0 3% 0 3%;}
 .buy h4 a{ float:right;  color:#47260e;}
 .buy ul{ padding:2% 3%; overflow:hidden; width:100%;}
-.buy ul li{ float:left; border:solid 1px #eeeeee; width:49%; background:#FFF;}
-.buy ul li:nth-of-type(1){ margin-right:2%;}
-.buy ul li img{ width:100%;}
+.buy ul li{ float:left; border:solid 1px #eeeeee; width:49%; background:#FFF;margin-bottom: 10px;}
+.buy ul li:nth-of-type(odd){ margin-right:2%;}
+.buy ul li img{ width:100%; height:170px;    object-fit: cover;}
 .buy_nei{ border-top:solid 1px #f3f3f3; padding:4%;}
 .buy_nei h5{ width:90%;overflow:hidden;white-space: nowrap; font-weight:500; color:#6a4623;text-overflow:ellipsis;}
 .buy_nei b{ color:#a37700; font-weight:500;}
@@ -100,11 +101,11 @@ a{text-decoration: none;color:#656565;}
 .history{ overflow:hidden; width:100%; padding:0 3%;}
 .history ul{ width:102%; overflow:hidden;}
 .history ul li{ float:left; width:48%; margin-right:2%; margin-top:5px; }
-.history ul li img{ width:100%; border-radius:3px;}
+.history ul li img{ width:100%; border-radius:3px; height:120px;object-fit: cover;}
 .history ul li span{ font-size:13px; color:#4d341c; height:32px; display:block; line-height:32px;}
 /*--推荐路线--*/
 .route{ width:100%; padding:0 3%; overflow:hidden;}
-.route img{ border:solid 2px #fff; width:100%;}
+.route img{ border:solid 2px #fff; width:100%; height:140px;object-fit: cover;}
 .route span{ width:100%; overflow:hidden; height:35px; font-size:14px; color:#4d341c; line-height:35px;}
 /*--路线页--*/
 .tube_not,.tube_notr{height:30px; width:100%;}
@@ -187,7 +188,7 @@ border-radius: 5px;display: inline-block;position: relative;  margin-bottom:0px;
 .inspect{ overflow:hidden; padding:1% 3% 3% 3%; width:100%;}
 .inspect ul{ width:102%; overflow:hidden;}
 .inspect ul li{ overflow:hidden; width:48%; background:#FFF; margin-bottom:10px; float:left; margin-right:2%;}
-.inspect ul li img{ width:100%; border-radius:3px;}
+.inspect ul li img{ height:98px; object-fit: cover; width:100%; border-radius:3px;}
 .inspect ul li span{ display:block; width:60%; text-indent:1mm; float:left; height:35px; font-size:14px; color:#4d341c; line-height:35px;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;}
 .inspect ul li b{ float:right; max-width:38%; margin-right:1%; height:35px; line-height:35px; font-size:12px; background:url(../images/place.png) no-repeat left center; text-indent:4mm; background-size:12px; color:#7e6f61; font-weight:400;}
 /*--巡查反馈内容--*/
@@ -202,6 +203,7 @@ border-radius: 5px;display: inline-block;position: relative;  margin-bottom:0px;
 .activityr{ overflow:hidden; padding:3%; width:100%;}
 .activityr img{ border-radius:3px;}
 .activityr_list{ margin-bottom:10px; overflow:hidden; position:relative;}
+.activityr img{ width:100%; height:130px;object-fit: cover;}
 .activityr_list span{ width:45px; height:23px; line-height:23px; background:rgba(0,0,0,0.5); display:block; right:5px; top:5px; position:absolute; text-align:center; color:#FFF; border-radius:3px;}
 .activityr_local{ height:36px; line-height:36px;padding:0 3px;}
 .activityr_local h4{ float:left; font-size:14px; color:#4d341c; margin-right:10px; max-width:56%; height:36px;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;}
@@ -234,10 +236,12 @@ border-radius: 5px;display: inline-block;position: relative;  margin-bottom:0px;
 .donate{ overflow:hidden; width:100%; padding:3%;}
 .donate ul li{ background:#FFF; padding:5px; margin-bottom:10px;}
 .donate_tile{ height:42px; line-height:42px; font-size:14px; color:#4d341c; width:100%; overflow:hidden;}
+.donate ul li img{ height:134px; width:100%;object-fit: cover;}
 .donate_tile h4{ width:68%; float:left;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;}
 .donate_tile a{ display:block; width:65px; line-height:25px; background:#ffa134; color:#fff; text-align:center; font-size:12px; border-radius:5px; margin-top:8px; height:25px; float:right;}
 .donate p{ color:#7e6f61;}
 .donate_nei{ overflow:hidden; width:100%; padding:3%;}
+.donate_nei img{object-fit: cover; height:137px; width:100%;}
 .donate_text{ line-height:22px; color:#7e6f61; overflow:hidden;}
 .donate_biao{ font-size:14px; color:#4d341c; height:40px; line-height:40px; width:100%;}
 .donate_me{ display:block; height:40px; margin:30px 0; line-height:40px; border-radius:5px; color:#fff; background:#ffa134; text-align:center; font-size:16px;}
@@ -311,7 +315,7 @@ border-radius: 5px;display: inline-block;position: relative;  margin-bottom:0px;
 .user_roar img{ border-radius:50%; border:solid 2px #FFF; padding:1px; margin-left:32px; margin-top:28px; float:left;}
 .user_roar dt{ color:#FFF; font-size:15px; float:left; margin-top:35px; margin-left:15px;}
 .doing{ overflow:hidden; margin:2%; background:#FFF; border-radius:5px; padding:0 5px;}
-.doing img{ width:100%;}
+.doing img{ width:100%; height:130px;object-fit: cover;}
 .doing ul { border-top:solid 1px #eee;margin-bottom:5px; overflow:hidden; padding-top:5px;}
 .doing_gd{ height:38px; line-height:38px;color:#4d341c;  font-size:15px; background:url(../images/xgd.png) no-repeat 99% center; background-size:20px;}
 .doing h4{ font-size:14px; color:#4d341c; height:36px; line-height:36px; font-weight:500;}
