@@ -115,4 +115,10 @@ return [
     'boss/product/mod/:id' =>'index/boss/productSave',
     'boss/product/state' =>'index/boss/productState',
     'boss/productimg/del' =>'index/boss/productImgDel',
+
+    /**
+     * 公告管理
+     */
+    'boss/news/list' =>'index/boss/newsList',
+
 ];

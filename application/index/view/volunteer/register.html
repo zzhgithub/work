@@ -10,44 +10,241 @@
             <li>
                 <dt>姓别<b>*</b></dt>
                 <div class="sex">
-                    <label class="radio-inline"><input name="sex" value="1" type="radio" id="1" checked="checked"><ins for="1"></ins><div class="opt">男</div></label>
-                    <label class="radio-inline"><input name="sex" value="0" type="radio" id="2"><ins for="2"></ins><div class="opt">女</div></label>
+                    <label class="radio-inline"><input name="gender" value="1" type="radio" id="1" checked="checked">
+                        <ins for="1"></ins>
+                        <div class="opt">男</div>
+                    </label>
+                    <label class="radio-inline"><input name="gender" value="0" type="radio" id="2">
+                        <ins for="2"></ins>
+                        <div class="opt">女</div>
+                    </label>
                 </div>
             </li>
             <li>
                 <dt>身份证号码<b>*</b></dt>
-                <input type="text" name="card" value=""/>
+                <input type="text" name="id_cards" value=""/>
             </li>
-            <li><dt>邮箱 <b>*</b></dt><p>活动通知主要通过邮箱发送，请仔细核对</p><input name="mail" type="text" value=""/></li>
-            <li><dt>联系方式 <b>*</b></dt><input type="text" name="phone" value=""/></li>
-            <li><dt>职业 <b>*</b></dt><input type="text" name="industry" value=""/></li>
-            <li><p class="cause">请问是什么原因使得你期望加入我们？<b>*</b></p><textarea name="cause"></textarea></li>
+            <li>
+                <dt>邮箱 <b>*</b></dt>
+                <p>活动通知主要通过邮箱发送，请仔细核对</p><input name="email" type="text" value=""/></li>
+            <li>
+                <dt>联系方式 <b>*</b></dt>
+                <input type="text" name="phone" value=""/></li>
+            <li>
+                <dt>职业 <b>*</b></dt>
+                <input type="text" name="career" value=""/></li>
+            <li><p class="cause">请问是什么原因使得你期望加入我们？<b>*</b></p><textarea name="reason"></textarea></li>
             <li>
                 <p>请问您是从何处知晓我们？<b>*</b></p>
-                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a1"><label for="checkbox_a1"></label>网站</div>
-                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a2"><label for="checkbox_a2"></label>报纸、杂志</div>
-                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a3"><label for="checkbox_a3"></label>微博</div>
-                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a4"><label for="checkbox_a4"></label>微信朋友圈</div>
-                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a5"><label for="checkbox_a5"></label>微信群</div>
-                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a6"><label for="checkbox_a6"></label>朋友推荐</div>
-                <div class="pick"><input class="checkbox" name="know" type="checkbox" value="" id="checkbox_a7"><label for="checkbox_a7"></label>其他</div>
-                <input class="enter" name="know" type="" value=""/>
+                <div class="pick">
+                    <input class="checkbox" name="know" type="checkbox" value="网站" id="checkbox_a1">
+                    <label for="checkbox_a1"></label>网站
+                </div>
+                <div class="pick">
+                    <input class="checkbox" name="know" type="checkbox" value="报纸、杂志" id="checkbox_a2">
+                    <label for="checkbox_a2"></label>报纸、杂志
+                </div>
+                <div class="pick">
+                    <input class="checkbox" name="know" type="checkbox" value="微博" id="checkbox_a3">
+                    <label for="checkbox_a3"></label>微博
+                </div>
+                <div class="pick">
+                    <input class="checkbox" name="know" type="checkbox" value="微信朋友圈" id="checkbox_a4">
+                    <label for="checkbox_a4"></label>微信朋友圈
+                </div>
+                <div class="pick">
+                    <input class="checkbox" name="know" type="checkbox" value="微信群" id="checkbox_a5">
+                    <label for="checkbox_a5"></label>微信群
+                </div>
+                <div class="pick">
+                    <input class="checkbox" name="know" type="checkbox" value="朋友推荐" id="checkbox_a6">
+                    <label for="checkbox_a6"></label>朋友推荐
+                </div>
+                <div class="pick">
+                    <input class="checkbox" name="know" type="checkbox" value="其他" id="checkbox_a7">
+                    <label for="checkbox_a7"></label>其他
+                </div>
+                <input class="enter" value=""/>
+                <input type="hidden" name="from" class="from"/>
             </li>
         </ul>
-        <input class="loginsub" type="submit" value="注册"/>
+        {:token()}
+        <input class="loginsub" type="button" value="注册"/>
     </form>
 </div>
 {/block}
 {block name="javascript"}
 <script src="/static/js/layer/layer.js"></script>
 <script type="text/javascript">
-    $(".loginsub").click(function(){
-        if($("input[name='know']:checked").size()==0){
-            if($(".enter").val()==""){
-                parent.layer.alert("姓名不能为空",{icon: 5});
+    var Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1];    // 加权因子
+    var ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2];            // 身份证验证位值.10代表X
+    function IdCardValidate(idCard) {
+        idCard = trim(idCard.replace(/ /g, ""));               //去掉字符串头尾空格
+        if (idCard.length == 15) {
+            return isValidityBrithBy15IdCard(idCard);       //进行15位身份证的验证
+        } else if (idCard.length == 18) {
+            var a_idCard = idCard.split("");                // 得到身份证数组
+            if (isValidityBrithBy18IdCard(idCard) && isTrueValidateCodeBy18IdCard(a_idCard)) {   //进行18位身份证的基本验证和第18位的验证
+                return true;
+            } else {
                 return false;
             }
+        } else {
+            return false;
         }
+    }
+
+    /**
+     * 判断身份证号码为18位时最后的验证位是否正确
+     * @param a_idCard 身份证号码数组
+     * @return
+     */
+    function isTrueValidateCodeBy18IdCard(a_idCard) {
+        var sum = 0;                             // 声明加权求和变量
+        if (a_idCard[17].toLowerCase() == 'x') {
+            a_idCard[17] = 10;                    // 将最后位为x的验证码替换为10方便后续操作
+        }
+        for (var i = 0; i < 17; i++) {
+            sum += Wi[i] * a_idCard[i];            // 加权求和
+        }
+        valCodePosition = sum % 11;                // 得到验证码所位置
+        if (a_idCard[17] == ValideCode[valCodePosition]) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 验证18位数身份证号码中的生日是否是有效生日
+     * @param idCard 18位书身份证字符串
+     * @return
+     */
+    function isValidityBrithBy18IdCard(idCard18) {
+        var year = idCard18.substring(6, 10);
+        var month = idCard18.substring(10, 12);
+        var day = idCard18.substring(12, 14);
+        var temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+        // 这里用getFullYear()获取年份，避免千年虫问题
+        if (temp_date.getFullYear() != parseFloat(year)
+            || temp_date.getMonth() != parseFloat(month) - 1
+            || temp_date.getDate() != parseFloat(day)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 验证15位数身份证号码中的生日是否是有效生日
+     * @param idCard15 15位书身份证字符串
+     * @return
+     */
+    function isValidityBrithBy15IdCard(idCard15) {
+        var year = idCard15.substring(6, 8);
+        var month = idCard15.substring(8, 10);
+        var day = idCard15.substring(10, 12);
+        var temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+        // 对于老身份证中的你年龄则不需考虑千年虫问题而使用getYear()方法
+        if (temp_date.getYear() != parseFloat(year)
+            || temp_date.getMonth() != parseFloat(month) - 1
+            || temp_date.getDate() != parseFloat(day)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    //去掉字符串头尾空格
+    function trim(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+    var falg = true;
+    $(document).ready(function () {
+        $(".loginsub").click(function () {
+            var name = $('input[name="name"]').val();
+            var gender = $('input[name="gender"]').val();
+            var id_cards = $('input[name="id_cards"]').val();
+            var email = $('input[name="email"]').val();
+            var phone = $('input[name="phone"]').val();
+            var career = $('input[name="career"]').val();
+            var token = $('input[name="__token__"]').val();
+            var reason = $('textarea[name="reason"]').val();
+
+            var chinese = /^[\u4E00-\u9FFF]+$/;
+            if (!token) {
+                parent.layer.alert("页面异常", {icon: 5});
+                return false;
+            }
+            if (!name || !chinese.test(name) || name.length < 2) {
+                parent.layer.alert("请输入正确的姓名", {icon: 5});
+                return false;
+            }
+            if (!gender) {
+                parent.layer.alert("请选择性别", {icon: 5});
+                return false;
+            }
+            if (!IdCardValidate(id_cards)) {
+                parent.layer.alert("请输入正确的身份证", {icon: 5});
+                return false;
+            }
+            if (!email || email.indexOf('@') == -1 || email.indexOf('.') == -1) {
+                parent.layer.alert("请输入正确的邮箱", {icon: 5});
+                return false;
+            }
+            if (!phone || phone.length != 11 || phone[0] != 1) {
+                parent.layer.alert("请输入正确的手机号码", {icon: 5});
+                return false;
+            }
+            if (!career || career.length < 2) {
+                parent.layer.alert("请输入正确的职业", {icon: 5});
+                return false;
+            }
+            if (!reason || reason.length < 10) {
+                parent.layer.alert("请输入加入原因，不少于10字", {icon: 5});
+                return false;
+            }
+
+            if ($("input[name='know']:checked").size() == 0) {
+                if ($(".enter").val() == "") {
+                    parent.layer.alert("请选择知晓来源", {icon: 5});
+                    return false;
+                }
+            }
+            var from_arr = [];
+            $("input[name='know']:checked").each(function () {
+                from_arr.push($(this).val());
+            });
+            var from = from_arr.join('|');
+            if ($('.enter').val() != '') {
+                from = from + '|' + $('.enter').val();
+            }
+            console.log(from);
+            $('.from').val(from);
+            //  提交表单信息
+            $.ajax({
+                type: 'post',
+                url: "/register",
+                data: $('form').serialize(),
+                dataType: "json",
+                success: function (data) {
+                    falg = false;
+                    parent.layer.alert(data.msg);
+                    if (data.code === 0) {
+                        setTimeout(function () {
+                            location.reload();
+                        },1000);
+                    }else{
+                        $('input[name="__token__"]').val(data.data.token);
+                        return false;
+                    }
+                },
+                error:function (res) {
+                    parent.layer.alert('服务有误');
+                }
+            });
+        });
     });
 </script>
 {/block}

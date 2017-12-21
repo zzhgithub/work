@@ -1,0 +1,61 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<div style="width: 98%;margin: 10px auto;">
+    <table class="layui-table" lay-data="{ url:'/boss/news/list',page:true,id:'idNews'}"
+           lay-filter="news">
+        <thead>
+        <tr>
+            <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
+            <th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
+            <th lay-data="{field:'title', width:160}">产品名称</th>
+            <th lay-data="{field:'create_time', width:150,sort: true}">添加时间</th>
+            <th lay-data="{field:'update_time', width:150, sort: true}">更新时间</th>
+            <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barNews'}">操作</th>
+        </tr>
+        </thead>
+    </table>
+    <script type="text/html" id="barNews">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">下架</a>
+    </script>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    layui.use(['table', 'jquery'], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+        //监听表格复选框选择
+        table.on('checkbox(news)', function (obj) {
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(news)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的下架此产品吗', function (index) {
+                    $.post("/boss/product/state", {id: data.id}, function (res) {
+                        layer.msg(res.msg);
+                        if (res.code === 0) {
+                            obj.del();
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'recovery') {
+                $.post("/boss/product/state", {id: data.id}, function (res) {
+                    layer.msg(res.msg);
+                    if (res.code === 0) {
+                        obj.del();
+                    }
+                });
+                layer.close(index);
+            } else if (obj.event === 'edit') {
+                location.href = '/boss/product/mod/' + data.id;
+            }
+        });
+    });
+</script>
+{/block}

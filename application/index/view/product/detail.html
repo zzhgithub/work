@@ -142,7 +142,7 @@
                 if (data.code === 0) {
                     if (countObj.data('id') == $('.product_nei .count').data('id')){
                         $('.product_nei .count').data('count',parseInt(count) - 1);
-                        $('.product_nei .count i').find('i').html(parseInt(count) - 1);
+                        $('.product_nei .count i').html(parseInt(count) - 1);
                     }
                     if (count <= 1) {
                         countObj.find(".count_ji").hide();
@@ -162,10 +162,23 @@
                     totalNum = totalNum - 1;
                     spanObj.text(totalPrice.toFixed(2));
                     bObj.text(totalNum);
+                    if (count<=1){
+                        if (countObj.parents('.shop_list').length>0){
+                            countObj.parents('li').remove();
+                        }
+                    }
                 }
             },
             error: function (res) {
                 alert('服务器开小差了');
+            }
+        });
+    }
+    function showNum(){
+        $('.count').each(function (index) {
+            if ($(this).data('count')>0){
+                $(this).find('.count_ji').show();
+                $(this).find('i').html($(this).data('count'));
             }
         });
     }
@@ -200,6 +213,7 @@
                     var totalObj = $('.total');
                     totalObj.find('span').text(totalPrice.toFixed(2));
                     totalObj.find('b').text(totalNum);
+                    showNum();
                 } else {
                     $('#shop_list').find('ul').html('<li>购物车还是空的~</li>');
                 }

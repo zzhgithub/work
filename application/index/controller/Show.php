@@ -1,5 +1,7 @@
 <?php
+
 namespace app\index\controller;
+
 /**
  * 文物展示相关
  * Created by PhpStorm.
@@ -32,14 +34,36 @@ class Show extends Controller
      * 根据参数获取
      * @param $query
      */
-    public function historyStruct($query = null){
+    public function historyStruct($query = null)
+    {
         //默认情况没有查询条件
-        try{
-            //
-            $list = Point::all();
-            $this->assign('list',$list);
+        try {
+            $search = Request::instance()->param('search', null, 'stripslashes');
+            if ($search) {
+                $levelArr = [
+                    '市宝' => 1,
+                    '区宝' => 2,
+                    '国宝' => 3,
+                    '文物点' => 4
+                ];
+                if (key_exists($search, $levelArr)) {
+                    $point = new Point();
+                    $list = $point->where('name', 'like', '%' . $search)
+                        ->whereOr('zone', 'like', '%' . $search)
+                        ->whereOr('level', $levelArr[$search])
+                        ->select();
+                } else {
+                    $point = new Point();
+                    $list = $point->where('name', 'like', '%' . $search)
+                        ->whereOr('zone', 'like', '%' . $search)
+                        ->select();
+                }
+            } else {
+                $list = Point::all();
+            }
+            $this->assign('list', $list);
             return $this->view->fetch('point/list');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             var_dump($e->getMessage());
         }
     }
@@ -48,7 +72,8 @@ class Show extends Controller
      * 任务点打开
      * 加载配置的固定模板
      */
-    public function punch(){
+    public function punch()
+    {
         //todo
     }
 
@@ -57,71 +82,84 @@ class Show extends Controller
      * 支持条件查询
      * @param $query
      */
-    public function pathList($query = null){
-        try{
+    public function pathList($query = null)
+    {
+        try {
+            $search = Request::instance()->param('search', null, 'stripslashes');
             $client = new Route();
-            $list =
-                $client->order('sort')
-                ->select();
-            $this->assign('list',$list);
-            return $this->view->fetch('route/list');
-        }catch (Exception $e){
-            var_dump($e->getMessage());
-        }
-    }
+            if ($search) {
+                $list = $client->where('name', 'like', '%' . $search)->order('sort')
+                    ->select();
 
-    /**
-     * 推荐路线查询页
-     * @param $id
-     */
-    public function pathDetail($id){
-        try{
-            $data = Route::get($id);
-            $this->assign('data',$data);
-            // 获文物点地址
-            $client = new Routepoint();
-            $list = $client->where(['rid'=>$id])
-                ->order('sort')
-                ->select();
-            foreach ($list as $k=>$v){
-                //
-                $tmp = Point::get($v['pid']);
-                $list[$k]['name'] = $tmp['name'];
+            } else {
+                $list = $client->order('sort')
+                        ->select();
             }
-            $this->assign('list',$list);
-            return $this->view->fetch('route/detail');
-        }catch (Exception $e){
+            $this->assign('list', $list);
+            return $this->view->fetch('route/list');
+        } catch (Exception $e) {
             var_dump($e->getMessage());
         }
-    }
+}
 
-    /**
-     * 文物点详情页
-     * @param $id
-     */
-    public function ponitDetail($id){
-        try{
-            $base = Point::get($id);
-            $this->assign('base',$base);
-
-            $ext = Pointdetail::get($id);
-            $this->assign('ext',$ext);
-
-            $client = new Pointbanner();
-            $list = $client->where(['pid'=>$id])->select();
-            $this->assign('list',$list);
-
-            return $this->view->fetch('point/detail');
-        }catch (Exception $e){
-            var_dump($e->getMessage());
+/**
+ * 推荐路线查询页
+ * @param $id
+ */
+public
+function pathDetail($id)
+{
+    try {
+        $data = Route::get($id);
+        $this->assign('data', $data);
+        // 获文物点地址
+        $client = new Routepoint();
+        $list = $client->where(['rid' => $id])
+            ->order('sort')
+            ->select();
+        foreach ($list as $k => $v) {
+            //
+            $tmp = Point::get($v['pid']);
+            $list[$k]['name'] = $tmp['name'];
         }
+        $this->assign('list', $list);
+        return $this->view->fetch('route/detail');
+    } catch (Exception $e) {
+        var_dump($e->getMessage());
     }
+}
 
-    /**
-     * 任务点证书页 todo 这里和上面的对应关系是什么呢？
-     * @param $id
-     */
-    public function paper($id){
-        //todo
+/**
+ * 文物点详情页
+ * @param $id
+ */
+public
+function ponitDetail($id)
+{
+    try {
+        $base = Point::get($id);
+        $this->assign('base', $base);
+
+        $ext = Pointdetail::get($id);
+        $this->assign('ext', $ext);
+
+        $client = new Pointbanner();
+        $list = $client->where(['pid' => $id])->select();
+        $this->assign('list', $list);
+
+        return $this->view->fetch('point/detail');
+    } catch (Exception $e) {
+        var_dump($e->getMessage());
     }
+}
+
+/**
+ * 任务点证书页 todo 这里和上面的对应关系是什么呢？
+ * @param $id
+ */
+public
+function paper($id)
+{
+    //todo
+}
 }
