@@ -28,9 +28,9 @@
 <!--公告滚动-->
 <div class="scroll">
     <ul class="swiper-wrapper">
-        <li class="swiper-slide"><a href="#">1.重庆老街微信公众号正式上线了！</a></li>
-        <li class="swiper-slide"><a href="#">2.重庆老街微信公众号正式上线了！</a></li>
-        <li class="swiper-slide"><a href="#">3.重庆老街微信公众号正式上线了！</a></li>
+        {volist name="news" id="new"}
+        <li class="swiper-slide"><a href='{if condition="$new.url neq ''"}{$new.url}{/if}'>{$new.title}</a></li>
+        {/volist}
     </ul>
 </div>
 <!--导航菜单-->

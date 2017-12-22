@@ -26,7 +26,7 @@ use think\Controller;
 use think\Exception;
 use think\Request;
 use think\View;
-use think\Config;
+use \app\index\model\Config;
 
 class Boss extends Controller
 {
@@ -52,10 +52,10 @@ class Boss extends Controller
             if ($res === false) {
                 throw new Exception($banners->getLastSql());
             }
-            $this->assign('list',$res);
-            $this->assign('title',"轮播图列表");
+            $this->assign('list', $res);
+            $this->assign('title', "轮播图列表");
             return $this->view->fetch('boss/banner/newlist');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             //
         }
     }
@@ -75,7 +75,7 @@ class Boss extends Controller
                 $this->assign('data', $res);
             }
             return $this->view->fetch('boss/banner/newadd');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             var_dump($e->getMessage());
         }
     }
@@ -635,7 +635,7 @@ class Boss extends Controller
         return json($response);
     }
 
-    private function response($code, $msg='', $data = [])
+    private function response($code, $msg = '', $data = [])
     {
         $response = new \stdClass();
         $response->code = $code;
@@ -752,21 +752,22 @@ class Boss extends Controller
 
     public function productImgDel($id = 0)
     {
-        if ($id<0){
-            return $this->response(400,'删除失败');
+        if ($id < 0) {
+            return $this->response(400, '删除失败');
         }
         $res = ProductImg::destroy($id);
-        if ($res){
-            return $this->response(0,'删除成功');
-        }else{
-            return $this->response(400,'删除失败');
+        if ($res) {
+            return $this->response(0, '删除成功');
+        } else {
+            return $this->response(400, '删除失败');
         }
     }
 
     /**
      * 网站公告管理
      */
-    public function newsList(Request $request){
+    public function newsList(Request $request)
+    {
         if ($request->isAjax()) {
             $limit = $request->request('limit');
             $limit = $limit ? intval($limit) : 10;
@@ -796,7 +797,7 @@ class Boss extends Controller
                 return $this->response(400, '非法请求');
             }
             $news = new News();
-            unset($data['file'], $data['content'], $data['imgs']);
+            unset($data['file']);
             if (isset($data['id']) && intval($data['id'])) { // 修改
                 $data['id'] = intval($data['id']);
                 $res = $news->save($data, ['id' => $data['id']]);
@@ -818,8 +819,25 @@ class Boss extends Controller
         }
     }
 
+    public function newsDel($id)
+    {
+        $id = intval($id);
+        if ($id <= 0) {
+            return $this->response(400, '非法请求');
+        }
+        if (!Request::instance()->isAjax()) {
+            return $this->response(400, '非法请求');
+        }
+        $res = News::destroy($id);
+        if (!$res) {
+            return $this->response(400, '删除失败');
+        }
+        return $this->response(0, '删除成功');
+    }
+
     //后台反馈列表
-    public function InspectList(Request $request){
+    public function InspectList(Request $request)
+    {
         if ($request->isAjax()) {
             $limit = $request->request('limit');
             $limit = $limit ? intval($limit) : 10;
@@ -868,6 +886,33 @@ class Boss extends Controller
             $this->assign('inspect', $news);
             $this->assign('title', '添加/修改反馈-' . $this->title);
             return $this->view->fetch('boss/inspect/add');
+        }
+    }
+
+    public function about(Request $request)
+    {
+        try {
+            $config = new Config();
+            $about = $config->find(1);
+            if ($request->isAjax()) {
+                $data = $request->param();
+                unset($data['file']);
+                $res = true;
+                if ($about == null) {
+                    $res = $config->data($data)->save();
+                } else {
+                    $config->where(['id'=>$data['id']])->update($data);
+                }
+                if (!$res) {
+                    return $this->response(400, '操作失败');
+                }
+                return $this->response(0, '操作成功');
+            }
+            $this->assign('about', $about);
+            $this->assign('title', '关于我们' . $this->title);
+            return $this->view->fetch('boss/about/index');
+        } catch (Exception $e) {
+            return $e->getMessage();
         }
     }
 }

@@ -1,12 +1,9 @@
 <?php
 namespace app\index\controller;
 
-use app\index\model\Act;
-use app\index\model\Banner;
-use app\index\model\Product;
+use app\index\model\Config;
 use \think\Controller;
 use think\Request;
-use think\View;
 
 class About extends Controller
 {
@@ -18,9 +15,10 @@ class About extends Controller
         parent::__construct($request);
     }
 
-    public function index(Request $request)
+    public function index()
     {
-
+        $about = Config::get(1);
+        $this->assign('about',$about);
         return $this->fetch('about/index');
     }
 }

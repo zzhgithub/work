@@ -1,0 +1,218 @@
+{extend name="boss/public/layout"/}
+
+{block name="css"}
+    <style>
+        .img_box{
+            display: inline-block;position: relative;margin-left: 5px;
+        }
+        .img_preview{
+            height: 100px;width: 100px;line-height:100px;overflow: hidden;
+        }
+        .img_preview .img{
+            width: 100px;
+        }
+        .spandel{
+            position: absolute;
+            bottom: -20px;
+            text-align: right;
+            font-size: 12px;
+            background: #009688;
+            display: block;
+            width: 100px;
+            height: 20px;
+            opacity:0.6;
+        }
+        .spandel a{
+            color: #fff;
+            cursor: pointer;
+        }
+        .spandel a:hover{
+            text-decoration: underline;
+        }
+    </style>
+{/block}
+{block name="body"}
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>添加/编辑关于我们</legend>
+    </fieldset>
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">网站标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入网站标题"
+                       class="layui-input" value="{$about.title}" style="width: 300px;">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">网站关键词</label>
+            <div class="layui-input-block">
+                <input type="text" name="keywords" lay-verify="" autocomplete="off" placeholder="请输入网站关键词"
+                       class="layui-input" value="{$about.keywords}" style="width: 300px;">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">网站描述</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入网站描述" class="layui-textarea" name="description" lay-verify="">{$about.description}</textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">顶部banner</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="img" lay-verify="img" autocomplete="off" placeholder="" class="layui-input" value="{$about.img}">
+                <button type="button" class="layui-btn" id="img">
+                    <i class="layui-icon">&#xe67c;</i>上传banner
+                </button>
+                <span class="done"></span>
+                <div><img class="preview" src="{$about.img}" style="width: 100px;"/></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="tel" lay-verify="" autocomplete="off" placeholder="请输入联系电话" class="layui-input" value="{$about.tel}" style="width: 200px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">公司地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="address" lay-verify="" autocomplete="off" placeholder="请输入公司地址" class="layui-input" value="{$about.address}" style="width: 200px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">经度：</label>
+            <div class="layui-input-block">
+                <input type="text" name="longitude" lay-verify="required" autocomplete="off" placeholder="请输入经度" class="layui-input" value="{$about.longitude}" style="width: 200px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">纬度：</label>
+            <div class="layui-input-block">
+                <input type="text" name="latitude" lay-verify="required" autocomplete="off" placeholder="请输入纬度" class="layui-input" value="{$about.latitude}" style="width: 200px;">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">关于我们详情</label>
+            <div class="layui-input-block">
+                <textarea id="editor" style="display: none;" name="about" lay-verify="content">{$about.about}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {if condition="$about.id gt 0"}
+                <input type="hidden" name="id" value="{$about.id}">
+                {/if}
+                <button class="layui-btn" lay-submit="" lay-filter="go">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    var $;
+    layui.use(['jquery'], function () {
+        $ = layui.jquery;
+    });
+
+    layui.use(['form','layer', 'layedit', 'upload'], function () {
+        var upload = layui.upload;
+        var layedit = layui.layedit;
+        var form = layui.form;
+        var layer = layui.layer;
+
+        layedit.set({
+            uploadImage: {
+                url: '/boss/upload?type=about' //接口url
+                , type: 'post' //默认post
+            }
+        });
+        var editor = layedit.build('editor'); //建立编辑器
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#img' //绑定元素
+            , url: '/boss/upload' //上传接口
+            , data: {type: 'about'}
+            , done: function (res) {
+                $('.done').css({"color": "#000"}).text('');
+                //上传完毕回调
+                if (res.code === 0) {
+                    $('input[name="img"]').val(res.data.src);
+                    $('.done').css({"color": "green"}).text(res.msg);
+                    $('.preview').attr('src', res.data.src);
+                } else {
+                    $('.done').css({"color": "red"}).text(res.msg);
+                }
+            }
+            , error: function () {
+                //请求异常回调
+                $('.done').css({"color": "red"}).text('服务异常');
+            }
+        });
+
+        //多图片上传
+        upload.render({
+            elem: '#multiUpload'
+            ,url: '/boss/upload/'
+            ,data:{type: 'about'}
+            ,multiple: true
+            ,before: function(obj){
+            }
+            ,done: function(res, index, upload){
+                if (res.code === 0){
+                    var str = '<div class="img_box"><div class="img_preview"><img src="'+res.data.src+'" class="layui-upload-img img"></div><span class="spandel"><a data-id onclick="delImg(this)">删除</a></span></div>';
+                    $('#multiPreview').append(str);
+                    var imgs = $('#imgs');
+                    var imgsPath = imgs.val();
+                    imgs.val(imgsPath + '|' + res.data.src);
+                }
+            }
+        });
+
+        form.verify({
+            title: function (value) { //value：表单的值、item：表单的DOM对象
+                if (/^\d+\d+\d$/.test(value)) {
+                    return '网站标题能全为数字';
+                }
+                if (value.length < 3) {
+                    return '网站标题至少得4个字符啊';
+                }
+            }
+            , img: function (value) {
+                if (value === '' || value.length === 0) {
+                    return '请上传banner';
+                }
+            }
+            , content: function (value) {
+                value = layedit.getContent(editor);
+                $('#editor').val(value);
+                layedit.sync(editor);
+                if (!value) {
+                    return '请输入详细信息';
+                }
+            }
+        });
+
+        form.on('submit(go)', function (data) {
+            layedit.sync(editor);
+            $.post("/boss/about", data.field, function (res) {
+                layer.msg(res.msg);
+                if (res.code === 0) {
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+{/block}

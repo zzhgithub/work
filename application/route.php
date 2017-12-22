@@ -120,6 +120,14 @@ return [
      * 公告管理
      */
     'boss/news/list' =>'index/boss/newsList',
+    'boss/news/add' =>'index/boss/newsSave',
+    'boss/news/mod/:id' =>'index/boss/newsSave',
+    'boss/news/del' =>'index/boss/newsDel',
+
+    /**
+     * 关于我们
+     */
+    'boss/about' =>'index/boss/about',
 
     /**
      * 反馈管理

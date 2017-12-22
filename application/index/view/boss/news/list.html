@@ -6,18 +6,21 @@
            lay-filter="news">
         <thead>
         <tr>
-            <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
-            <th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
-            <th lay-data="{field:'title', width:160}">产品名称</th>
+            <th lay-data="{field:'id', width:60, sort: true, fixed: true}">ID</th>
+            <th lay-data="{field:'title', width:400}">公告标题</th>
+            <th lay-data="{field:'url', width:180,templet: '#urlTpl'}" >公告外链</th>
             <th lay-data="{field:'create_time', width:150,sort: true}">添加时间</th>
             <th lay-data="{field:'update_time', width:150, sort: true}">更新时间</th>
-            <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barNews'}">操作</th>
+            <th lay-data="{fixed: 'right', width:120, align:'center', toolbar: '#barNews'}">操作</th>
         </tr>
         </thead>
     </table>
     <script type="text/html" id="barNews">
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">下架</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script type="text/html" id="urlTpl">
+        <a href="{{d.url}}" class="layui-table-link" target="_blank">{{d.url}}</a>
     </script>
 </div>
 {/block}
@@ -35,8 +38,8 @@
         table.on('tool(news)', function (obj) {
             var data = obj.data;
             if (obj.event === 'del') {
-                layer.confirm('真的下架此产品吗', function (index) {
-                    $.post("/boss/product/state", {id: data.id}, function (res) {
+                layer.confirm('真的删除此公告吗~?', function (index) {
+                    $.post("/boss/news/del", {id: data.id}, function (res) {
                         layer.msg(res.msg);
                         if (res.code === 0) {
                             obj.del();
@@ -44,16 +47,8 @@
                     });
                     layer.close(index);
                 });
-            } else if (obj.event === 'recovery') {
-                $.post("/boss/product/state", {id: data.id}, function (res) {
-                    layer.msg(res.msg);
-                    if (res.code === 0) {
-                        obj.del();
-                    }
-                });
-                layer.close(index);
             } else if (obj.event === 'edit') {
-                location.href = '/boss/product/mod/' + data.id;
+                location.href = '/boss/news/mod/' + data.id;
             }
         });
     });

@@ -8,7 +8,6 @@ namespace app\index\model;
  */
 use think\Model;
 
-class news extends Model{
-    protected $dateFormat = 'Y-m-d H:i';
-    protected $autoWriteTimestamp = 'datetime';
+class Config extends Model{
+
 }
