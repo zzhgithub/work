@@ -21,6 +21,11 @@ use \think\Validate;
 
 class Volunteer extends Controller
 {
+    public function __construct(Request $request = null)
+    {
+        parent::__construct($request);
+        $this->assign('_action','index');
+    }
     /**
      * @deprecated
      * 文物注册页

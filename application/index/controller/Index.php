@@ -19,6 +19,7 @@ class Index extends Controller
     {
         parent::__construct($request);
         $this->view = new View();
+        $this->assign('_action','index');
     }
 
     public function index(Request $request)

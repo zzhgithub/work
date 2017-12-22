@@ -12,7 +12,7 @@ use think\Controller;
 class Person extends Controller{
 
     public function index(){
-
+        $this->assign('_action','ucenter');
         return $this->fetch('ucenter/index');
     }
 }

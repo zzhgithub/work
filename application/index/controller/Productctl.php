@@ -26,6 +26,7 @@ class Productctl extends Controller
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
+        $this->assign('_action','index');
     }
 
     public function productList(Request $request)

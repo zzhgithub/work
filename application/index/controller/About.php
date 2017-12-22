@@ -13,6 +13,7 @@ class About extends Controller
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
+        $this->assign('_action','about');
     }
 
     public function index()

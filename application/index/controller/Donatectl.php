@@ -16,12 +16,15 @@ class Donatectl extends Controller
     {
         parent::__construct($request);
         $this->view = new View();
+        $this->assign('_action','index');
     }
 
     /**
      * 捐款列表
      * @param Request $request
      * @return string|\think\response\Json
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
      */
     public function donateList(Request $request)
     {
@@ -48,6 +51,8 @@ class Donatectl extends Controller
      * 捐款详情
      * @param $id
      * @return string
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
      */
     public function donateDetail($id)
     {
@@ -63,6 +68,15 @@ class Donatectl extends Controller
         return $this->view->fetch('donate/detail');
     }
 
+    /**
+     * 保存捐款信息
+     * @param $id
+     * @return string
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function donateDo($id){
         $id = intval($id);
         if (!$id) {

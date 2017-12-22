@@ -29,6 +29,7 @@ class Activity extends Controller
             'message' => '',
             'data' => []
         ];
+        $this->assign('_action','index');
     }
 
     /**
@@ -68,6 +69,7 @@ class Activity extends Controller
     /**
      * 活动报名页
      * @param $id
+     * @return string|void
      */
     public function joinActivity($id)
     {
