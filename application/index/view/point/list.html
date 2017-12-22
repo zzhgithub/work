@@ -3,7 +3,7 @@
 <!--搜索-->
 <div class="search">
     <form method="post">
-        <input type="text" placeholder="请输入名称/级别/区位进行搜索" name="search"/>
+        <input type="text" placeholder="请输入名称/级别/区位进行搜索" name="search" value="{$search}"/>
         <button type="submit"></button>
     </form>
 </div>
@@ -15,4 +15,41 @@
         {/volist}
     </ul>
 </div>
+{/block}
+{block name="javascript"}
+<script>
+    var search = '{$search}';
+    var flag = true;
+    var currentPage = parseInt({$curPage});
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
+                if (!flag){
+                    return false;
+                }
+                $.ajax({
+                    type: 'post',
+                    url: "/point/list",
+                    data: {'page': currentPage - (-1),'search':search},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.code === 0){
+                            currentPage++;
+                            var str = '';
+                            for (var i = 0; i < data.data.length; i++) {
+                                str += '<li><a href="/index.php?s=point/detail/'+data.data[i].id+'"><img src="'+data.data[i].img+'"/><span>'+data.data[i].zone+' | '+data.data[i].name+'</span></a></li>';
+                            }
+                            $('.history').find('ul').append(str);
+                        }else{
+                            flag = false;
+                        }
+                    },
+                    error:function (res) {
+                        alert('服务器开小差了');
+                    }
+                });
+            }
+        });
+    });
+</script>
 {/block}

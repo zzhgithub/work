@@ -1,0 +1,152 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>添加/编辑培训内容</legend>
+    </fieldset>
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">培训标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入培训标题"
+                       class="layui-input" value="{$train.title}" style="width: 300px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">培训分类</label>
+            <div class="layui-input-inline">
+                <select name="cate_id" lay-verify="cate">
+                    <option value="0">请选择分类</option>
+                    {volist name="cates" id="cate"}
+                    <option value="{$cate.id}" {if condition="$cate.id eq $train.cate_id"}selected{/if}>{$cate.name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">培训简介</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入简介" class="layui-textarea" name="des" lay-verify="">{$train.des}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传封面</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="img" lay-verify="image" autocomplete="off" placeholder="" class="layui-input" value="{$train.img}">
+                <button type="button" class="layui-btn" id="img">
+                    <i class="layui-icon">&#xe67c;</i>上传封面
+                </button>
+                <span class="done"></span>
+                <div><img class="preview" src="{$train.img}" style="width: 100px;"/></div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">培训详情</label>
+            <div class="layui-input-block">
+                <textarea id="editor" style="display: none;" name="content" lay-verify="content">{$train.content}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">外链</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" lay-verify="" autocomplete="off" placeholder="请输入外链"
+                       class="layui-input" value="{$train.url}" style="width: 300px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {if condition="$train.id gt 0"}
+                <input type="hidden" name="id" value="{$train.id}">
+                {/if}
+                <button class="layui-btn" lay-submit="" lay-filter="go">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    var $;
+    layui.use(['jquery'], function () {
+        $ = layui.jquery;
+    });
+    layui.use(['form','upload', 'layedit', 'layer'], function () {
+        var layedit = layui.layedit;
+        var form = layui.form;
+        var layer = layui.layer;
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#img' //绑定元素
+            ,url: '/boss/upload' //上传接口
+            ,data:{type:'donate'}
+            ,done: function(res){
+                $('.done').css({"color":"#000"}).text('');
+                //上传完毕回调
+                if(res.code === 0){
+                    $('input[name="img"]').val(res.data.src);
+                    $('.done').css({"color":"green"}).text(res.msg);
+                    $('.preview').attr('src',res.data.src);
+                }else{
+                    $('.done').css({"color":"red"}).text(res.msg);
+                }
+            }
+            ,error: function(){
+                //请求异常回调
+                $('.done').css({"color":"red"}).text('服务异常');
+            }
+        });
+       layedit.set({
+           uploadImage: {
+               url: '/boss/upload?type=train' //接口url
+               , type: 'post' //默认post
+           }
+       });
+       var editor = layedit.build('editor'); //建立编辑器
+        form.verify({
+            title: function (value) { //value：表单的值、item：表单的DOM对象
+                if (/^\d+\d+\d$/.test(value)) {
+                    return '培训标题不能全为数字';
+                }
+                if (value.length == 0) {
+                    return '培训标题不能为空';
+                }
+            }
+            , cate:function (value) {
+                if (!value || value<=0) {
+                    return '请选择分类';
+                }
+            }
+           , image: function (value) {
+               if (!value) {
+                   return '请上传封面';
+               }
+           }
+           , content: function (value) {
+                value = layedit.getContent(editor);
+                $('#editor').val(value);
+                layedit.sync(editor);
+                if (!value) {
+                   return '请输入详细信息';
+               }
+           }
+        });
+        form.on('submit(go)', function (data) {
+           layedit.sync(editor);
+            $.post("/boss/train/add", data.field, function (res) {
+                layer.msg(res.msg);
+                if (res.code === 0) {
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+{/block}

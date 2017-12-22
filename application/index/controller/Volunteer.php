@@ -9,11 +9,12 @@ namespace app\index\controller;
  * Date: 2017/11/19
  * Time: 下午5:24
  */
-use app\index\model\Member;
-use app\index\model\Point;
-use app\index\model\Pointbanner;
-use app\index\model\Pointdetail;
-use think\Exception;
+use \app\index\model\Member;
+use \app\index\model\Point;
+use \app\index\model\Pointbanner;
+use \app\index\model\Pointdetail;
+use \app\index\model\TrainContent;
+use \think\Exception;
 use \think\Request;
 use \think\Controller;
 use \think\Validate;
@@ -79,29 +80,59 @@ class Volunteer extends Controller
 
     /**
      * 文物保护培训列表页
-     * @param $query
+     * @param Request $request
+     * @return mixed|\think\response\Json
+     * @throws \think\exception\DbException
      */
-    public function trainList()
+    public function trainList(Request $request)
     {
-        //todo
-        return $this->fetch('volunteer/train_list');
+        $search = Request::instance()->param('search', null, 'stripslashes');
+        $train = new TrainContent();
+        if ($search){
+            $list = $train->alias('a')->where('a.title', 'like', '%' . $search.'%')->order('a.id desc')->join('ly_train_cate b','a.cate_id = b.id','LEFT')->field('a.id,title,img,name')->paginate(10);
+        }else{
+            $list = $train->alias('a')->order('a.id desc')->join('ly_train_cate b','a.cate_id = b.id','LEFT')->field('a.id,title,img,name')->paginate(10);
+        }
 
+        $items = $list->items();
+        if ($request->isAjax()) {
+            if (!empty($items)) {
+                return self::response(0, 'success', $items);
+            }
+            return self::response(400);
+        }
+        $this->assign('search', $search);
+        $this->assign('curPage', 1);
+        $this->assign('list', $items);
+        return $this->fetch('volunteer/train_list');
     }
 
     /**
      * 培训详情页
-     * @param $id
+     * @return mixed|\think\response\Redirect
      */
     public function trainDetail()
     {
-        //todo
+        try{
+            $id = intval(Request::instance()->param('id'));
+            if (!$id){
+                return redirect('/');
+            }
+            $trainContent = TrainContent::get($id);
+            if ($trainContent == null){
+                return redirect('/');
+            }
+            $this->assign('train',$trainContent);
+        }catch (Exception $e){
+            return redirect('/');
+        }
         return $this->fetch('volunteer/train_detail');
-
     }
 
     /**
      * 巡查反馈列表页
-     * @param $query
+     * @param null $query
+     * @return mixed
      */
     public function inspectBackList($query = null)
     {
@@ -139,6 +170,10 @@ class Volunteer extends Controller
     /**
      * 巡查反馈详情页
      * @param $id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function inspectBackDetail($id)
     {
@@ -156,11 +191,20 @@ class Volunteer extends Controller
         return $this->fetch('volunteer/inspect_back_detail');
     }
 
+    /**
+     * @return mixed
+     */
     public function certificate()
     {
         return $this->fetch('volunteer/certificate');
     }
 
+    /**
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     * @return \think\response\Json
+     */
     private static function response($code, $msg = '', $data = [])
     {
         $response = new \stdClass();

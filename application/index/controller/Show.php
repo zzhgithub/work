@@ -32,14 +32,15 @@ class Show extends Controller
 
     /**
      * 历史建筑
-     * 根据参数获取
-     * @param $query
+     * @param Request $request
+     * @return string
      */
-    public function historyStruct($query = null)
+    public function historyStruct(Request $request)
     {
         //默认情况没有查询条件
         try {
             $search = Request::instance()->param('search', null, 'stripslashes');
+            $point = new Point();
             if ($search) {
                 $levelArr = [
                     '市宝' => 1,
@@ -48,24 +49,31 @@ class Show extends Controller
                     '文物点' => 4
                 ];
                 if (key_exists($search, $levelArr)) {
-                    $point = new Point();
-                    $list = $point->where('name', 'like', '%' . $search)
-                        ->whereOr('zone', 'like', '%' . $search)
+                    $list = $point->where('name', 'like', '%' . $search . '%')
+                        ->whereOr('zone', 'like', '%' . $search . '%')
                         ->whereOr('level', $levelArr[$search])
-                        ->select();
+                        ->paginate(8);
                 } else {
-                    $point = new Point();
-                    $list = $point->where('name', 'like', '%' . $search)
-                        ->whereOr('zone', 'like', '%' . $search)
-                        ->select();
+                    $list = $point->where('name', 'like', '%' . $search . '%')
+                        ->whereOr('zone', 'like', '%' . $search . '%')
+                        ->paginate(8);
                 }
             } else {
-                $list = Point::all();
+                $list = $point->paginate(8);
             }
-            $this->assign('list', $list);
+            $items = $list->items();
+            if ($request->isAjax()) {
+                if (!empty($items)) {
+                    return self::response(0, 'success', $items);
+                }
+                return self::response(400);
+            }
+            $this->assign('list', $items);
+            $this->assign('search', $search);
+            $this->assign('curPage', 1);
             return $this->view->fetch('point/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -80,93 +88,113 @@ class Show extends Controller
 
     /**
      * 推荐路线页(分页查询 这里交互模糊)
-     * 支持条件查询
-     * @param $query
+     * @param Request $request
+     * @return string|\think\response\Json
      */
-    public function pathList($query = null)
+    public function pathList(Request $request)
     {
         try {
             $search = Request::instance()->param('search', null, 'stripslashes');
             $client = new Route();
             if ($search) {
-                $list = $client->where('name', 'like', '%' . $search)->order('sort')
-                    ->select();
-
+                $list = $client->where('name', 'like', '%' . $search . '%')->order('sort')
+                    ->paginate(8);
             } else {
-                $list = $client->order('sort')
-                        ->select();
+                $list = $client->order('sort')->paginate(8);
+            }
+            $items = $list->items();
+            if ($request->isAjax()) {
+                if (!empty($items)) {
+                    return self::response(0, 'success', $items);
+                }
+                return self::response(400);
             }
             $this->assign('list', $list);
+            $this->assign('search', $search);
+            $this->assign('curPage', 1);
             return $this->view->fetch('route/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
-}
+    }
 
-/**
- * 推荐路线查询页
- * @param $id
- */
-public
-function pathDetail($id)
-{
-    try {
-        $data = Route::get($id);
-        $this->assign('data', $data);
-        // 获文物点地址
-        $client = new Routepoint();
-        $list = $client->where(['rid' => $id])
-            ->order('sort')
-            ->select();
-        foreach ($list as $k => $v) {
-            //
-            $tmp = Point::get($v['pid']);
-            $list[$k]['name'] = $tmp['name'];
+    /**
+     * 推荐路线查询页
+     * @param $id
+     * @return string
+     */
+    public function pathDetail($id)
+    {
+        try {
+            $data = Route::get($id);
+            $this->assign('data', $data);
+            // 获文物点地址
+            $client = new Routepoint();
+            $list = $client->where(['rid' => $id])
+                ->order('sort')
+                ->select();
+            foreach ($list as $k => $v) {
+                //
+                $tmp = Point::get($v['pid']);
+                $list[$k]['name'] = $tmp['name'];
+            }
+            $this->assign('list', $list);
+            return $this->view->fetch('route/detail');
+        } catch (Exception $e) {
+            return $e->getMessage();
         }
-        $this->assign('list', $list);
-        return $this->view->fetch('route/detail');
-    } catch (Exception $e) {
-        var_dump($e->getMessage());
     }
-}
 
-/**
- * 文物点详情页
- * @param $id
- */
-public
-function ponitDetail($id)
-{
-    try {
-        $base = Point::get($id);
-        $this->assign('base', $base);
+    /**
+     * 文物点详情页
+     * @param $id
+     * @return string
+     */
+    public function ponitDetail($id)
+    {
+        try {
+            $base = Point::get($id);
+            $this->assign('base', $base);
 
-        $ext = Pointdetail::get($id);
-        $this->assign('ext', $ext);
+            $ext = Pointdetail::get($id);
+            $this->assign('ext', $ext);
 
-        $client = new Pointbanner();
-        $list = $client->where(['pid' => $id])->select();
-        $this->assign('list', $list);
+            $client = new Pointbanner();
+            $list = $client->where(['pid' => $id])->select();
+            $this->assign('list', $list);
 
-        $inspect = new Inspect();
-        $inspect_list = $inspect->where(['pid'=>$id])
-            ->select();
+            $inspect = new Inspect();
+            $inspect_list = $inspect->where(['pid' => $id])
+                ->select();
+            $this->assign('inspect', $inspect_list);
 
-        $this->assign('inspect',$inspect_list);
-
-        return $this->view->fetch('point/detail');
-    } catch (Exception $e) {
-        var_dump($e->getMessage());
+            return $this->view->fetch('point/detail');
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
-}
 
-/**
- * 任务点证书页 todo 这里和上面的对应关系是什么呢？
- * @param $id
- */
-public
-function paper($id)
-{
-    //todo
-}
+    /**
+     * 任务点证书页 todo 这里和上面的对应关系是什么呢？
+     * @param $id
+     */
+    public function paper($id)
+    {
+        //todo
+    }
+
+    /**
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     * @return \think\response\Json
+     */
+    private static function response($code, $msg = '', $data = [])
+    {
+        $response = new \stdClass();
+        $response->code = $code;
+        $response->data = $data;
+        $response->msg = $msg;
+        return json($response);
+    }
 }

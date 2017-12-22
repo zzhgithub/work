@@ -135,4 +135,18 @@ return [
     'boss/inspect/list' => 'index/boss/InspectList',
     'boss/inspect/add' =>'index/boss/inspectSave',
     'boss/inspect/mod/:id' =>'index/boss/inspectSave',
+
+    /**
+     * 培训管理
+     */
+    'boss/train/catelist' =>'index/boss/catelist',
+    'boss/train/cateadd' =>'index/boss/catesave',
+    'boss/train/catemod/:id' =>'index/boss/catesave',
+    'boss/train/catedel' =>'index/boss/catedel',
+
+    'boss/train/list' =>'index/boss/trainlist',
+    'boss/train/add' =>'index/boss/trainsave',
+    'boss/train/mod/:id' =>'index/boss/trainsave',
+    'boss/train/del' =>'index/boss/traindel',
+
 ];

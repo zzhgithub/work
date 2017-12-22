@@ -22,6 +22,8 @@ use app\index\model\ProductImg;
 use app\index\model\Route;
 use app\index\model\Routepoint;
 use app\index\model\News;
+use app\index\model\TrainCate;
+use app\index\model\TrainContent;
 use think\Controller;
 use think\Exception;
 use think\Request;
@@ -914,5 +916,152 @@ class Boss extends Controller
         } catch (Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function cateList(Request $request)
+    {
+        if ($request->isAjax()) {
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $trainCate = new TrainCate();
+            $list = $trainCate->order('id desc')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '培训分类管理-' . $this->title);
+        return $this->view->fetch('boss/train/cate_list');
+    }
+
+    // 培训分类添加和编辑
+    public function cateSave(Request $request)
+    {
+        if ($request->isAjax()) {
+            $data = $request->post();
+            unset($data['file']);
+            if (empty($data)) {
+                return $this->response(400, '非法请求');
+            }
+            $trainCate = new TrainCate();
+            $res = true;
+            if (isset($data['id']) && intval($data['id'])) { // 修改
+                $data['id'] = intval($data['id']);
+                $trainCate->save($data, ['id' => $data['id']]);
+            } else {              //添加
+                $trainCate->data($data);
+                $res = $trainCate->save();
+            }
+            if ($res) {
+                return $this->response(0, '操作成功');
+            } else {
+                return $this->response(400, '操作失败');
+            }
+        } else {
+            $id = intval($request->param('id'));
+            $cate = TrainCate::get($id);
+            $this->assign('cate', $cate);
+            $this->assign('title', '添加/修改培训分类-' . $this->title);
+            return $this->view->fetch('boss/train/cate_add');
+        }
+    }
+
+    public function cateDel($id)
+    {
+        $id = intval($id);
+        if ($id <= 0) {
+            return $this->response(400, '非法请求');
+        }
+        if (!Request::instance()->isAjax()) {
+            return $this->response(400, '非法请求');
+        }
+        $trainContent = new TrainContent();
+        $trains = $trainContent->where(['cate_id'=>$id])->find();
+        if ($trains){
+            return $this->response(400, '请先删除此分类下的内容');
+        }
+        $res = TrainCate::destroy($id);
+        if (!$res) {
+            return $this->response(400, '删除失败');
+        }
+        return $this->response(0, '删除成功');
+    }
+
+    public function trainList(Request $request)
+    {
+        if ($request->isAjax()) {
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $train = new TrainContent();
+            $list = $train->alias('a')->order('a.id desc')->join('ly_train_cate b','a.cate_id = b.id','LEFT')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '培训管理-' . $this->title);
+        return $this->view->fetch('boss/train/list');
+    }
+
+    // 培训分类添加和编辑
+    public function trainSave(Request $request)
+    {
+        if ($request->isAjax()) {
+            $data = $request->post();
+            if (empty($data)) {
+                return $this->response(400, '非法请求');
+            }
+            $train = new TrainContent();
+            unset($data['file']);
+            $res = true;
+            if (isset($data['id']) && intval($data['id'])) { // 修改
+                $data['id'] = intval($data['id']);
+                $train->save($data, ['id' => $data['id']]);
+            } else {              //添加
+                $train->data($data);
+                $res = $train->save();
+            }
+            if ($res) {
+                return $this->response(0, '操作成功');
+            } else {
+                return $this->response(400, '操作失败');
+            }
+        } else {
+            $id = intval($request->param('id'));
+            $train = TrainContent::get($id);
+            $cates = TrainCate::all();
+            $this->assign('cates', $cates);
+            $this->assign('train', $train);
+            $this->assign('title', '添加/修改培训-' . $this->title);
+            return $this->view->fetch('boss/train/add');
+        }
+    }
+
+    public function trainDel($id)
+    {
+        $id = intval($id);
+        if ($id <= 0) {
+            return $this->response(400, '非法请求');
+        }
+        if (!Request::instance()->isAjax()) {
+            return $this->response(400, '非法请求');
+        }
+        $res = TrainCate::destroy($id);
+        if (!$res) {
+            return $this->response(400, '删除失败');
+        }
+        return $this->response(0, '删除成功');
     }
 }

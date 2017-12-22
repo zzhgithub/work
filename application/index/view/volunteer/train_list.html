@@ -3,16 +3,54 @@
 <!--搜索-->
 <div class="search">
     <form method="post">
-        <input type="text" placeholder="请输入名称/级别/区位进行搜索"/>
+        <input type="text" placeholder="请输入标题进行搜索" name="search" value="{$search}"/>
         <button type="submit"></button>
     </form>
 </div>
 <div class="train">
     <ul>
-        <li><a href="#"><img src="/static/images//train_03.jpg"/><span>文物保护培训</span><b>分类</b></a></li>
-        <li><a href="#"><img src="/static/images//train_03.jpg"/><span>文物保护培训</span><b>分类</b></a></li>
-        <li><a href="#"><img src="/static/images//train_03.jpg"/><span>文物保护培训</span><b>分类</b></a></li>
-        <li><a href="#"><img src="/static/images//train_03.jpg"/><span>文物保护培训</span><b>分类</b></a></li>
+        {volist name="list" id="train"}
+        <li>
+            <a href="/train/detail/{$train.id}"><img src="{$train.img}"/><span>{$train.title}</span><b>{$train.name}</b></a>
+        </li>
+       {/volist}
     </ul>
 </div>
+{/block}
+{block name="javascript"}
+<script>
+    var search = '{$search}';
+    var flag = true;
+    var currentPage = parseInt({$curPage});
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
+                if (!flag){
+                    return false;
+                }
+                $.ajax({
+                    type: 'post',
+                    url: "/train/list",
+                    data: {'page': currentPage - (-1),'search':search},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.code === 0){
+                            currentPage++;
+                            var str = '';
+                            for (var i = 0; i < data.data.length; i++) {
+                                str += '<li><a href="/train/detail/'+data.data[i].id+'"><img src="'+data.data[i].img+'"/><span>'+data.data[i].title+'</span><b>'+data.data[i].name+'</b></a></li>';
+                            }
+                            $('.train').find('ul').append(str);
+                        }else{
+                            flag = false;
+                        }
+                    },
+                    error:function (res) {
+                        alert('服务器开小差了');
+                    }
+                });
+            }
+        });
+    });
+</script>
 {/block}

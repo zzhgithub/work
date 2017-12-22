@@ -1,0 +1,52 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<div style="width: 98%;margin: 10px auto;">
+    <table class="layui-table" lay-data="{ url:'/boss/train/catelist',page:true,id:'idCate'}"
+           lay-filter="cate">
+        <thead>
+        <tr>
+            <th lay-data="{field:'id', width:60, sort: true, fixed: true}">ID</th>
+            <th lay-data="{field:'name', width:400}">培训分类标题</th>
+            <th lay-data="{field:'create_time', width:150,sort: true}">添加时间</th>
+            <th lay-data="{field:'update_time', width:150, sort: true}">更新时间</th>
+            <th lay-data="{fixed: 'right', width:120, align:'center', toolbar: '#barCate'}">操作</th>
+        </tr>
+        </thead>
+    </table>
+    <script type="text/html" id="barCate">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    layui.use(['table', 'jquery'], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+        //监听表格复选框选择
+        table.on('checkbox(cate)', function (obj) {
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(cate)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除此分类吗~?', function (index) {
+                    $.post("/boss/train/catedel", {id: data.id}, function (res) {
+                        layer.msg(res.msg);
+                        if (res.code === 0) {
+                            obj.del();
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                location.href = '/boss/train/catemod/' + data.id;
+            }
+        });
+    });
+</script>
+{/block}
