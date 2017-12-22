@@ -2,10 +2,10 @@
 <div id="bottom">
     <div class="bottom">
         <ul>
-            <li><a href="/index.php?s=home" {if condition="$_action eq 'index'"}class="pick"{/if}>首页</a></li>
+            <li {if condition="$_action eq 'index'"}class="pick"{/if}><a href="/index.php?s=home">首页</a></li>
             <li><a href="tel:4008001234">联系电话</a></li>
-            <li><a href="/index.php?s=about" {if condition="$_action eq 'about'"}class="pick"{/if}>关于我们</a></li>
-            <li><a href="/index.php?s=ucenter" {if condition="$_action eq 'ucenter'"}class="pick"{/if}>个人中心</a></li>
+            <li {if condition="$_action eq 'about'"}class="pick"{/if}><a href="/index.php?s=about">关于我们</a></li>
+            <li {if condition="$_action eq 'ucenter'"}class="pick"{/if}><a href="/index.php?s=ucenter">个人中心</a></li>
         </ul>
     </div>
 </div>
