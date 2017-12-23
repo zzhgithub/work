@@ -27,6 +27,7 @@ use app\index\model\TrainContent;
 use think\Controller;
 use think\Exception;
 use think\Request;
+use think\Session;
 use think\View;
 use \app\index\model\Config;
 
@@ -38,10 +39,26 @@ class Boss extends Controller
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
+        $admin = Session::get('admin');
+        if (empty($admin)){
+            if ($request->isAjax()){
+                return self::response(400,'请先登录~');
+            }else{
+                $this->redirect('/boss/login');
+            }
+        }
         $this->view = new View();
         $this->title = Config::get('boss_title');
+        if (!$request->isAjax()){
+            $this->assign('admin',explode('|',$admin));
+        }
     }
     //boss后台设计
+    public function index()
+    {
+        $this->assign('title',$this->title);
+        return $this->fetch('boss/index/index');
+    }
 
     // banner显示列表
     public function bannerList()

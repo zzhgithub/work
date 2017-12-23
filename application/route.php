@@ -49,6 +49,8 @@ return [
     /**
      * boss 后台相关功能
      */
+    'boss/index' => 'index/boss/index',//banner 列表
+
     'boss/banner/list' => 'index/boss/bannerList',//banner 列表
     'boss/banner/add'  => 'index/boss/bannerAddOrModify',//banner添加页
     'boss/banner/mod/:id'  => 'index/boss/bannerAddOrModify',//banner修改页
@@ -148,5 +150,12 @@ return [
     'boss/train/add' =>'index/boss/trainsave',
     'boss/train/mod/:id' =>'index/boss/trainsave',
     'boss/train/del' =>'index/boss/traindel',
+
+    /**
+     * 登录 登出
+     */
+    'boss/login' =>'index/BossLogin/login',
+    'boss/logout' =>'index/BossLogin/logout',
+    'boss/verify' =>'index/BossLogin/verify',
 
 ];
