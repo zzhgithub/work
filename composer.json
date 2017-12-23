@@ -18,7 +18,8 @@
     "require": {
         "php": ">=5.4.0",
         "topthink/framework": "~5.0.0",
-        "hooklife/thinkphp5-wechat":"^v1.1.0"
+        "hooklife/thinkphp5-wechat":"^v1.1.0",
+        "topthink/think-captcha":"*"
     },
     "autoload": {
         "psr-4": {
