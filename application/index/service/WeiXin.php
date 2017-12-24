@@ -77,7 +77,7 @@ class WeiXin
         //设置header
         curl_setopt($ch, CURLOPT_HEADER, false);
 
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,false); //是否直接输出到屏幕
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true); //是否直接输出到屏幕
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //https请求 不验证证书 其实只用这个就可以了
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); //https请求 不验证HOST
 
@@ -116,7 +116,7 @@ class WeiXin
         //设置header
         curl_setopt($ch, CURLOPT_HEADER, false);
         //要求结果为字符串且输出到屏幕上
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if ($useCert == true) {
             //设置证书
             //使用证书：cert 与 key 分别属于两个.pem文件
