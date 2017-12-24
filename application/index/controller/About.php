@@ -4,6 +4,8 @@ namespace app\index\controller;
 use app\index\model\Config;
 use \think\Controller;
 use think\Request;
+use \app\index\service\WeiXin;
+use \think\Session;
 
 class About extends Controller
 {

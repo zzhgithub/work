@@ -6,6 +6,8 @@ use \think\Controller;
 use think\Request;
 use think\View;
 use app\index\model\Donate;
+use \app\index\service\WeiXin;
+use \think\Session;
 
 class Donatectl extends Controller
 {

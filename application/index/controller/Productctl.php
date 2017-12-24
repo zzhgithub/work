@@ -18,6 +18,7 @@ use \think\Controller;
 use \think\Request;
 use \app\index\model\Product;
 use \think\Session;
+use \app\index\service\WeiXin;
 
 class Productctl extends Controller
 {

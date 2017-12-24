@@ -8,6 +8,8 @@ namespace app\index\controller;
  * Time: 下午5:53
  */
 use think\Controller;
+use \app\index\service\WeiXin;
+use \think\Session;
 
 class Person extends Controller{
 

@@ -14,6 +14,8 @@ use think\Controller;
 use think\Exception;
 use think\Request;
 use think\View;
+use \app\index\service\WeiXin;
+use \think\Session;
 
 class Activity extends Controller
 {

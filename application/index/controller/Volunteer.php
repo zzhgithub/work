@@ -18,6 +18,8 @@ use \think\Exception;
 use \think\Request;
 use \think\Controller;
 use \think\Validate;
+use \app\index\service\WeiXin;
+use \think\Session;
 
 class Volunteer extends Controller
 {

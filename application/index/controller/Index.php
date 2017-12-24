@@ -5,7 +5,7 @@ use \app\index\model\Act;
 use \app\index\model\Banner;
 use \app\index\model\Product;
 use \app\index\model\News;
-use app\index\service\WeiXin;
+use \app\index\service\WeiXin;
 use \think\Controller;
 use \think\Request;
 use \think\Session;
