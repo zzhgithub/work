@@ -9,6 +9,7 @@ namespace app\index\controller;
  * Date: 2017/11/19
  * Time: 下午5:24
  */
+use app\index\model\Cert;
 use \app\index\model\Member;
 use \app\index\model\Point;
 use \app\index\model\Pointbanner;
@@ -207,6 +208,11 @@ class Volunteer extends Controller
      */
     public function certificate()
     {
+        // 获取证书的数据
+        $client = new Cert();
+        $list = $client->order('sort')->select();
+        $this->assign('list',$list);
+
         return $this->fetch('volunteer/certificate');
     }
 
