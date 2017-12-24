@@ -5,6 +5,7 @@ use \app\index\model\Act;
 use \app\index\model\Banner;
 use \app\index\model\Product;
 use \app\index\model\News;
+use app\index\service\WeiXin;
 use \think\Controller;
 use \think\Request;
 use \think\Session;
@@ -20,6 +21,10 @@ class Index extends Controller
         parent::__construct($request);
         $this->view = new View();
         $this->assign('_action','index');
+        $openId = Session::get('openid');
+        if (!$openId){
+            WeiXin::getOpenidAndAcessToken();
+        }
     }
 
     public function index(Request $request)

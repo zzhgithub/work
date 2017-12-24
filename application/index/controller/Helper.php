@@ -9,8 +9,8 @@ namespace app\index\controller;
  */
 
 use app\index\model\User;
+use app\index\service\WeiXin;
 use think\Controller;
-use think\Cookie;
 use think\Exception;
 use think\Session;
 
@@ -58,36 +58,62 @@ class Helper extends Controller
     }
 
     public function weixinBack(){
-        try{
-            $appid = "wxfcc662fea0340227";
-            $secret = "923658e6d9f6beee3eeacce5b940d9c1";
-            $code = $_GET["code"];
-            $get_token_url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$appid.'&secret='.$secret.'&code='.$code.'&grant_type=authorization_code';
-            $json_obj = json_decode(file_get_contents($get_token_url));
-            $access_token = $json_obj->access_token;
-            $openid = $json_obj->openid;
-            $get_user_info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
-            $user_obj = json_decode(file_get_contents($get_user_info_url));
+        //try{
+        //    $appid = "wxfcc662fea0340227";
+        //    $secret = "923658e6d9f6beee3eeacce5b940d9c1";
+        //    $code = $_GET["code"];
+        //    $get_token_url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$appid.'&secret='.$secret.'&code='.$code.'&grant_type=authorization_code';
+        //    $json_obj = json_decode(file_get_contents($get_token_url));
+        //    $access_token = $json_obj->access_token;
+        //    $openid = $json_obj->openid;
+        //    $get_user_info_url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+        //    $user_obj = json_decode(file_get_contents($get_user_info_url));
+        //    //var_dump($user_obj);
+        //    //设置用的cookie
+        //    $client = new User();
+        //    $user = new \stdClass();
+        //    $user->openid = $user_obj->openid;
+        //    $user->nickname = $user_obj->nickname;
+        //    $user->headimgurl = $user_obj->headimgurl;
+        //    $user->sex = $user_obj->sex;
+        //
+        //    $res = $client->where(['openid'=>$user_obj->openid])
+        //        ->find();
+        //    if($res == null ||!isset($res->id) || $res->id == 0 || $res->id == null) {
+        //        //没有数据进行更新
+        //        $client->data($user)->save();
+        //    }
+        //    //设置登录的cookie
+        //    Session::set("openid",$user_obj->openid);
+        //    $this->redirect("/");
+        //}catch (Exception $e){
+        //    var_dump($e);
+        //}
+        $openid = Session::get('openid');
+        if (!$openid){
+            $data = WeiXin::getOpenidAndAcessToken();
+            $access_token = $data['access_token'];
+            $openid = $data['openid'];
+            $getUserInfoUrl = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+            $userObj = json_decode(Weixin::get($getUserInfoUrl));
             //var_dump($user_obj);
             //设置用的cookie
             $client = new User();
             $user = new \stdClass();
-            $user->openid = $user_obj->openid;
-            $user->nickname = $user_obj->nickname;
-            $user->headimgurl = $user_obj->headimgurl;
-            $user->sex = $user_obj->sex;
+            $user->openid = $userObj->openid;
+            $user->nickname = $userObj->nickname;
+            $user->headimgurl = $userObj->headimgurl;
+            $user->sex = $userObj->sex;
 
-            $res = $client->where(['openid'=>$user_obj->openid])
+            $res = $client->where(['openid'=>$userObj->openid])
                 ->find();
             if($res == null ||!isset($res->id) || $res->id == 0 || $res->id == null) {
                 //没有数据进行更新
                 $client->data($user)->save();
             }
             //设置登录的cookie
-            Session::set("openid",$user_obj->openid);
-            $this->redirect("/");
-        }catch (Exception $e){
-            var_dump($e);
+            Session::set("openid",$userObj->openid);
         }
+        $this->redirect("/");
     }
 }
