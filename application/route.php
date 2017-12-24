@@ -137,7 +137,7 @@ return [
     'boss/inspect/list' => 'index/boss/InspectList',
     'boss/inspect/add' =>'index/boss/inspectSave',
     'boss/inspect/mod/:id' =>'index/boss/inspectSave',
-
+    'boss/inspect/del'=>'index/boss/inspectDel',
     /**
      * 培训管理
      */

@@ -908,6 +908,21 @@ class Boss extends Controller
         }
     }
 
+    public function inspectDel($id){
+        $id = intval($id);
+        if ($id <= 0) {
+            return $this->response(400, '非法请求');
+        }
+        if (!Request::instance()->isAjax()) {
+            return $this->response(400, '非法请求');
+        }
+        $res = Inspect::destroy($id);
+        if (!$res) {
+            return $this->response(400, '删除失败');
+        }
+        return $this->response(0, '删除成功');
+    }
+
     public function about(Request $request)
     {
         try {

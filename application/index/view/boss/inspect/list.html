@@ -36,8 +36,8 @@
         table.on('tool(news)', function (obj) {
             var data = obj.data;
             if (obj.event === 'del') {
-                layer.confirm('真的下架此产品吗', function (index) {
-                    $.post("/boss/product/state", {id: data.id}, function (res) {
+                layer.confirm('您真的删除此产品吗？', function (index) {
+                    $.post("/boss/inspect/del", {id: data.id}, function (res) {
                         layer.msg(res.msg);
                         if (res.code === 0) {
                             obj.del();
@@ -45,16 +45,16 @@
                     });
                     layer.close(index);
                 });
-            } else if (obj.event === 'recovery') {
-                $.post("/boss/product/state", {id: data.id}, function (res) {
-                    layer.msg(res.msg);
-                    if (res.code === 0) {
-                        obj.del();
-                    }
-                });
-                layer.close(index);
+//            } else if (obj.event === 'recovery') {
+//                $.post("/boss/product/state", {id: data.id}, function (res) {
+//                    layer.msg(res.msg);
+//                    if (res.code === 0) {
+//                        obj.del();
+//                    }
+//                });
+//                layer.close(index);
             } else if (obj.event === 'edit') {
-                location.href = '/boss/product/mod/' + data.id;
+                location.href = '/boss/inspect/mod/' + data.id;
             }
         });
     });
