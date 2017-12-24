@@ -17,6 +17,10 @@ class Donatectl extends Controller
         parent::__construct($request);
         $this->view = new View();
         $this->assign('_action','index');
+        $openId = Session::get('openid');
+        if (!$openId){
+            WeiXin::getOpenidAndAcessToken();
+        }
     }
 
     /**

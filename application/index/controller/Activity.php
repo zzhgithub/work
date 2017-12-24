@@ -30,6 +30,10 @@ class Activity extends Controller
             'data' => []
         ];
         $this->assign('_action','index');
+        $openId = Session::get('openid');
+        if (!$openId){
+            WeiXin::getOpenidAndAcessToken();
+        }
     }
 
     /**

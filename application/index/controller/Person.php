@@ -12,6 +12,10 @@ use think\Controller;
 class Person extends Controller{
 
     public function index(){
+        $openId = Session::get('openid');
+        if (!$openId){
+            WeiXin::getOpenidAndAcessToken();
+        }
         $this->assign('_action','ucenter');
         return $this->fetch('ucenter/index');
     }

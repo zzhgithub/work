@@ -14,6 +14,10 @@ class About extends Controller
     {
         parent::__construct($request);
         $this->assign('_action','about');
+        $openId = Session::get('openid');
+        if (!$openId){
+            WeiXin::getOpenidAndAcessToken();
+        }
     }
 
     public function index()

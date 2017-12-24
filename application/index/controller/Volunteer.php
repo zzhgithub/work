@@ -25,6 +25,10 @@ class Volunteer extends Controller
     {
         parent::__construct($request);
         $this->assign('_action','index');
+        $openId = Session::get('openid');
+        if (!$openId){
+            WeiXin::getOpenidAndAcessToken();
+        }
     }
     /**
      * @deprecated
