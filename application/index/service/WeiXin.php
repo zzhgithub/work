@@ -63,7 +63,8 @@ class WeiXin
      * curl get 请求
      * @param $url
      * @param int $second
-     * @return mixed|null
+     * @return mixed
+     * @throws \Exception
      */
     public static function get($url, $second = 10)
     {
@@ -74,7 +75,6 @@ class WeiXin
         curl_setopt($ch, CURLOPT_URL, $url);
         //设置header
         curl_setopt($ch, CURLOPT_HEADER, false);
-        $ch = curl_init();
 
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,false); //是否直接输出到屏幕
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //https请求 不验证证书 其实只用这个就可以了
@@ -90,7 +90,7 @@ class WeiXin
         } else {
             $error = curl_errno($ch);
             curl_close($ch);
-            throw new Exception("curl出错，错误码:$error");
+            throw new \Exception("curl出错，错误码:$error");
         }
     }
 
@@ -101,6 +101,7 @@ class WeiXin
      * @param int $second
      * @param bool $useCert
      * @return mixed|null
+     * @throws \Exception
      */
     public static function post($url, $data = null, $second = 10, $useCert = false)
     {
@@ -135,19 +136,20 @@ class WeiXin
         } else {
             $error = curl_errno($ch);
             curl_close($ch);
-            throw new Exception("curl出错，错误码:$error");
+            throw new \Exception("curl出错，错误码:$error");
         }
     }
 
     /**
      * @param $params
      * @return string
+     * @throws \Exception
      */
     public static function ToXml($params)
     {
         if (!is_array($params)
             || count($params) <= 0) {
-            throw new Exception("数组数据异常！");
+            throw new \Exception("数组数据异常！");
         }
 
         $xml = "<xml>";
@@ -163,11 +165,10 @@ class WeiXin
     }
 
     /**
-     *
      * 通过code从工作平台获取openid机器access_token
-     * @param string $code 微信跳转回来带上的code
-     *
-     * @return openid
+     * @param $code
+     * @return mixed
+     * @throws \Exception
      */
     public static function GetOpenidFromMp($code)
     {
