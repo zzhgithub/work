@@ -152,6 +152,13 @@ return [
     'boss/train/del' =>'index/boss/traindel',
 
     /**
+     * 证书管理
+     */
+    'boss/cert/list' =>'index/boss/certList',
+    'boss/cert/add' =>'index/boss/certSave',
+    'boss/cert/mod/:id' =>'index/boss/certSave',
+    'boss/cert/del' =>'index/boss/certDel',
+    /**
      * 登录 登出
      */
     'boss/login' =>'index/BossLogin/login',
