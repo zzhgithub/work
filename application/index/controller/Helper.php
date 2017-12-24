@@ -92,8 +92,8 @@ class Helper extends Controller
         $openid = Session::get('openid');
         if (!$openid){
             $data = WeiXin::getOpenidAndAcessToken();
-            $access_token = $data['access_token'];
-            $openid = $data['openid'];
+            $access_token = $data->access_token;
+            $openid = $data->openid;
             $getUserInfoUrl = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
             $userObj = json_decode(Weixin::get($getUserInfoUrl));
             //var_dump($user_obj);

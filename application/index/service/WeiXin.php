@@ -40,6 +40,7 @@ class WeiXin
      * 2、微信服务处理完成之后会跳转回用户redirect_uri地址，此时会带上一些参数，如：code
      *
      * @return openid
+     * @throws \Exception
      */
     public static function getOpenidAndAcessToken()
     {
@@ -54,7 +55,7 @@ class WeiXin
             //获取code码，以获取openid
             $code = $_GET['code'];
             $res = self::getOpenidFromMp($code);
-            $data = json_decode($res, true);
+            $data = json_decode($res);
             return $data;
         }
     }
