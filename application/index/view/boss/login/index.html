@@ -121,6 +121,7 @@
         if (!flag){
             return false;
         }
+        flag = false;
         $('input[type="button"]').click(function () {
             var login = $('input[name="login"]').val();
             var pwd = $('input[name="pwd"]').val();
@@ -156,7 +157,7 @@
 
                 AjaxPost(url, JsonData, function (data) {},
                     function (data) {
-                        flag =false;
+                        flag = true;
                         //ajax返回
                         //认证完成
                         setTimeout(function () {

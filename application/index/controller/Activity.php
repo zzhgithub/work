@@ -10,6 +10,8 @@ namespace app\index\controller;
  * Time: 下午5:36
  */
 use app\index\model\Act;
+use app\index\service\WeiXinJs;
+use think\Config;
 use think\Controller;
 use think\Exception;
 use think\Request;
@@ -94,21 +96,39 @@ class Activity extends Controller
     /**
      * 报名页表单处理
      */
-    public function doJoin()
+    public function doJoin(Request $request)
     {
-        $data = Request::instance()->post();
-
-        if (empty($data)) {
-            $this->response['message'] = '非法请求';
-            $this->response['code'] = 400;
-            return json($this->response);
+        if (!$request->isAjax()){
+            return self::response(400, '非法请求');
         }
-        foreach ($data as $v) {
-            if (!$v) {
-                $this->response['message'] = '非法请求';
-                $this->response['code'] = 400;
-                return json($this->response);
-            }
+        $data = $request->post();
+        if (empty($data)) {
+            return self::response(400, '非法请求');
+        }
+        $result = $this->checkName($data['name']);
+        if ($result) {
+            return self::response(400, $result);
+        }
+        $result = $this->checkPhone($data['phone']);
+        if ($result) {
+            return self::response(400, $result);
+        }
+        $result = $this->validate(
+            $data,
+            [
+                'id' => 'require|token',
+                'name' => 'require',
+                'phone' => 'require',
+            ],
+            [
+                'id.require' => '请先选择活动',
+                'name.require' => '姓名不能为空',
+                'phone.require' => '请输入电话号码'
+            ]
+        );
+        if (true !== $result) {
+            // 验证失败 输出错误信息
+            return self::response(400, $result, ['token' => $request->token()]);
         }
 
         try {
@@ -119,6 +139,14 @@ class Activity extends Controller
                 return json($this->response);
             }
             // 报名处理
+            $jsApi = new WeiXinJs();
+            $jsApi->appId = Config::get('weixin.APPID');
+            $jsApi->nonceStr = WeiXin::getNonceStr();
+            $jsApi->package = Config::get('weixin.APPID');
+            $jsApi->paySign = Config::get('weixin.APPID');
+            $jsApi->signType = Config::get('weixin.APPID');
+            $jsApi->timeStamp = time();
+            $this->assign('jsApi', $jsApi->toJson());
 
 
             $this->response['message'] = '报名成功';
@@ -130,55 +158,30 @@ class Activity extends Controller
         return json($this->response);
     }
 
-    /**
-     * 捐款列表页
-     */
-    public function DonteList()
+    private function checkName($value)
     {
-        //
+        if (mb_strlen($value) < 2 || mb_strlen($value) > 5) {
+            return '用户名长度在2-5之间';
+        }
+        $pattern = '/^[a-zA-Z0-9_^\x00-\x80\s·]+$/';
+        if (!preg_match($pattern, $value)) {
+            return '用户名不能包含特殊字符';
+        }
     }
 
-    /**
-     * 捐款详情页
-     */
-    public function DonteDetail($id)
+    private function checkPhone($value)
     {
-
+        if (mb_strlen($value) !== 11 || intval($value) <=0 || substr($value,0,1) != 1) {
+            return '请输入正确的手机号';
+        }
     }
 
-    /**
-     * 捐款/文创 支付页
-     * @param $id
-     */
-    public function payPage($id, $type)
+    private static function response($code, $msg = '', $data = [])
     {
-
-    }
-
-    //todo 获取捐款的第三方接口
-
-
-    /**
-     * 文创产品列表页
-     */
-    public function productList()
-    {
-
-    }
-
-    /**
-     * 文创产品详情页
-     */
-    public function productDetail()
-    {
-
-    }
-
-    /**
-     * 关于我们
-     */
-    public function about()
-    {
-
+        $response = new \stdClass();
+        $response->code = $code;
+        $response->data = $data;
+        $response->msg = $msg;
+        return json($response);
     }
 }

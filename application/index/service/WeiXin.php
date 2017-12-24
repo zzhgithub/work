@@ -18,6 +18,11 @@ use think\Config;
 
 class WeiXin
 {
+    public static function weiXinPay()
+    {
+
+    }
+
     /**
      * 产生随机字符串，不长于32位
      * @param int $length
