@@ -159,7 +159,7 @@ class Activity extends Controller
             $actRecords->name = $data['name'];
             $actRecords->phone = $data['phone'];
             if ($act->isfree != 1) {
-                $actRecords->price = $data['price'];
+                $actRecords->price = $act['cost'];
                 $actRecords->need_pay = 1;
             }
             $actRecords->save();
