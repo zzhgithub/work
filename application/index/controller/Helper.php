@@ -15,9 +15,8 @@ use app\index\model\User;
 use app\index\service\WeiXin;
 use think\Controller;
 use think\Exception;
-use think\Request;
 use think\Session;
-
+use \app\index\model\Log;
 
 class Helper extends Controller
 {
@@ -163,7 +162,8 @@ class Helper extends Controller
             $result['return_code'] = 'FAIL';
             $result['return_msg'] = '签名失败';
         }
-        file_put_contents('../data/log/notify.log', $data['out_trade_no'] . ':' . $data['transaction_id'] .'-----'. $msg . PHP_EOL, FILE_APPEND);
-        return WeiXin::fromArrayToXml($result);
+        $returnStr = WeiXin::fromArrayToXml($result);
+        file_put_contents('../data/log/notify.log', $data['out_trade_no'] . ':' . $data['transaction_id'] .'-----'. $msg . PHP_EOL.$returnStr.PHP_EOL.'------------------------------------------'.PHP_EOL, FILE_APPEND);
+        return $returnStr;
     }
 }
