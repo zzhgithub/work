@@ -14,14 +14,75 @@
 
 namespace app\index\service;
 
+use app\index\model\User;
 use think\Cache;
 use think\Config;
+use think\Request;
 
 class WeiXin
 {
-    public static function weiXinPay()
+    public static function weiXinPayData($body, $out_trade_no, $total_fee, $openId)
     {
+        $appid = Config::get('weixin.APPID');
+        $mch_id = Config::get('weixin.MCHID');
+        $nonceStr = self::getNonceStr();
+        $spbill_create_ip = Request::instance()->ip();
+        $notify_url = 'http://' . $_SERVER['HTTP_HOST'] . '/notify';
+        $time_start = date('YmdHis');
+        $time_expire = date('YmdHis', time() + 900);
+        $trade_type = 'JSAPI';
 
+        // 生成预处理签名
+        $stringA = "appid=$appid&body=$body&mch_id=$mch_id&nonce_str=$nonceStr&notify_url=$notify_url&openid=$openId&out_trade_no=$out_trade_no&spbill_create_ip=$spbill_create_ip&time_expire=$time_expire&time_start=$time_start&total_fee=$total_fee&trade_type=$trade_type";
+        $stringSignTemp = $stringA . '&key=' . Config::get('weixin.KEY');//注：key为商户平台设置的密钥key
+
+        $sign = strtoupper(md5($stringSignTemp));//注：MD5签名方式
+
+        $url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+        $xmlTpl = "<xml>
+                       <appid><![CDATA[%s]]></appid>
+                       <body><![CDATA[%s]]></body>
+                       <mch_id><![CDATA[%s]]></mch_id>
+                       <nonce_str><![CDATA[%s]]></nonce_str>
+                       <notify_url><![CDATA[%s]]></notify_url>
+                       <out_trade_no><![CDATA[%s]]></out_trade_no>
+                       <spbill_create_ip><![CDATA[%s]]></spbill_create_ip>
+                       <time_start><![CDATA[%s]]></time_start>
+                       <time_expire><![CDATA[%s]]></time_expire>                       
+                       <total_fee><![CDATA[%s]]></total_fee>
+                       <trade_type><![CDATA[%s]]></trade_type>
+                       <sign><![CDATA[%s]]></sign>
+                       <openid><![CDATA[%s]]></openid>
+                   </xml>";
+        $postData = sprintf($xmlTpl, $appid, $body, $mch_id, $nonceStr, $notify_url, $out_trade_no, $spbill_create_ip,
+            $time_start, $time_expire, $total_fee, $trade_type, $sign, $openId);
+        $returnData = null;
+        try {
+            $returnData = self::post($url, $postData);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+
+        libxml_disable_entity_loader(true);
+        $data = simplexml_load_string($returnData, 'SimpleXMLElement', LIBXML_NOCDATA);
+
+        // 重新签名
+        $timeStamp = time();
+        $nonceStr = self::getNonceStr();
+        $package = 'prepay_id=' . $data->prepay_id;
+        $signType = 'MD5';
+
+        $stringA = "appId=$appid&nonceStr=$nonceStr&package=$package&signType=$signType&timeStamp=$timeStamp";
+        $stringSignTemp = $stringA . '&key=' . Config::get('weixin.KEY');//注：key为商户平台设置的密钥key
+        $sign = strtoupper(md5($stringSignTemp));//注：MD5签名方式
+
+        $wxPayConfig = new WXPayConfig();
+        $wxPayConfig->package = $package;
+        $wxPayConfig->nonceStr = $nonceStr;
+        $wxPayConfig->timeStamp = $timeStamp;
+        $wxPayConfig->signType = $signType;
+        $wxPayConfig->paySign = $sign;
+        return $wxPayConfig;
     }
 
     public static function getPrepayId()
@@ -51,32 +112,33 @@ class WeiXin
      */
     public static function getAccessToken()
     {
-        $accessToken = Cache::get('access_token','');
+        $accessToken = Cache::get('access_token', '');
         if ($accessToken != '') {
             return $accessToken;
         }
         $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . Config::get('weixin.APPID') . '&secret=' . Config::get('weixin.APPSECRET');
         $data = self::get($url);
         $json = json_decode($data);
-        Cache::set('access_token',$json->access_token,7200);
+        Cache::set('access_token', $json->access_token, 7200);
         return $json->access_token;
     }
 
     public static function getJsApiTicket($accessToken)
     {
-        $jsApiTicket = Cache::get('jsapi_ticket','');
+        $jsApiTicket = Cache::get('jsapi_ticket', '');
         if ($jsApiTicket != '') {
             return $jsApiTicket;
         }
-        $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='.$accessToken.'&type=jsapi';
+        $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' . $accessToken . '&type=jsapi';
         $data = self::get($url);
         $json = json_decode($data);
-        Cache::set('jsapi_ticket',$json->ticket,7200);
+        Cache::set('jsapi_ticket', $json->ticket, 7200);
         return $json->ticket;
     }
-    public static function signature($jsApiTicket,$nonceStr,$timestamp,$url)
+
+    public static function signature($jsApiTicket, $nonceStr, $timestamp, $url)
     {
-        $string = 'jsapi_ticket='.$jsApiTicket.'&noncestr='.$nonceStr.'&timestamp='.$timestamp.'&url='.$url;
+        $string = 'jsapi_ticket=' . $jsApiTicket . '&noncestr=' . $nonceStr . '&timestamp=' . $timestamp . '&url=' . $url;
         return sha1($string);
     }
 
@@ -184,7 +246,6 @@ class WeiXin
         } else {
             $error = curl_errno($ch);
             curl_close($ch);
-            throw new \Exception("curl出错，错误码:$error");
         }
     }
 
@@ -275,5 +336,15 @@ class WeiXin
 
         $buff = trim($buff, "&");
         return $buff;
+    }
+
+    public static function getUserIdByOpenid($openid)
+    {
+        if (!$openid){
+            return false;
+        }
+        $userObj = new User();
+        $user = $userObj->where(['openid' => $openid])->field('id')->find();
+        return $user->id;
     }
 }

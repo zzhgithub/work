@@ -10,6 +10,8 @@ namespace app\index\controller;
  * Time: 下午5:36
  */
 use app\index\model\Act;
+use app\index\model\ActRecords;
+use app\index\model\Log;
 use app\index\service\WeiXinJs;
 use think\Config;
 use think\Controller;
@@ -22,22 +24,22 @@ use \think\Session;
 class Activity extends Controller
 {
     protected $view;
-    protected $response;
+    protected $openId;
 
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->view = new View();
-        $this->response = [
-            'code' => 200,
-            'message' => '',
-            'data' => []
-        ];
-        $this->assign('_action','index');
+        $this->assign('_action', 'index');
         $openId = Session::get('openid');
-        if (!$openId){
-            WeiXin::getOpenidAndAcessToken();
+        if (!$openId) {
+            if ($request->isAjax()) {
+                return self::response(400, '请刷新页面重新登录');
+            } else {
+                WeiXin::getOpenidAndAcessToken();
+            }
         }
+        $this->openId = $openId;
     }
 
     /**
@@ -88,21 +90,17 @@ class Activity extends Controller
             $data = Act::get($id);
 
             // 返回微信参数
-            if ($data->isfree != 1){
+            if ($data->isfree != 1) {
                 $accessToken = WeiXin::getAccessToken();
                 $jsApiTicket = WeiXin::getJsApiTicket($accessToken);
-                $url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 $jsApi = new WeiXinJs();
                 $jsApi->appId = Config::get('weixin.APPID');
                 $jsApi->nonceStr = WeiXin::getNonceStr();
                 $jsApi->timestamp = time();
-                $jsApi->signature = WeiXin::signature($jsApiTicket,$jsApi->nonceStr,$jsApi->timestamp,$url);
+                $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
                 $this->assign('jsApi', $jsApi);
             }
-
-
-
-
             $this->assign('data', $data);
             return $this->view->fetch('act/join');
         } catch (Exception $e) {
@@ -115,7 +113,7 @@ class Activity extends Controller
      */
     public function doJoin(Request $request)
     {
-        if (!$request->isAjax()){
+        if (!$request->isAjax()) {
             return self::response(400, '非法请求');
         }
         $data = $request->post();
@@ -149,21 +147,51 @@ class Activity extends Controller
         }
 
         try {
-            $data = Act::get($data['id']);
-            if (empty($data)){
-                $this->response['message'] = '非法请求';
-                $this->response['code'] = 400;
-                return json($this->response);
+            $act = Act::get($data['id']);
+            if (empty($act)) {
+                return self::response(400, $result, ['token' => $request->token()]);
             }
-            //
+            // 创建活动订单
+            $actRecords = new ActRecords();
+            $actRecords->act_id = $act->id;
+            $actRecords->open_id = $this->openId;
+            $actRecords->user_id = WeiXin::getUserIdByOpenid($this->openId);
+            $actRecords->name = $data['name'];
+            $actRecords->phone = $data['phone'];
+            if ($act->isfree != 1) {
+                $actRecords->price = $data['price'];
+                $actRecords->need_pay = 1;
+            }
+            $actRecords->save();
+            // 获取报名记录ID
+            $recordsid = $actRecords->id;
 
-            $this->response['message'] = '报名成功';
-            $this->response['code'] = 200;
+            if ($act->isfree != 1) {
+                if (!$recordsid) {
+                    return self::response(400, '报名失败', ['token' => $request->token()]);
+                }
+                // 写入日志
+                $log = new Log();
+                $log->relate_id = $recordsid;
+                $log->user_id = $actRecords->user_id;
+                $log->open_id = $this->openId;
+                $log->type = 1;
+                $log->content = $act['name'] . ':活动报名发起支付';
+                $log->price = $act['cost'];
+                $log->save();
+                // 返回支付接口参数
+                $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街活动报名:' . $act['name'], $recordsid, $act['cost'],
+                    $this->openId), true);
+                return self::response(0, '支付创建成功', $wxPayConfig);
+            }
+            if ($recordsid) {
+                return self::response(0, '报名成功');
+            } else {
+                return self::response(400, '报名失败', ['token' => $request->token()]);
+            }
         } catch (Exception $e) {
-            $this->response['code'] = 400;
-            $this->response['message'] = $e->getMessage();
+            return self::response(400, $e->getMessage(), ['token' => $request->token()]);
         }
-        return json($this->response);
     }
 
     private function checkName($value)
@@ -179,7 +207,7 @@ class Activity extends Controller
 
     private function checkPhone($value)
     {
-        if (mb_strlen($value) !== 11 || intval($value) <=0 || substr($value,0,1) != 1) {
+        if (mb_strlen($value) !== 11 || intval($value) <= 0 || substr($value, 0, 1) != 1) {
             return '请输入正确的手机号';
         }
     }
