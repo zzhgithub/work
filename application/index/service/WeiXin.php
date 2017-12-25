@@ -18,9 +18,14 @@ use app\index\model\User;
 use think\Cache;
 use think\Config;
 use think\Request;
+use think\Session;
 
 class WeiXin
 {
+    const ORDER_ACT = 1;
+    const ORDER_DONATE = 2;
+    const ORDER_PRODUCT = 3;
+
     public static function weiXinPayData($body, $out_trade_no, $total_fee, $openId)
     {
         $appid = Config::get('weixin.APPID');
@@ -31,9 +36,9 @@ class WeiXin
         $time_start = date('YmdHis');
         $time_expire = date('YmdHis', time() + 900);
         $trade_type = 'JSAPI';
-
+        $attach = $out_trade_no;
         // 生成预处理签名
-        $stringA = "appid=$appid&body=$body&mch_id=$mch_id&nonce_str=$nonceStr&notify_url=$notify_url&openid=$openId&out_trade_no=$out_trade_no&spbill_create_ip=$spbill_create_ip&time_expire=$time_expire&time_start=$time_start&total_fee=$total_fee&trade_type=$trade_type";
+        $stringA = "appid=$appid&attach=$attach&body=$body&mch_id=$mch_id&nonce_str=$nonceStr&notify_url=$notify_url&openid=$openId&out_trade_no=$out_trade_no&spbill_create_ip=$spbill_create_ip&time_expire=$time_expire&time_start=$time_start&total_fee=$total_fee&trade_type=$trade_type";
         $stringSignTemp = $stringA . '&key=' . Config::get('weixin.KEY');//注：key为商户平台设置的密钥key
 
         $sign = strtoupper(md5($stringSignTemp));//注：MD5签名方式
@@ -41,6 +46,7 @@ class WeiXin
         $url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
         $xmlTpl = "<xml>
                        <appid><![CDATA[%s]]></appid>
+                       <attach><![CDATA[%s]]></attach>
                        <body><![CDATA[%s]]></body>
                        <mch_id><![CDATA[%s]]></mch_id>
                        <nonce_str><![CDATA[%s]]></nonce_str>
@@ -54,7 +60,7 @@ class WeiXin
                        <sign><![CDATA[%s]]></sign>
                        <openid><![CDATA[%s]]></openid>
                    </xml>";
-        $postData = sprintf($xmlTpl, $appid, $body, $mch_id, $nonceStr, $notify_url, $out_trade_no, $spbill_create_ip,
+        $postData = sprintf($xmlTpl, $appid, $attach, $body, $mch_id, $nonceStr, $notify_url, $out_trade_no, $spbill_create_ip,
             $time_start, $time_expire, $total_fee, $trade_type, $sign, $openId);
         $returnData = null;
         try {
@@ -341,10 +347,38 @@ class WeiXin
     public static function getUserIdByOpenid($openid)
     {
         if (!$openid){
-            return false;
+            return 0;
+        }
+        $userid = Session::get('user_id',0);
+        if ($userid){
+            return $userid;
         }
         $userObj = new User();
         $user = $userObj->where(['openid' => $openid])->field('id')->find();
-        return $user->id;
+        if ($user){
+            Session::set('user_id',$user->id);
+            return $user->id;
+        }
+        return 0;
+    }
+
+    public static function createOrderNo($type)
+    {
+        if (!in_array($type,[self::ORDER_ACT,self::ORDER_DONATE,self::ORDER_PRODUCT])){
+            return '';
+        }
+        $orderPre = '';
+        switch ($type) {
+            case self::ORDER_ACT:
+                $orderPre = 'act_';
+                break;
+            case self::ORDER_DONATE:
+                $orderPre = 'don_';
+                break;
+            default:
+                $orderPre = 'pro_';
+                break;
+        }
+        return $orderPre.date('YmdHis').(string)rand(1000,9999);
     }
 }

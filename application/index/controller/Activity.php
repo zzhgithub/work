@@ -161,6 +161,7 @@ class Activity extends Controller
             if ($act->isfree != 1) {
                 $actRecords->price = $act['cost'];
                 $actRecords->need_pay = 1;
+                $actRecords->order_no = WeiXin::createOrderNo(1);
             }
             $actRecords->save();
             // 获取报名记录ID
@@ -180,7 +181,7 @@ class Activity extends Controller
                 $log->price = $act['cost'];
                 $log->save();
                 // 返回支付接口参数
-                $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街活动报名:' . $act['name'], $recordsid, $act['cost'] * 100, $this->openId), true);
+                $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街活动报名:' . $act['name'], $actRecords->order_no, $act['cost'] * 100, $this->openId), true);
                 $wxPayConfig['token'] = $request->token();
                 return self::response(0, '支付创建成功', $wxPayConfig);
             }
@@ -192,6 +193,19 @@ class Activity extends Controller
         } catch (Exception $e) {
             return self::response(400, $e->getMessage(), ['token' => $request->token()]);
         }
+    }
+
+    public function cancelJoin()
+    {
+        // 写入日志
+        //$log = new Log();
+        //$log->relate_id = $recordsid;
+        //$log->user_id = $actRecords->user_id;
+        //$log->open_id = $this->openId;
+        //$log->type = 1;
+        //$log->content = $act['name'] . ':活动报名发起支付';
+        //$log->price = $act['cost'];
+        //$log->save();
     }
 
     private function checkName($value)

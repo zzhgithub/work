@@ -53,6 +53,7 @@
         layer.find('a').hide();
         $('#layer').show();
     }
+    {if condition="$data['isfree'] eq 0"}
     wx.config({
         debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: '{$jsApi->appId}', // 必填，公众号的唯一标识
@@ -67,9 +68,9 @@
     wx.error(function(res){
         // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
     });
+    {/if}
 
     var flag = true;
-    var isfree = {$data['isfree']};
     $(function () {
         $('.define').on('click', function () {
             if (!flag){
@@ -112,10 +113,11 @@
                     flag = true;
                     if(data.code === 0){
                         // 免费
-                        if (isfree){
+                        {if condition="$data['isfree'] eq 1"}
                             alertMsg(data.msg);
                             location.href = '/';
-                        }else{
+                        {/if}
+                        {if condition="$data['isfree'] eq 0"}
                             if(data.data.token != 'undefined' && data.data.token != ''){
                                 $('input[name="__token__"]').val(data.data.token);
                             }
@@ -128,18 +130,28 @@
                                 paySign: data.data.paySign, // 支付签名
                                 success: function (res) {
                                     //支付成功
-                                    alertMsg('支付成功')
+                                    alertMsg('报名成功');
+                                    alert(JSON.stringify(res));
                                 },
                                 cancel: function (res) {
                                     //支付取消
-                                    alertMsg('支付失败')
+                                    alertMsg('支付取消');
+                                    // $.post("/boss/about", data.field, function (res) {
+                                    //     layer.msg(res.msg);
+                                    //     if (res.code === 0) {
+                                    //         setTimeout(function () {
+                                    //             location.reload();
+                                    //         },1000);
+                                    //     }
+                                    // });
+                                    alert(JSON.stringify(res));
                                 },
                                 fail: function(res){        　　　　　　　　// 支付失败回调函数
-                                    alert('pay fail');
+                                    alertMsg('支付失败');
                                     alert(JSON.stringify(res));
                                 }
                             });
-                        }
+                        {/if}
                     }else{
                         alertMsg(data.msg);
                         if(data.data.token != 'undefined' && data.data.token != ''){

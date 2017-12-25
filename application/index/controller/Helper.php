@@ -12,6 +12,7 @@ use app\index\model\User;
 use app\index\service\WeiXin;
 use think\Controller;
 use think\Exception;
+use think\Request;
 use think\Session;
 
 
@@ -115,5 +116,10 @@ class Helper extends Controller
             Session::set("openid",$userObj->openid);
         }
         $this->redirect("/");
+    }
+
+    public function notify()
+    {
+        file_put_contents('notify.log',json_encode(Request::instance()->param()).PHP_EOL,FILE_APPEND);
     }
 }
