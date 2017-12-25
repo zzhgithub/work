@@ -141,7 +141,7 @@
                                     $.post("/act/fail", {'order_no':order,'msg':'cancel'}, function (r) {
                                         alertMsg('支付取消');
                                         setTimeout(function () {
-                                            window.location.go(-1);
+                                            location.href = data.data.referrer;
                                         },1000);
                                     });
                                 },
@@ -149,7 +149,7 @@
                                     $.post("/act/fail", {'order_no':order,'msg':'fail'}, function (r) {
                                         alertMsg('支付失败');
                                         setTimeout(function () {
-                                            window.location.go(-1);
+                                            location.href = data.data.referrer;
                                         },1000);
                                     });
                                 }

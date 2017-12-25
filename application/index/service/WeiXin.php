@@ -260,7 +260,7 @@ class WeiXin
      * @return string
      * @throws \Exception
      */
-    public static function ToXml($params)
+    public static function fromArrayToXml($params)
     {
         if (!is_array($params)
             || count($params) <= 0) {
@@ -343,6 +343,53 @@ class WeiXin
         $buff = trim($buff, "&");
         return $buff;
     }
+
+    /**
+     * 将xml转为array
+     * @param $xml
+     * @return mixed
+     */
+    public static function fromXmlToArray($xml)
+    {
+        //将XML转为array
+        //禁止引用外部xml实体
+        libxml_disable_entity_loader(true);
+        return json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    }
+
+    /**
+     *
+     * 查询订单，out_trade_no、transaction_id至少填一个
+     * appid、mchid、spbill_create_ip、nonce_str不需要填入
+     * @param WxPayOrderQuery $inputObj
+     * @param int $timeOut
+     * @throws WxPayException
+     * @return 成功时返回，其他抛异常
+     */
+    //public static function orderQuery($transaction_id, $timeOut = 6)
+    //{
+    //    $url = "https://api.mch.weixin.qq.com/pay/orderquery";
+    //    //检测必填参数
+    //    if (!$transaction_id){
+    //        return false;
+    //    }
+    //    $inputArr['transaction_id'] = $transaction_id;
+    //    $inputArr['appid'] = Config::get('weixin.APPID');
+    //    $inputArr['mch_id'] = Config::get('weixin.MCHID');
+    //    $inputArr['nonce_str'] = self::getNonceStr();
+    //
+    //    // 签名
+    //    $stringA = "";
+    //    $sign =
+    //    $xml = $inputObj->ToXml();
+    //
+    //    $startTimeStamp = self::getMillisecond();//请求开始时间
+    //    $response = self::postXmlCurl($xml, $url, false, $timeOut);
+    //    $result = WxPayResults::Init($response);
+    //    self::reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
+    //
+    //    return $result;
+    //}
 
     public static function getUserIdByOpenid($openid)
     {

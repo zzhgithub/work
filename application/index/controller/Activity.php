@@ -184,6 +184,7 @@ class Activity extends Controller
                 $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街活动报名:' . $act['name'], $actRecords->order_no, $act['cost'] * 100, $this->openId), true);
                 $wxPayConfig['token'] = $request->token();
                 $wxPayConfig['order_no'] = $actRecords->order_no;
+                $wxPayConfig['referrer'] = $_SERVER['HTTP_REFERER'];
                 return self::response(0, '支付创建成功', $wxPayConfig);
             }
             if ($recordsid) {

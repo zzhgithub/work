@@ -121,6 +121,10 @@ class Helper extends Controller
     public function notify()
     {
         $xml = file_get_contents('php://input');
-        file_put_contents('notify.log',json_encode($xml).PHP_EOL,FILE_APPEND);
+        //$data = WeiXin::fromXmlToArray($xml);
+        //if(!array_key_exists("transaction_id", $data) || !array_key_exists("return_code", $data)||!array_key_exists("result_code", $data)){
+        //    return false;
+        //}
+        file_put_contents('notify.log',$xml.PHP_EOL,FILE_APPEND);
     }
 }
