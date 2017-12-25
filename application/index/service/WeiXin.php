@@ -82,7 +82,7 @@ class WeiXin
         $wxPayConfig->timeStamp = $timeStamp;
         $wxPayConfig->signType = $signType;
         $wxPayConfig->paySign = $sign;
-        return $wxPayConfig;
+        return $wxPayConfig->toJson();
     }
 
     public static function getPrepayId()
