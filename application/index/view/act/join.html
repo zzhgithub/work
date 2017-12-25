@@ -133,6 +133,10 @@
                                 cancel: function (res) {
                                     //支付取消
                                     alertMsg('支付失败')
+                                },
+                                fail: function(res){        　　　　　　　　// 支付失败回调函数
+                                    alert('pay fail');
+                                    alert(JSON.stringify(res));
                                 }
                             });
                         }
