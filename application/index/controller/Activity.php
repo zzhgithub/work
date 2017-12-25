@@ -180,7 +180,7 @@ class Activity extends Controller
                 $log->price = $act['cost'];
                 $log->save();
                 // 返回支付接口参数
-                $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街活动报名:' . $act['name'], $recordsid, $act['cost'], $this->openId), true);
+                $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街活动报名:' . $act['name'], $recordsid, $act['cost'] * 100, $this->openId), true);
                 $wxPayConfig['token'] = $request->token();
                 return self::response(0, '支付创建成功', $wxPayConfig);
             }
