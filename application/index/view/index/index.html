@@ -109,7 +109,11 @@
                             url: "/product/list",
                             data: {'page': currentPage - (-1)},
                             dataType: "json",
+                            beforeSend: function () {
+                                flag = false;
+                            },
                             success: function (data) {
+                                flag = true;
                                 if (data.code === 0){
                                     currentPage++;
                                     var str = '';
@@ -119,7 +123,6 @@
                                     $('.product').find('ul').append(str);
                                 }else{
                                     $('.nodata').show();
-                                    flag = false;
                                 }
                             },
                             error:function (res) {

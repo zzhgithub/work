@@ -29,7 +29,11 @@
                     url: "/donate/list",
                     data: {'page': currentPage - (-1)},
                     dataType: "json",
+                    beforeSend: function () {
+                        flag = false;
+                    },
                     success: function (data) {
+                        flag = true;
                         if (data.code === 0){
                             currentPage++;
                             var str = '';
@@ -39,8 +43,6 @@
                             console.log('currentPage:' + currentPage);
                             $('.donate').find('ul').append(str);
                             console.log(data);
-                        }else{
-                            flag = false;
                         }
                     },
                     error:function (res) {

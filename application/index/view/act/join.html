@@ -75,7 +75,7 @@
             if (!flag){
                 return false;
             }
-            flag = false;
+
             var id = $('input[name="id"]').data('id');
             var name = $('input[name="name"]').val();
             var phone = $('input[name="phone"]').val();
@@ -105,6 +105,9 @@
                 url: "/act/dojoin",
                 data: {'name': name, 'phone': phone, 'id': id, '__token__': token},
                 dataType: "json",
+                beforeSend: function () {
+                    flag = false;
+                },
                 success: function (data) {
                     flag = true;
                     if(data.code === 0){

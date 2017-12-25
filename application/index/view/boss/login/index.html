@@ -121,7 +121,7 @@
         if (!flag){
             return false;
         }
-        flag = false;
+
         $('input[type="button"]').click(function () {
             var login = $('input[name="login"]').val();
             var pwd = $('input[name="pwd"]').val();
@@ -155,7 +155,9 @@
                 //此处做为ajax内部判断
                 var url = '/boss/login';
 
-                AjaxPost(url, JsonData, function (data) {},
+                AjaxPost(url, JsonData, function (data) {
+                        flag = false;
+                    },
                     function (data) {
                         flag = true;
                         //ajax返回

@@ -32,7 +32,11 @@
                     url: "/point/list",
                     data: {'page': currentPage - (-1),'search':search},
                     dataType: "json",
+                    beforeSend: function () {
+                        flag = false;
+                    },
                     success: function (data) {
+                        falg = true;
                         if (data.code === 0){
                             currentPage++;
                             var str = '';

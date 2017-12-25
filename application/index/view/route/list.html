@@ -34,7 +34,11 @@
                     url: "/route/list",
                     data: {'page': currentPage - (-1),'search':search},
                     dataType: "json",
+                    beforeSend: function () {
+                        flag = false;
+                    },
                     success: function (data) {
+                        flag = true;
                         if (data.code === 0){
                             currentPage++;
                             var str = '';
