@@ -208,8 +208,8 @@ class Activity extends Controller
             return self::response(400, '非法请求');
         }
         // 根据订单 查询信息
-        $actRecoedsObj = new ActRecords();
-        $actRecords = $actRecoedsObj->getOneByOrder($orderNo);
+        $actRecordsObj = new ActRecords();
+        $actRecords = $actRecordsObj->getOneByOrder($orderNo);
 
         // 写入日志
         if ($actRecords){

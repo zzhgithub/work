@@ -1,5 +1,7 @@
 <?php
+
 namespace app\index\controller;
+
 /**
  * 帮助类
  * Created by PhpStorm.
@@ -8,6 +10,7 @@ namespace app\index\controller;
  * Time: 下午6:06
  */
 
+use app\index\model\ActRecords;
 use app\index\model\User;
 use app\index\service\WeiXin;
 use think\Controller;
@@ -18,47 +21,50 @@ use think\Session;
 
 class Helper extends Controller
 {
-    public function Upload(){
+    public function Upload()
+    {
         // 获取表单上传文件 例如上传了001.jpg
         $file = request()->file('file');
-    // 移动到框架应用根目录/public/uploads/ 目录下
-        $info = $file->validate(['ext'=>'jpg,png,gif,jpeg'])->move(ROOT_PATH . 'public' . DS . 'uploads');
-      if($info){
-          // 成功上传后 获取上传信息
-          // 输出 jpg
-          //echo $info->getExtension();
-          // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg echo $info->getSaveName();
-          // 输出 42a79759f284b767dfcb2a0197904287.jpg
-          echo $info->getSaveName();
-          //echo $info->getFilename();
-          //echo $info->getSaveName();
-    }else{
-          //上传失败
-          echo $file->getError();
-      }
+        // 移动到框架应用根目录/public/uploads/ 目录下
+        $info = $file->validate(['ext' => 'jpg,png,gif,jpeg'])->move(ROOT_PATH . 'public' . DS . 'uploads');
+        if ($info) {
+            // 成功上传后 获取上传信息
+            // 输出 jpg
+            //echo $info->getExtension();
+            // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg echo $info->getSaveName();
+            // 输出 42a79759f284b767dfcb2a0197904287.jpg
+            echo $info->getSaveName();
+            //echo $info->getFilename();
+            //echo $info->getSaveName();
+        } else {
+            //上传失败
+            echo $file->getError();
+        }
     }
 
     //登录测试
-    public function sendTest(){
-        try{
+    public function sendTest()
+    {
+        try {
             $appid = "wxfcc662fea0340227";
             $callbackurl = "http://www.cqlaojie.com/index.php?s=helper/back";//暂时定位测试地址
             $scope = "snsapi_userinfo";
 
             $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
-                .$appid
-                ."&redirect_uri="
+                . $appid
+                . "&redirect_uri="
                 . urlencode($callbackurl)
-                ."&response_type=code&scope="
-                .$scope
-                ."&state=STATE#wechat_redirect";
-            header("Location:".$url);
-        }catch (Exception $e){
+                . "&response_type=code&scope="
+                . $scope
+                . "&state=STATE#wechat_redirect";
+            header("Location:" . $url);
+        } catch (Exception $e) {
             var_dump($e->getMessage());
         }
     }
 
-    public function weixinBack(){
+    public function weixinBack()
+    {
         //try{
         //    $appid = "wxfcc662fea0340227";
         //    $secret = "923658e6d9f6beee3eeacce5b940d9c1";
@@ -91,11 +97,11 @@ class Helper extends Controller
         //    var_dump($e);
         //}
         $openid = Session::get('openid');
-        if (!$openid){
+        if (!$openid) {
             $data = WeiXin::getOpenidAndAcessToken();
             $access_token = $data->access_token;
             $openid = $data->openid;
-            $getUserInfoUrl = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
+            $getUserInfoUrl = 'https://api.weixin.qq.com/sns/userinfo?access_token=' . $access_token . '&openid=' . $openid . '&lang=zh_CN';
             $userObj = json_decode(Weixin::get($getUserInfoUrl));
             //var_dump($user_obj);
             //设置用的cookie
@@ -106,14 +112,14 @@ class Helper extends Controller
             $user->headimgurl = $userObj->headimgurl;
             $user->sex = $userObj->sex;
 
-            $res = $client->where(['openid'=>$userObj->openid])
+            $res = $client->where(['openid' => $userObj->openid])
                 ->find();
-            if($res == null ||!isset($res->id) || $res->id == 0 || $res->id == null) {
+            if ($res == null || !isset($res->id) || $res->id == 0 || $res->id == null) {
                 //没有数据进行更新
                 $client->data($user)->save();
             }
             //设置登录的cookie
-            Session::set("openid",$userObj->openid);
+            Session::set("openid", $userObj->openid);
         }
         $this->redirect("/");
     }
@@ -123,29 +129,41 @@ class Helper extends Controller
         $xml = file_get_contents('php://input');
         $data = WeiXin::fromXmlToArray($xml);
         $sign = WeiXin::makeSign($data);
-        if ($data === $data['sign']){
-            file_put_contents('notify.log','OK'.PHP_EOL,FILE_APPEND);
+        $result = [];
+        if ($sign === $data['sign']) {  // 签名校验通过
+            // 更新订单状态
+            $actRecordsObj = new ActRecords();
+            $res = $actRecordsObj->save([
+                'is_paied' => 1,
+                'transaction_id' => $data['transaction_id']
+            ], ['order_no' => $data['out_trade_no']]);
+            if ($res){
+                // 更新日志
+                // 根据订单 查询信息
+                $actRecords = $actRecordsObj->getOneByOrder($data['out_trade_no']);
+                $log = new Log();
+                $log->order_no = $data['out_trade_no'];
+                $log->user_id = $actRecords->user_id;
+                $log->open_id = $actRecords->open_id;
+                $log->type = 1;
+                $log->content = '支付成功';
+                $log->price = $actRecords->price;
+                $log->transaction_id = $data['transaction_id'];
+                $log->save();
+                $msg = '交易成功';
+                $result['return_code'] = 'SUCCESS';
+                $result['return_msg'] = 'OK';
+            }else{
+                $msg = '交易失败';
+                $result['return_code'] = 'FAIL';
+                $result['return_msg'] = '业务处理失败';
+            }
+        } else {
+            $msg = '交易失败';
+            $result['return_code'] = 'FAIL';
+            $result['return_msg'] = '签名失败';
         }
-        file_put_contents('notify.log','$sign:'.$sign.PHP_EOL,FILE_APPEND);
-
-        //$r = "<xml>
-        //            <appid><![CDATA[wxfcc662fea0340227]]></appid>
-        //            <attach><![CDATA[act_201712260051272042]]></attach>
-        //            <bank_type><![CDATA[CFT]]></bank_type>
-        //            <cash_fee><![CDATA[1]]></cash_fee>
-        //            <fee_type><![CDATA[CNY]]></fee_type>
-        //            <is_subscribe><![CDATA[Y]]></is_subscribe>
-        //            <mch_id><![CDATA[1494638542]]></mch_id>
-        //            <nonce_str><![CDATA[15dqbtpmk960s79lutonp7qeklnic12o]]></nonce_str>
-        //            <openid><![CDATA[o-EEJxPt-jGneTzccMvyVwez5OdI]]></openid>
-        //            <out_trade_no><![CDATA[act_201712260051272042]]></out_trade_no>
-        //            <result_code><![CDATA[SUCCESS]]></result_code>
-        //            <return_code><![CDATA[SUCCESS]]></return_code>
-        //            <sign><![CDATA[FF338EBEC06FFA051DFE45D4E7265ED6]]></sign>
-        //            <time_end><![CDATA[20171226005132]]></time_end>
-        //            <total_fee>1</total_fee>
-        //            <trade_type><![CDATA[JSAPI]]></trade_type>
-        //            <transaction_id><![CDATA[4200000009201712261446581883]]></transaction_id>
-        //      </xml>";
+        file_put_contents('../data/log/notify.log', $data['out_trade_no'] . ':' . $data['transaction_id'] .'-----'. $msg . PHP_EOL, FILE_APPEND);
+        return WeiXin::fromArrayToXml($result);
     }
 }
