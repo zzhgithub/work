@@ -163,7 +163,7 @@ class Helper extends Controller
             $result['return_msg'] = '签名失败';
         }
         $returnStr = WeiXin::fromArrayToXml($result);
-        file_put_contents('../data/log/notify.log', $data['out_trade_no'] . ':' . $data['transaction_id'] .'-----'. $msg . PHP_EOL.$returnStr.PHP_EOL.'------------------------------------------'.PHP_EOL, FILE_APPEND);
-        return $returnStr;
+        file_put_contents('../data/log/notify.log', date('Y-m-d H:i:s').':'.$data['out_trade_no'] . ':' . $data['transaction_id'] .'-----'. $msg . PHP_EOL.$returnStr.PHP_EOL.'------------------------------------------'.PHP_EOL, FILE_APPEND);
+        echo $returnStr;
     }
 }
