@@ -122,7 +122,7 @@
                                 nonceStr: data.data.nonceStr, // 支付签名随机串，不长于32 位
                                 package: data.data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
                                 signType: data.data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                                paySign: res.data.paySign, // 支付签名
+                                paySign: data.data.paySign, // 支付签名
                                 success: function (res) {
                                     //支付成功
                                     alertMsg('支付成功')
