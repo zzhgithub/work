@@ -71,7 +71,7 @@ class WeiXin
         $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='.$accessToken.'&type=jsapi';
         $data = self::get($url);
         $json = json_decode($data);
-        Cache::set('access_token',$json->ticket,7200);
+        Cache::set('jsapi_ticket',$json->ticket,7200);
         return $json->ticket;
     }
     public static function signature($jsApiTicket,$nonceStr,$timestamp,$url)
