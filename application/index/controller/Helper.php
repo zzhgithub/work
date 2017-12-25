@@ -120,6 +120,7 @@ class Helper extends Controller
 
     public function notify()
     {
-        file_put_contents('notify.log',json_encode(Request::instance()->param()).PHP_EOL,FILE_APPEND);
+        $xml = file_get_contents('php://input');
+        file_put_contents('notify.log',json_encode($xml).PHP_EOL,FILE_APPEND);
     }
 }
