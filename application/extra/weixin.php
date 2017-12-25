@@ -12,9 +12,10 @@
  */
 return [
     'APPID'=>'wxfcc662fea0340227',
-    'MCHID'=>'',
-    'KEY'=>'',
     'APPSECRET'=>'923658e6d9f6beee3eeacce5b940d9c1',
+    'MCHID'=>'1494638542',
+    'KEY'=>'',
+
     'SSLCERT_PATH'=>'',
     'SSLKEY_PATH'=>''
 ];

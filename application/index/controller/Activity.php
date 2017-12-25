@@ -75,9 +75,9 @@ class Activity extends Controller
     }
 
     /**
-     * 活动报名页
      * @param $id
      * @return string|void
+     * @throws \Exception
      */
     public function joinActivity($id)
     {
@@ -86,6 +86,23 @@ class Activity extends Controller
         }
         try {
             $data = Act::get($id);
+
+            // 返回微信参数
+            if ($data->isfree != 1){
+                $accessToken = WeiXin::getAccessToken();
+                $jsApiTicket = WeiXin::getJsApiTicket($accessToken);
+                $url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+                $jsApi = new WeiXinJs();
+                $jsApi->appId = Config::get('weixin.APPID');
+                $jsApi->nonceStr = WeiXin::getNonceStr();
+                $jsApi->timestamp = time();
+                $jsApi->signature = WeiXin::signature($jsApiTicket,$jsApi->nonceStr,$jsApi->timestamp,$url);
+                $this->assign('jsApi', $jsApi);
+            }
+
+
+
+
             $this->assign('data', $data);
             return $this->view->fetch('act/join');
         } catch (Exception $e) {
@@ -138,16 +155,7 @@ class Activity extends Controller
                 $this->response['code'] = 400;
                 return json($this->response);
             }
-            // 报名处理
-            $jsApi = new WeiXinJs();
-            $jsApi->appId = Config::get('weixin.APPID');
-            $jsApi->nonceStr = WeiXin::getNonceStr();
-            $jsApi->package = Config::get('weixin.APPID');
-            $jsApi->paySign = Config::get('weixin.APPID');
-            $jsApi->signType = Config::get('weixin.APPID');
-            $jsApi->timeStamp = time();
-            $this->assign('jsApi', $jsApi->toJson());
-
+            //
 
             $this->response['message'] = '报名成功';
             $this->response['code'] = 200;

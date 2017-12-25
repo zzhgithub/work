@@ -17,15 +17,13 @@ namespace app\index\service;
 
 class WeiXinJs
 {
-    public $appId;
-    public $timeStamp;
-    public $nonceStr;
-    public $package;
-    public $signType;
-    public $paySign;
+    public $appId; // 必填，公众号的唯一标识
+    public $timestamp; // 必填，生成签名的时间戳
+    public $nonceStr; // 必填，生成签名的随机串
+    public $signature;// 必填，签名，见附录1
 
     public function toJson()
     {
-        return json_encode($this,JSON_UNESCAPED_UNICODE);
+        return json_encode($this, JSON_UNESCAPED_UNICODE);
     }
 }

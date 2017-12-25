@@ -14,11 +14,17 @@
 
 namespace app\index\service;
 
+use think\Cache;
 use think\Config;
 
 class WeiXin
 {
     public static function weiXinPay()
+    {
+
+    }
+
+    public static function getPrepayId()
     {
 
     }
@@ -36,6 +42,42 @@ class WeiXin
             $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
         }
         return $str;
+    }
+
+    /**
+     * 获取access_token 接口调用凭证
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function getAccessToken()
+    {
+        $accessToken = Cache::get('access_token','');
+        if ($accessToken != '') {
+            return $accessToken;
+        }
+        $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . Config::get('weixin.APPID') . '&secret=' . Config::get('weixin.APPSECRET');
+        $data = self::get($url);
+        $json = json_decode($data);
+        Cache::set('access_token',$json->access_token,7200);
+        return $json->access_token;
+    }
+
+    public static function getJsApiTicket($accessToken)
+    {
+        $jsApiTicket = Cache::get('jsapi_ticket','');
+        if ($jsApiTicket != '') {
+            return $jsApiTicket;
+        }
+        $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='.$accessToken.'&type=jsapi';
+        $data = self::get($url);
+        $json = json_decode($data);
+        Cache::set('access_token',$json->ticket,7200);
+        return $json->ticket;
+    }
+    public static function signature($jsApiTicket,$nonceStr,$timestamp,$url)
+    {
+        $string = 'jsapi_ticket='.$jsApiTicket.'&noncestr='.$nonceStr.'&timestamp='.$timestamp.'&url='.$url;
+        return sha1($string);
     }
 
     /**
@@ -82,11 +124,11 @@ class WeiXin
         //设置header
         curl_setopt($ch, CURLOPT_HEADER, false);
 
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true); //是否直接输出到屏幕
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); //是否直接输出到屏幕
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //https请求 不验证证书 其实只用这个就可以了
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); //https请求 不验证HOST
 
-        curl_setopt($ch,CURLOPT_POST,false);
+        curl_setopt($ch, CURLOPT_POST, false);
         //运行curl
         $data = curl_exec($ch);
         //返回结果
@@ -195,9 +237,9 @@ class WeiXin
         $urlObj["redirect_uri"] = "$redirectUrl";
         $urlObj["response_type"] = "code";
         $urlObj["scope"] = "snsapi_userinfo";
-        $urlObj["state"] = "STATE"."#wechat_redirect";
-        $bizString =self::ToUrlParams($urlObj);
-        return "https://open.weixin.qq.com/connect/oauth2/authorize?".$bizString;
+        $urlObj["state"] = "STATE" . "#wechat_redirect";
+        $bizString = self::ToUrlParams($urlObj);
+        return "https://open.weixin.qq.com/connect/oauth2/authorize?" . $bizString;
     }
 
     /**
@@ -212,7 +254,7 @@ class WeiXin
         $urlObj["code"] = $code;
         $urlObj["grant_type"] = "authorization_code";
         $bizString = self::ToUrlParams($urlObj);
-        return "https://api.weixin.qq.com/sns/oauth2/access_token?".$bizString;
+        return "https://api.weixin.qq.com/sns/oauth2/access_token?" . $bizString;
     }
 
     /**
@@ -225,9 +267,8 @@ class WeiXin
     private static function ToUrlParams($urlObj)
     {
         $buff = "";
-        foreach ($urlObj as $k => $v)
-        {
-            if($k != "sign"){
+        foreach ($urlObj as $k => $v) {
+            if ($k != "sign") {
                 $buff .= $k . "=" . $v . "&";
             }
         }
