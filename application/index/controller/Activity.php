@@ -199,10 +199,6 @@ class Activity extends Controller
         if (mb_strlen($value) < 2 || mb_strlen($value) > 5) {
             return '用户名长度在2-5之间';
         }
-        $pattern = '/^[a-zA-Z0-9_^\x00-\x80\s·]+$/';
-        if (!preg_match($pattern, $value)) {
-            return '用户名不能包含特殊字符';
-        }
     }
 
     private function checkPhone($value)

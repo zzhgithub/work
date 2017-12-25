@@ -135,7 +135,9 @@
                         }
                     }else{
                         alertMsg(data.msg);
-                        $('input[name="__token__"]').val(data.data.token);
+                        if(data.data.token != 'undefined' && data.data.token != ''){
+                            $('input[name="__token__"]').val(data.data.token);
+                        }
                     }
                 }
             });
