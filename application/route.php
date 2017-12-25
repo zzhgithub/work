@@ -18,6 +18,7 @@ return [
     'act/detail/:id' => 'index/activity/activityDetail', //活动详情
     'act/join/:id' => 'index/activity/joinActivity', //活动报名
     'act/dojoin' => 'index/activity/doJoin', //活动报名
+    'act/fail' => 'index/activity/failJoin', //取消活动支付
     'ucenter' => 'index/person/index', //个人中心
     'register' => 'index/volunteer/register', //信息提交
     'train/list' => 'index/volunteer/trainlist', //培训列表

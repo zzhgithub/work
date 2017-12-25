@@ -173,7 +173,7 @@ class Activity extends Controller
                 }
                 // 写入日志
                 $log = new Log();
-                $log->relate_id = $recordsid;
+                $log->order_no = $actRecords->order_no;
                 $log->user_id = $actRecords->user_id;
                 $log->open_id = $this->openId;
                 $log->type = 1;
@@ -183,6 +183,7 @@ class Activity extends Controller
                 // 返回支付接口参数
                 $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街活动报名:' . $act['name'], $actRecords->order_no, $act['cost'] * 100, $this->openId), true);
                 $wxPayConfig['token'] = $request->token();
+                $wxPayConfig['order_no'] = $actRecords->order_no;
                 return self::response(0, '支付创建成功', $wxPayConfig);
             }
             if ($recordsid) {
@@ -195,17 +196,38 @@ class Activity extends Controller
         }
     }
 
-    public function cancelJoin()
+    public function failJoin(Request $request)
     {
+        if (!$request->isAjax()){
+            return self::response(400, '非法请求');
+        }
+        $orderNo = $request->param('order_no');
+        $msg = $request->param('msg');
+        if (!$orderNo || !$msg){
+            return self::response(400, '非法请求');
+        }
+        // 根据订单 查询信息
+        $actRecoedsObj = new ActRecords();
+        $actRecords = $actRecoedsObj->getOneByOrder($orderNo);
+
         // 写入日志
-        //$log = new Log();
-        //$log->relate_id = $recordsid;
-        //$log->user_id = $actRecords->user_id;
-        //$log->open_id = $this->openId;
-        //$log->type = 1;
-        //$log->content = $act['name'] . ':活动报名发起支付';
-        //$log->price = $act['cost'];
-        //$log->save();
+        if ($actRecords){
+            $log = new Log();
+            $log->order_no = $orderNo;
+            $log->user_id = $actRecords->user_id;
+            $log->open_id = $actRecords->open_id;
+            $log->type = 1;
+            if ($msg == 'cancel'){
+                $log->content = '支付取消';
+            }else{
+                $log->content = '支付失败';
+            }
+            $log->price = $actRecords->price;
+            $log->save();
+            return self::response(0);
+        }else{
+            return self::response(400, '非法请求');
+        }
     }
 
     private function checkName($value)

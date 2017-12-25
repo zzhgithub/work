@@ -121,6 +121,7 @@
                             if(data.data.token != 'undefined' && data.data.token != ''){
                                 $('input[name="__token__"]').val(data.data.token);
                             }
+                            var order = data.data.order_no;
                             // 付费
                             wx.chooseWXPay({
                                 timestamp: data.data.timeStamp, // 支付签名时间戳
@@ -131,24 +132,26 @@
                                 success: function (res) {
                                     //支付成功
                                     alertMsg('报名成功');
-                                    //alert(JSON.stringify(res));
+                                    setTimeout(function () {
+                                        location.href = '/ucenter';
+                                    },1000);
                                 },
                                 cancel: function (res) {
                                     //支付取消
-                                    alertMsg('支付取消');
-                                    // $.post("/boss/about", data.field, function (res) {
-                                    //     layer.msg(res.msg);
-                                    //     if (res.code === 0) {
-                                    //         setTimeout(function () {
-                                    //             location.reload();
-                                    //         },1000);
-                                    //     }
-                                    // });
-                                    //alert(JSON.stringify(res));
+                                    $.post("/act/fail", {'order_no':order,'msg':'cancel'}, function (r) {
+                                        alertMsg('支付取消');
+                                        setTimeout(function () {
+                                            window.location.go(-1);
+                                        },1000);
+                                    });
                                 },
-                                fail: function(res){        　　　　　　　　// 支付失败回调函数
-                                    alertMsg('支付失败');
-                                    //alert(JSON.stringify(res));
+                                fail: function(res){       // 支付失败回调函数
+                                    $.post("/act/fail", {'order_no':order,'msg':'fail'}, function (r) {
+                                        alertMsg('支付失败');
+                                        setTimeout(function () {
+                                            window.location.go(-1);
+                                        },1000);
+                                    });
                                 }
                             });
                         {/if}

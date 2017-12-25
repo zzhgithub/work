@@ -1,5 +1,7 @@
 <?php
+
 namespace app\index\model;
+
 /**
  * Created by PhpStorm.
  * User: zhouzihao
@@ -8,7 +10,13 @@ namespace app\index\model;
  */
 use think\Model;
 
-class ActRecords extends Model{
+class ActRecords extends Model
+{
     protected $dateFormat = 'Y-m-d H:i:s';
     protected $autoWriteTimestamp = 'datetime';
+
+    public function getOneByOrder($orderNo)
+    {
+        return $this->where(['order_no' => $orderNo])->find();
+    }
 }
