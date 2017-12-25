@@ -60,7 +60,8 @@ class WeiXin
                        <sign><![CDATA[%s]]></sign>
                        <openid><![CDATA[%s]]></openid>
                    </xml>";
-        $postData = sprintf($xmlTpl, $appid, $attach, $body, $mch_id, $nonceStr, $notify_url, $out_trade_no, $spbill_create_ip,
+        $postData = sprintf($xmlTpl, $appid, $attach, $body, $mch_id, $nonceStr, $notify_url, $out_trade_no,
+            $spbill_create_ip,
             $time_start, $time_expire, $total_fee, $trade_type, $sign, $openId);
         $returnData = null;
         try {
@@ -393,17 +394,17 @@ class WeiXin
 
     public static function getUserIdByOpenid($openid)
     {
-        if (!$openid){
+        if (!$openid) {
             return 0;
         }
-        $userid = Session::get('user_id',0);
-        if ($userid){
+        $userid = Session::get('user_id', 0);
+        if ($userid) {
             return $userid;
         }
         $userObj = new User();
         $user = $userObj->where(['openid' => $openid])->field('id')->find();
-        if ($user){
-            Session::set('user_id',$user->id);
+        if ($user) {
+            Session::set('user_id', $user->id);
             return $user->id;
         }
         return 0;
@@ -411,7 +412,7 @@ class WeiXin
 
     public static function createOrderNo($type)
     {
-        if (!in_array($type,[self::ORDER_ACT,self::ORDER_DONATE,self::ORDER_PRODUCT])){
+        if (!in_array($type, [self::ORDER_ACT, self::ORDER_DONATE, self::ORDER_PRODUCT])) {
             return '';
         }
         $orderPre = '';
@@ -426,6 +427,24 @@ class WeiXin
                 $orderPre = 'pro_';
                 break;
         }
-        return $orderPre.date('YmdHis').(string)rand(1000,9999);
+        return $orderPre . date('YmdHis') . (string)rand(1000, 9999);
+    }
+
+    /**
+     * 生成签名 签名，本函数不覆盖sign变量
+     * @param array $data
+     * @return string
+     */
+    public static function makeSign($data = [])
+    {
+        //签名步骤一：按字典序排序参数
+        ksort($data);
+        $string = self::ToUrlParams($data);
+        //签名步骤二：在string后加入KEY
+        $string = $string . "&key=" . Config::get('weixin.KEY');
+        //签名步骤三：MD5加密
+        $string = md5($string);
+        //签名步骤四：所有字符转为大写
+        return strtoupper($string);
     }
 }

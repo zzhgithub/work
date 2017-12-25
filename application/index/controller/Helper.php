@@ -121,10 +121,31 @@ class Helper extends Controller
     public function notify()
     {
         $xml = file_get_contents('php://input');
-        //$data = WeiXin::fromXmlToArray($xml);
-        //if(!array_key_exists("transaction_id", $data) || !array_key_exists("return_code", $data)||!array_key_exists("result_code", $data)){
-        //    return false;
-        //}
-        file_put_contents('notify.log',$xml.PHP_EOL,FILE_APPEND);
+        $data = WeiXin::fromXmlToArray($xml);
+        $sign = WeiXin::makeSign($data);
+        if ($data === $data['sign']){
+            file_put_contents('notify.log','OK'.PHP_EOL,FILE_APPEND);
+        }
+        file_put_contents('notify.log','$sign:'.$sign.PHP_EOL,FILE_APPEND);
+
+        //$r = "<xml>
+        //            <appid><![CDATA[wxfcc662fea0340227]]></appid>
+        //            <attach><![CDATA[act_201712260051272042]]></attach>
+        //            <bank_type><![CDATA[CFT]]></bank_type>
+        //            <cash_fee><![CDATA[1]]></cash_fee>
+        //            <fee_type><![CDATA[CNY]]></fee_type>
+        //            <is_subscribe><![CDATA[Y]]></is_subscribe>
+        //            <mch_id><![CDATA[1494638542]]></mch_id>
+        //            <nonce_str><![CDATA[15dqbtpmk960s79lutonp7qeklnic12o]]></nonce_str>
+        //            <openid><![CDATA[o-EEJxPt-jGneTzccMvyVwez5OdI]]></openid>
+        //            <out_trade_no><![CDATA[act_201712260051272042]]></out_trade_no>
+        //            <result_code><![CDATA[SUCCESS]]></result_code>
+        //            <return_code><![CDATA[SUCCESS]]></return_code>
+        //            <sign><![CDATA[FF338EBEC06FFA051DFE45D4E7265ED6]]></sign>
+        //            <time_end><![CDATA[20171226005132]]></time_end>
+        //            <total_fee>1</total_fee>
+        //            <trade_type><![CDATA[JSAPI]]></trade_type>
+        //            <transaction_id><![CDATA[4200000009201712261446581883]]></transaction_id>
+        //      </xml>";
     }
 }
