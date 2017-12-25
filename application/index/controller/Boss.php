@@ -11,6 +11,7 @@ namespace app\index\controller;
  */
 use app\index\model\Act;
 use app\index\model\Banner;
+use app\index\model\Cert;
 use app\index\model\Donate;
 use app\index\model\Inspect;
 use app\index\model\Point;
@@ -908,6 +909,21 @@ class Boss extends Controller
         }
     }
 
+    public function inspectDel($id){
+        $id = intval($id);
+        if ($id <= 0) {
+            return $this->response(400, '非法请求');
+        }
+        if (!Request::instance()->isAjax()) {
+            return $this->response(400, '非法请求');
+        }
+        $res = Inspect::destroy($id);
+        if (!$res) {
+            return $this->response(400, '删除失败');
+        }
+        return $this->response(0, '删除成功');
+    }
+
     public function about(Request $request)
     {
         try {
@@ -1076,6 +1092,72 @@ class Boss extends Controller
             return $this->response(400, '非法请求');
         }
         $res = TrainCate::destroy($id);
+        if (!$res) {
+            return $this->response(400, '删除失败');
+        }
+        return $this->response(0, '删除成功');
+    }
+
+
+    public function certList(Request $request){
+        if ($request->isAjax()) {
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $train = new Cert();
+            $list = $train->order('sort')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '证书管理-' . $this->title);
+        return $this->view->fetch('boss/cert/list');
+    }
+
+    public function certSave(Request $request){
+        if ($request->isAjax()) {
+            $data = $request->post();
+            if (empty($data)) {
+                return $this->response(400, '非法请求');
+            }
+            $news = new Cert();
+            unset($data['file']);
+            if (isset($data['id']) && intval($data['id'])) { // 修改
+                $data['id'] = intval($data['id']);
+                $res = $news->save($data, ['id' => $data['id']]);
+            } else {              //添加
+                $news->data($data);
+                $res = $news->save();
+            }
+            if ($res) {
+                return $this->response(0, '操作成功');
+            } else {
+                return $this->response(400, '操作失败');
+            }
+        } else {
+            $id = intval($request->param('id'));
+            $news = News::get($id);
+            $this->assign('news', $news);
+            $this->assign('title', '添加/修改证书-' . $this->title);
+            return $this->view->fetch('boss/cert/add');
+        }
+    }
+
+    public function certDel($id){
+        $id = intval($id);
+        if ($id <= 0) {
+            return $this->response(400, '非法请求');
+        }
+        if (!Request::instance()->isAjax()) {
+            return $this->response(400, '非法请求');
+        }
+        $res = Cert::destroy($id);
         if (!$res) {
             return $this->response(400, '删除失败');
         }

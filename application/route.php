@@ -137,7 +137,7 @@ return [
     'boss/inspect/list' => 'index/boss/InspectList',
     'boss/inspect/add' =>'index/boss/inspectSave',
     'boss/inspect/mod/:id' =>'index/boss/inspectSave',
-
+    'boss/inspect/del'=>'index/boss/inspectDel',
     /**
      * 培训管理
      */
@@ -151,6 +151,13 @@ return [
     'boss/train/mod/:id' =>'index/boss/trainsave',
     'boss/train/del' =>'index/boss/traindel',
 
+    /**
+     * 证书管理
+     */
+    'boss/cert/list' =>'index/boss/certList',
+    'boss/cert/add' =>'index/boss/certSave',
+    'boss/cert/mod/:id' =>'index/boss/certSave',
+    'boss/cert/del' =>'index/boss/certDel',
     /**
      * 登录 登出
      */

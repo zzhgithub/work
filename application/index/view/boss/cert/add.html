@@ -1,0 +1,110 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>添加/编辑证书</legend>
+    </fieldset>
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">证书编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="num" lay-verify="num" autocomplete="off" placeholder="请输入公告标题"
+                       class="layui-input" value="{$news.num}" style="width: 300px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传封面</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="img" lay-verify="img" autocomplete="off" placeholder="" class="layui-input" value="{$news.img}">
+                <button type="button" class="layui-btn" id="img">
+                    <i class="layui-icon">&#xe67c;</i>上传封面
+                </button>
+                <span class="done"></span>
+                <div><img class="preview" src="{$news.img}" style="width: 100px;"/></div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">要求</label>
+            <div class="layui-input-block">
+                <input type="text" name="des" lay-verify="" autocomplete="off" placeholder="请输入公告标题"
+                       class="layui-input" value="{$news.des}" style="width: 300px;">
+            </div>
+        </div>
+        <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">公告内容</label>-->
+        <!--<div class="layui-input-block">-->
+        <!--<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入公告标题"-->
+        <!--class="layui-input" value="{$news.title}" style="width: 300px;">-->
+        <!--</div>-->
+        <!--</div>-->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {if condition="$news.id gt 0"}
+                <input type="hidden" name="id" value="{$news.id}">
+                {/if}
+                <button class="layui-btn" lay-submit="" lay-filter="go">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    var $;
+    layui.use(['jquery'], function () {
+        $ = layui.jquery;
+    });
+    layui.use(['form', 'layedit', 'layer'], function () {
+        //var layedit = layui.layedit;
+        var form = layui.form;
+        var layer = layui.layer;
+
+//        layedit.set({
+//            uploadImage: {
+//                url: '/boss/upload?type=product' //接口url
+//                , type: 'post' //默认post
+//            }
+//        });
+//        var editor = layedit.build('editor'); //建立编辑器
+        form.verify({
+            title: function (value) { //value：表单的值、item：表单的DOM对象
+                if (/^\d+\d+\d$/.test(value)) {
+                    return '公告标题不能全为数字';
+                }
+                if (value.length < 5) {
+                    return '公告标题至少得5个字符啊';
+                }
+            }
+//            , des: function (value) {
+//                if (!value) {
+//                    return '请输入公告描述';
+//                }
+//                if (value.length < 20) {
+//                    return '产品描述不能少于20字';
+//                }
+//            }
+//            , content: function (value) {
+//                layedit.sync(editor);
+//                if (!value) {
+//                    return '请输入详细信息';
+//                }
+//            }
+        });
+        form.on('submit(go)', function (data) {
+//            layedit.sync(editor);
+            $.post("/boss/cert/add", data.field, function (res) {
+                layer.msg(res.msg);
+                if (res.code === 0) {
+                    setTimeout(function () {
+                        location.reload();
+                    },1000);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+{/block}
