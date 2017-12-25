@@ -14,7 +14,7 @@ return [
     'APPID'=>'wxfcc662fea0340227',
     'APPSECRET'=>'923658e6d9f6beee3eeacce5b940d9c1',
     'MCHID'=>'1494638542',
-    'KEY'=>'',
+    'KEY'=>'Syxyx679KlfgYix7928sdDuv32kmCopH',
 
     'SSLCERT_PATH'=>'',
     'SSLKEY_PATH'=>''

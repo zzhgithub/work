@@ -116,6 +116,9 @@
                             alertMsg(data.msg);
                             location.href = '/';
                         }else{
+                            if(data.data.token != 'undefined' && data.data.token != ''){
+                                $('input[name="__token__"]').val(data.data.token);
+                            }
                             // 付费
                             wx.chooseWXPay({
                                 timestamp: data.data.timeStamp, // 支付签名时间戳
