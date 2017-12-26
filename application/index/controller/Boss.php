@@ -145,7 +145,7 @@ class Boss extends Controller
             $this->assign('list', $list);
             return $this->view->fetch('boss/point/list');
         } catch (Exception $e) {
-            var_dump("");
+            var_dump($e->getMessage());
         }
     }
 
