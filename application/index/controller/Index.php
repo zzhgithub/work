@@ -65,4 +65,20 @@ class Index extends Controller
         $this->assign('productList', $items);
         return $this->view->fetch('index/index');
     }
+
+    /**
+     * 异步返回
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     * @return \think\response\Json
+     */
+    private static function response($code, $msg = '', $data = [])
+    {
+        $response = new \stdClass();
+        $response->code = $code;
+        $response->data = $data;
+        $response->msg = $msg;
+        return json($response);
+    }
 }
