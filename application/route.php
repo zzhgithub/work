@@ -37,6 +37,8 @@ return [
     'donate/list' => 'index/donatectl/donateList',
     'donate/detail/:id' => 'index/donatectl/donateDetail',
     'donate/do/:id' => 'index/donatectl/donateDo',
+    'donate/save' => 'index/donatectl/donateSave',
+    'donate/fail' => 'index/donatectl/donateFail',
 
     /**
      * 产品

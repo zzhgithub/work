@@ -160,9 +160,12 @@
         return str.replace(/(^\s*)|(\s*$)/g, "");
     }
 
-    var falg = true;
+    var flag = true;
     $(document).ready(function () {
         $(".loginsub").click(function () {
+            if (!flag){
+                return false;
+            }
             var name = $('input[name="name"]').val();
             var gender = $('input[name="gender"]').val();
             var id_cards = $('input[name="id_cards"]').val();
@@ -220,7 +223,6 @@
             if ($('.enter').val() != '') {
                 from = from + '|' + $('.enter').val();
             }
-            console.log(from);
             $('.from').val(from);
             //  提交表单信息
             $.ajax({
@@ -228,8 +230,11 @@
                 url: "/register",
                 data: $('form').serialize(),
                 dataType: "json",
+                beforeSend: function () {
+                    flag = false;
+                },
                 success: function (data) {
-                    falg = false;
+                    flag = true;
                     parent.layer.alert(data.msg);
                     if (data.code === 0) {
                         setTimeout(function () {
