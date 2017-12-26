@@ -262,6 +262,7 @@ class Boss extends Controller
             //获取相应的banner列表
             $client = new Pointbanner();
             $res = $client->where(['pid' => $id])->select();
+            $this->assign("title","banner列表");
             $this->assign('list', $res);
             return $this->view->fetch('boss/point/banner/list');
         } catch (Exception $e) {
@@ -286,7 +287,7 @@ class Boss extends Controller
                 }
             }
 
-            return $this->view->fetch('boss/point/banner/add');
+            return $this->view->fetch('boss/point/banner/newadd');
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
