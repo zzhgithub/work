@@ -1,6 +1,5 @@
-<!DOC{extend name="base" /}
-{block name="title"}{$title}{/block}
-{block name="content"}
+{extend name="boss/public/layout"/}
+{block name="body"}
 <!-- 修改添加页 关键是看有没有值传过来 -->
 <div class="container">
     <div class="row" >
@@ -47,6 +46,8 @@
         </div>
     </div>
 </div>
+{/black}
+{block name="javascript"}
 <script type="application/javascript">
     if($('#pimg').attr('src') == ''){
         $('#pimg').attr('src','/static/images/no_pic.gif');
@@ -68,7 +69,6 @@
             }
         });
     });
-
 
     $("#datafrom").submit(function () {
         var formData = new FormData();

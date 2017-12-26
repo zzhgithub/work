@@ -1,6 +1,5 @@
-<!DOC{extend name="base" /}
-{block name="title"}文物点详情{/block}
-{block name="content"}
+{extend name="boss/public/layout"/}
+{block name="body"}
 <!-- 修改添加页 关键是看有没有值传过来 -->
 <div class="container">
     <div class="row" >
@@ -27,6 +26,9 @@
         </div>
     </div>
 </div>
+{/block}
+
+{block name="javascript"}
 <script type="application/javascript">
 
     $("#datafrom").submit(function () {
