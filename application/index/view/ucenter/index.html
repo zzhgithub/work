@@ -45,7 +45,7 @@
     <div class="doing_gd">我的捐款</div>
     <ul>
         {volist name="donateList" id="donate"}
-        <li><b>{$donate.create_time|date="y-m-d",###}</b><h5>{$donate.name}</h5><span>金额：￥{$donate.money}</span></li>
+        <li><b>{:date('Y-m-d',strtotime($donate.create_time))}</b><h5>{$donate.name}</h5><span>金额：￥{$donate.money}</span></li>
         {/volist}
     </ul>
 </div>
