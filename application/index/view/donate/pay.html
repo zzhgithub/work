@@ -39,6 +39,7 @@
         // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
     });
 
+    var referer = '{$referer}';
     $(document).ready(function () {
         //当input我空
         $(".amount").blur(function () {
@@ -101,7 +102,7 @@
                             paySign: data.data.paySign, // 支付签名
                             success: function (res) {
                                 //支付成功
-                                alertMsg('报名成功');
+                                parent.layer.alert('捐款成功');
                                 setTimeout(function () {
                                     location.href = '/ucenter';
                                 },1000);
@@ -109,23 +110,23 @@
                             cancel: function (res) {
                                 //支付取消
                                 $.post("/donate/fail", {'order_no':order,'msg':'cancel'}, function (r) {
-                                    alertMsg('支付取消');
+                                    parent.layer.alert('支付取消');
                                     setTimeout(function () {
-                                        location.href = data.data.referrer;
+                                        location.href = referer;
                                     },1000);
                                 });
                             },
                             fail: function(res){       // 支付失败回调函数
                                 $.post("/donate/fail", {'order_no':order,'msg':'fail'}, function (r) {
-                                    alertMsg('支付失败');
+                                    parent.layer.alert('支付失败');
                                     setTimeout(function () {
-                                        location.href = data.data.referrer;
+                                        location.href = referer;
                                     },1000);
                                 });
                             }
                         });
                     }else{
-                        alertMsg(data.msg);
+                        parent.layer.alert(data.msg);
                     }
                 }
             });

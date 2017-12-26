@@ -113,6 +113,7 @@ class Donatectl extends Controller
         $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
         $this->assign('jsApi', $jsApi);
         $this->assign('detail',$detail);
+        $this->assign('referer', $_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:'/donate/list');
         return $this->view->fetch('donate/pay');
     }
 
@@ -158,7 +159,6 @@ class Donatectl extends Controller
         // 返回支付接口参数
         $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街捐款:' . $detail['name'], $donateRecords->order_no, $amount * 100, $this->openId), true);
         $wxPayConfig['order_no'] = $donateRecords->order_no;
-        $wxPayConfig['referrer'] = $_SERVER['HTTP_REFERER'];
         return self::response(0, '支付创建成功', $wxPayConfig);
     }
 
@@ -182,7 +182,7 @@ class Donatectl extends Controller
             $log->order_no = $orderNo;
             $log->user_id = $donateRecords->user_id;
             $log->open_id = $donateRecords->open_id;
-            $log->type = 1;
+            $log->type = WeiXin::ORDER_DONATE;
             if ($msg == 'cancel'){
                 $log->content = '支付取消';
             }else{

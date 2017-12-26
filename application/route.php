@@ -48,6 +48,8 @@ return [
     'product/addcart' => 'index/productctl/productModCart',
     'product/cart' => 'index/productctl/productCart',
     'product/order' => 'index/productctl/productCart',
+    'product/pay' => 'index/productctl/pay',
+    'product/fail' => 'index/productctl/fail',
 
     /**
      * boss 后台相关功能

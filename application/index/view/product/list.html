@@ -81,6 +81,8 @@
                     totalNum = totalNum + 1;
                     spanObj.text(totalPrice.toFixed(2));
                     bObj.text(totalNum);
+                }else{
+                    alert(data.msg);
                 }
             },
             error: function (res) {
@@ -131,6 +133,8 @@
                             countObj.parents('li').remove();
                         }
                     }
+                }else{
+                    alert(data.msg);
                 }
             },
             error: function (res) {

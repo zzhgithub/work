@@ -12,6 +12,7 @@ namespace app\index\controller;
 
 use app\index\model\ActRecords;
 use app\index\model\DonateRecords;
+use app\index\model\Order;
 use app\index\model\User;
 use app\index\service\WeiXin;
 use think\Controller;
@@ -132,15 +133,15 @@ class Helper extends Controller
         $result = [];
         if ($sign === $data['sign']) {  // 签名校验通过
             $out_trade_no = $data['out_trade_no'];
-            $type = substr($out_trade_no,0,3);
-            if ($type == 'act'){
-// 更新订单状态
+            $type = substr($out_trade_no, 0, 3);
+            if ($type == 'act') {
+                // 更新订单状态
                 $actRecordsObj = new ActRecords();
                 $res = $actRecordsObj->save([
                     'is_paied' => 1,
                     'transaction_id' => $data['transaction_id']
                 ], ['order_no' => $data['out_trade_no']]);
-                if ($res){
+                if ($res) {
                     // 更新日志
                     // 根据订单 查询信息
                     $actRecords = $actRecordsObj->getOneByOrder($data['out_trade_no']);
@@ -148,7 +149,7 @@ class Helper extends Controller
                     $log->order_no = $data['out_trade_no'];
                     $log->user_id = $actRecords->user_id;
                     $log->open_id = $actRecords->open_id;
-                    $log->type = 1;
+                    $log->type = WeiXin::ORDER_ACT;
                     $log->content = '支付成功';
                     $log->price = $actRecords->price;
                     $log->transaction_id = $data['transaction_id'];
@@ -156,19 +157,19 @@ class Helper extends Controller
                     $msg = '交易成功';
                     $result['return_code'] = 'SUCCESS';
                     $result['return_msg'] = '';
-                }else{
+                } else {
                     $msg = '交易失败';
                     $result['return_code'] = 'FAIL';
                     $result['return_msg'] = '业务处理失败';
                 }
-            }elseif ($type == 'don'){   // 捐款
+            } elseif ($type == 'don') {   // 捐款
                 // 更新订单状态
                 $donateRecordsObj = new DonateRecords();
                 $res = $donateRecordsObj->save([
                     'is_paied' => 1,
                     'transaction_id' => $data['transaction_id']
                 ], ['order_no' => $data['out_trade_no']]);
-                if ($res){
+                if ($res) {
                     // 更新日志
                     // 根据订单 查询信息
                     $donateRecords = $donateRecordsObj->getOneByOrder($data['out_trade_no']);
@@ -184,14 +185,40 @@ class Helper extends Controller
                     $msg = '交易成功';
                     $result['return_code'] = 'SUCCESS';
                     $result['return_msg'] = '';
-                }else{
+                } else {
                     $msg = '交易失败';
                     $result['return_code'] = 'FAIL';
                     $result['return_msg'] = '业务处理失败';
                 }
-            }elseif ($type == 'pro'){
-
-            }else{
+            } elseif ($type == 'pro') {
+                // 更新订单状态
+                $orderObj = new Order();
+                $res = $orderObj->save([
+                    'is_paied' => 1,
+                    'transaction_id' => $data['transaction_id']
+                ], ['order_no' => $data['out_trade_no']]);
+                if ($res) {
+                    // 更新日志
+                    // 根据订单 查询信息
+                    $order = $orderObj->getOneByOrder($data['out_trade_no']);
+                    $log = new Log();
+                    $log->order_no = $data['out_trade_no'];
+                    $log->user_id = $order->user_id;
+                    $log->open_id = $order->open_id;
+                    $log->type = WeiXin::ORDER_PRODUCT;
+                    $log->content = '支付成功';
+                    $log->price = $order->total_price;
+                    $log->transaction_id = $data['transaction_id'];
+                    $log->save();
+                    $msg = '交易成功';
+                    $result['return_code'] = 'SUCCESS';
+                    $result['return_msg'] = '';
+                } else {
+                    $msg = '交易失败';
+                    $result['return_code'] = 'FAIL';
+                    $result['return_msg'] = '业务处理失败';
+                }
+            } else {
                 $msg = '交易失败';
                 $result['return_code'] = 'FAIL';
                 $result['return_msg'] = '业务处理失败';
@@ -202,7 +229,9 @@ class Helper extends Controller
             $result['return_msg'] = '签名失败';
         }
         $returnStr = WeiXin::fromArrayToXml($result);
-        file_put_contents('../data/log/notify.log', date('Y-m-d H:i:s').':'.$data['out_trade_no'] . ':' . $data['transaction_id'] .'-----'. $msg . PHP_EOL.$returnStr.PHP_EOL.'------------------------------------------'.PHP_EOL, FILE_APPEND);
+        file_put_contents('../data/log/notify.log',
+            date('Y-m-d H:i:s') . ':' . $data['out_trade_no'] . ':' . $data['transaction_id'] . '-----' . $msg . PHP_EOL . $returnStr . PHP_EOL . '------------------------------------------' . PHP_EOL,
+            FILE_APPEND);
         echo $returnStr;
     }
 }

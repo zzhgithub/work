@@ -71,6 +71,7 @@
     {/if}
 
     var flag = true;
+    var referer = '{$referer}';
     $(function () {
         $('.define').on('click', function () {
             if (!flag){
@@ -141,7 +142,7 @@
                                     $.post("/act/fail", {'order_no':order,'msg':'cancel'}, function (r) {
                                         alertMsg('支付取消');
                                         setTimeout(function () {
-                                            location.href = data.data.referrer;
+                                            location.href = referer;
                                         },1000);
                                     });
                                 },
@@ -149,7 +150,7 @@
                                     $.post("/act/fail", {'order_no':order,'msg':'fail'}, function (r) {
                                         alertMsg('支付失败');
                                         setTimeout(function () {
-                                            location.href = data.data.referrer;
+                                            location.href = referer;
                                         },1000);
                                     });
                                 }
