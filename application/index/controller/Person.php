@@ -33,12 +33,12 @@ class Person extends Controller
         $this->openId = $openId;
         $prefix = config("database.prefix");
         // 用户信息
-        $user = User::get($this->openId);
+        $user = User::get(['openid' => $this->openId]);
 
         // 获取相关订单信息
         // 参与的活动
         $actRecordsObj = new ActRecords();
-        $actList = $actRecordsObj->alias('a')->order('a.id desc')->join($prefix.'act b','a.act_id = b.id','LEFT')->field('a.is_paied,a.need_pay,b.id,b.name,b.img,b.des')->where(['a.open_id'=>$this->openId])->select();
+        $actList = $actRecordsObj->alias('a')->order('a.id desc')->join($prefix.'act b','a.act_id = b.id','LEFT')->field('a.is_paied,a.need_pay,b.id,b.name,b.img,b.des')->where(['a.open_id'=>$this->openId])->group('a.act_id')->select();
         // 产品订单
         $orderObj = new Order();
         $orderList = $orderObj->order('id DESC')->where(['open_id'=>$this->openId,'is_paied'=>1])->field('order_no')->select();
