@@ -297,19 +297,18 @@ class Productctl extends Controller
         if (!$orderId) {
             return self::response(400, '订单发起失败', ['token' => $request->token()]);
         }
-        $productObj = new Product();
-        $orderItemObj = new OrderItem();
         $res = null;
         $productName = [];
         foreach ($carts as $_cart) {
+            $productObj = new Product();
             $res = $productObj->save(['store' => ['exp', 'store-' . $_cart->count]],
                 ['id' => $_cart->id, 'state' => 1]);
             if (!$res) {
-                echo $productObj->getLastSql();
                 return self::response(400, '产品' . $_cart->name . '库存不足', ['token' => $request->token()]);
             }
             $productName[] = $_cart->name;
             // 创建order_item
+            $orderItemObj = new OrderItem();
             $orderItemObj->order_no = $orderObj->order_no;
             $orderItemObj->pro_id = $_cart->id;
             $orderItemObj->count = $_cart->count;
