@@ -5,12 +5,64 @@
     {volist name="list" id="vo"}
     <div class="activityr_list">
         <img src="{$vo.img}" width="100%"/>
-        <div class="activityr_local"><h4>{$vo.name}</h4><em>{$vo.zone}</em><a href="/index.php?s=act/detail/{$vo.id}">我要报名</a></div>
+        <div class="activityr_local"><h4>{$vo.name}</h4><em>{$vo.zone}</em><a href="/index.php?s=act/detail/{$vo.id}">我要报名</a>
+        </div>
         <p>{$vo.des}</p>
         {if condition="$vo['isfree'] == 1"}
-            <span>公益</span>
+        <span>公益</span>
         {/if}
     </div>
     {/volist}
 </div>
 {/block}
+
+{block name="javascript"}
+<script type="text/javascript">
+    var currentPage = parseInt({$curPage});
+    var flag = true;
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
+                if (!flag) {
+                    return false;
+                }
+                $.ajax({
+                    type: 'post',
+                    url: "/act/list",
+                    data: {'page': currentPage - (-1)},
+                    dataType: "json",
+                    beforeSend: function () {
+                        flag = false;
+                    },
+                    success: function (data) {
+                        flag = true;
+                        if (data.code === 0) {
+                            currentPage++;
+                            var str = '';
+                            for (var i = 0; i < data.data.length; i++) {
+                                str += '<div class="activityr_list">';
+                                str += '<img src="' + data.data[i].img + '" width="100%"/>';
+                                str += '<div class="activityr_local">';
+                                str += '<h4>' + data.data[i].name + '</h4>';
+                                str += '<em>' + data.data[i].zone + '</em>';
+                                str += '<a href="/index.php?s=act/detail/' + data.data[i].id + '">我要报名</a>';
+                                str += '</div>';
+                                str += '<p>' + data.data[i].des + '</p>';
+                                if (data.data[i].isfree) {
+                                    str += '<span>公益</span>';
+                                }
+                                str += '</div>';
+                            }
+                            $('.activityr').append(str);
+                        }
+                    },
+                    error: function (res) {
+                        alert('服务器开小差了');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{/block}
+

@@ -60,10 +60,17 @@ class Helper extends Controller
                 . "&state=STATE#wechat_redirect";
             header("Location:" . $url);
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
+    /**
+     * 微信网页登录授权
+     * @throws \Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function weixinBack()
     {
         //try{
@@ -125,6 +132,10 @@ class Helper extends Controller
         $this->redirect("/");
     }
 
+    /**
+     * 微信支付异步通知 处理订单信息
+     * @throws \Exception
+     */
     public function notify()
     {
         $xml = file_get_contents('php://input');
@@ -229,7 +240,7 @@ class Helper extends Controller
             $result['return_msg'] = '签名失败';
         }
         $returnStr = WeiXin::fromArrayToXml($result);
-        file_put_contents('../data/log/notify.log',
+        file_put_contents('../data/log/' . date('Ym') . '/' . date('Y-m-d') . 'notify.log',
             date('Y-m-d H:i:s') . ':' . $data['out_trade_no'] . ':' . $data['transaction_id'] . '-----' . $msg . PHP_EOL . $returnStr . PHP_EOL . '------------------------------------------' . PHP_EOL,
             FILE_APPEND);
         echo $returnStr;

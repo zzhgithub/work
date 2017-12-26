@@ -45,6 +45,12 @@ class Productctl extends Controller
         $this->openId = $openId;
     }
 
+    /**
+     * 产品列表页
+     * @param Request $request
+     * @return mixed|\think\response\Json
+     * @throws \think\exception\DbException
+     */
     public function productList(Request $request)
     {
         $product = new Product();
@@ -73,9 +79,18 @@ class Productctl extends Controller
         }
         $this->assign('curPage', 1);
         $this->assign('list', $items);
+        $this->assign('title', '重庆老街文创产品');
         return $this->fetch('product/list');
     }
 
+    /**
+     * 产品详情页
+     * @param $id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function productDetail($id)
     {
         $id = intval($id);
@@ -97,6 +112,7 @@ class Productctl extends Controller
         $this->assign('product', $product);
         $this->assign('productContent', $productContent);
         $this->assign('productImgs', $productImgs);
+        $this->assign('title', $product->name);
         return $this->fetch('product/detail');
     }
 
@@ -104,6 +120,7 @@ class Productctl extends Controller
      * 加入购物车
      * @param Request $request
      * @return \think\response\Json
+     * @throws \think\exception\DbException
      */
     public function productModCart(Request $request)
     {
@@ -149,6 +166,9 @@ class Productctl extends Controller
      * 获取购物车信息
      * @param int $id
      * @return array|int
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     private static function getCart($id = 0)
     {
@@ -200,6 +220,15 @@ class Productctl extends Controller
         return $count;
     }
 
+    /**
+     * 获取购物车信息
+     * @param Request $request
+     * @return mixed|\think\response\Json
+     * @throws \Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function productCart(Request $request)
     {
         $carts = self::getCart();
@@ -220,6 +249,7 @@ class Productctl extends Controller
             $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
             $this->assign('jsApi', $jsApi);
             $this->assign('carts', $carts);
+            $this->assign('title', '文创产品购物车');
             $this->assign('referer', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/product/list');
             $this->assign('totalPrice', sprintf("%.2f", $totalPrice));
             return $this->fetch('product/pay');
@@ -232,6 +262,15 @@ class Productctl extends Controller
         }
     }
 
+    /**
+     * 订单支付
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \app\index\service\WxPayException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function pay(Request $request)
     {
         if (!$request->isAjax()) {
@@ -326,6 +365,8 @@ class Productctl extends Controller
         $log->content = '重庆老街产品:' . $proName . '发起支付';
         $log->price = $totalPrice;
         $log->save();
+        // 消除购物车
+        Session::set('cart',null);
         // 返回支付接口参数
         $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街产品:' . $proName, $orderObj->order_no, $totalPrice * 100,
             $this->openId), true);
@@ -334,6 +375,11 @@ class Productctl extends Controller
         return self::response(0, '支付创建成功', $wxPayConfig);
     }
 
+    /**
+     * 产品购买失败和取消处理
+     * @param Request $request
+     * @return \think\response\Json
+     */
     public function fail(Request $request)
     {
         if (!$request->isAjax()) {
@@ -368,6 +414,13 @@ class Productctl extends Controller
         }
     }
 
+    /**
+     * 异步返回
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     * @return \think\response\Json
+     */
     private static function response($code, $msg = '', $data = [])
     {
         $response = new \stdClass();
@@ -377,6 +430,11 @@ class Productctl extends Controller
         return json($response);
     }
 
+    /**
+     * 验证姓名
+     * @param $value
+     * @return string
+     */
     private function checkName($value)
     {
         $value = trim($value);
@@ -385,6 +443,11 @@ class Productctl extends Controller
         }
     }
 
+    /**
+     * 验证手机
+     * @param $value
+     * @return string
+     */
     private function checkPhone($value)
     {
         $value = trim($value);
@@ -393,6 +456,11 @@ class Productctl extends Controller
         }
     }
 
+    /**
+     * 验证地址
+     * @param $value
+     * @return string
+     */
     private function checkAddress($value)
     {
         $value = trim($value);

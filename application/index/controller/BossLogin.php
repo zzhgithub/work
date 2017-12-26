@@ -22,6 +22,14 @@ use \think\Session;
 
 class BossLogin extends Controller
 {
+    /**
+     * 用户登录
+     * @param Request $request
+     * @return mixed|\think\response\Json|\think\response\Redirect
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function login(Request $request)
     {
         if (Session::get('admin')){
@@ -69,12 +77,19 @@ class BossLogin extends Controller
         return $this->fetch('boss/login/index');
     }
 
+    /**
+     * 用户登出
+     */
     public function logout()
     {
         Session::set('admin',null);
         return $this->redirect('/boss/login');
     }
 
+    /**
+     * 图片验证码
+     * @return \think\Response
+     */
     public function verify()
     {
         $config = [
@@ -85,6 +100,13 @@ class BossLogin extends Controller
         return $captcha->entry();
     }
 
+    /**
+     * 异步返回
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     * @return \think\response\Json
+     */
     private static function response($code, $msg = '', $data = [])
     {
         $response = new \stdClass();
@@ -94,6 +116,11 @@ class BossLogin extends Controller
         return json($response);
     }
 
+    /**
+     * 验证用户名
+     * @param $value
+     * @return string
+     */
     private function checkName($value)
     {
         if (mb_strlen($value) < 2 || mb_strlen($value) > 20) {

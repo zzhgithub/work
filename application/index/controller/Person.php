@@ -9,16 +9,30 @@ namespace app\index\controller;
  */
 use think\Controller;
 use \app\index\service\WeiXin;
+use think\Request;
 use \think\Session;
 
-class Person extends Controller{
+class Person extends Controller
+{
+    protected $openId;
 
-    public function index(){
+    /**
+     * 个人中心
+     * @return mixed
+     * @throws \Exception
+     */
+    public function index(Request $request){
         $openId = Session::get('openid');
-        if (!$openId){
-            WeiXin::getOpenidAndAcessToken();
+        if (!$openId) {
+            if ($request->isAjax()) {
+                return self::response(400, '请刷新页面重新登录');
+            } else {
+                WeiXin::getOpenidAndAcessToken();
+            }
         }
+        $this->openId = $openId;
         $this->assign('_action','ucenter');
+        $this->assign('title','个人中心');
         return $this->fetch('ucenter/index');
     }
 }

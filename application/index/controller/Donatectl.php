@@ -59,6 +59,7 @@ class Donatectl extends Controller
         }
         $this->assign('curPage', 1);
         $this->assign('list', $items);
+        $this->assign('title', '捐款活动');
         return $this->view->fetch('donate/list');
     }
 
@@ -80,10 +81,12 @@ class Donatectl extends Controller
             $this->redirect('/');
         }
         $this->assign('detail',$detail);
+        $this->assign('title',$detail->name);
         return $this->view->fetch('donate/detail');
     }
 
     /**
+     * 捐款详情页
      * @param $id
      * @return string
      * @throws \Exception
@@ -113,10 +116,20 @@ class Donatectl extends Controller
         $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
         $this->assign('jsApi', $jsApi);
         $this->assign('detail',$detail);
+        $this->assign('title',$detail->name);
         $this->assign('referer', isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'/donate/list');
         return $this->view->fetch('donate/pay');
     }
 
+    /**
+     * 保存捐款并支付
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \app\index\service\WxPayException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function donateSave(Request $request)
     {
         if (!$request->isAjax()) {
@@ -162,6 +175,11 @@ class Donatectl extends Controller
         return self::response(0, '支付创建成功', $wxPayConfig);
     }
 
+    /**
+     * 捐款失败和取消处理
+     * @param Request $request
+     * @return \think\response\Json
+     */
     public function donateFail(Request $request)
     {
         if (!$request->isAjax()){
@@ -196,6 +214,13 @@ class Donatectl extends Controller
         }
     }
 
+    /**
+     * 异步处理
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     * @return \think\response\Json
+     */
     private static function response($code, $msg = '', $data = [])
     {
         $response = new \stdClass();

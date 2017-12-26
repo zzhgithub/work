@@ -24,18 +24,27 @@ use \think\Session;
 
 class Volunteer extends Controller
 {
+    protected $openId;
+
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->assign('_action','index');
         $openId = Session::get('openid');
-        if (!$openId){
-            WeiXin::getOpenidAndAcessToken();
+        if (!$openId) {
+            if ($request->isAjax()) {
+                return self::response(400, '请刷新页面重新登录');
+            } else {
+                WeiXin::getOpenidAndAcessToken();
+            }
         }
+        $this->openId = $openId;
     }
+
     /**
-     * @deprecated
      * 文物注册页
+     * @param Request $request
+     * @return mixed|\think\response\Json
      */
     public function register(Request $request)
     {
@@ -78,6 +87,7 @@ class Volunteer extends Controller
                 }
             }
         }
+        $this->assign('title','志愿者注册');
         return $this->fetch('volunteer/register');
     }
 
@@ -86,7 +96,7 @@ class Volunteer extends Controller
      */
     public function inspect()
     {
-        //todo
+        $this->assign('title','文物巡查');
         return $this->fetch('volunteer/inspect');
     }
 
@@ -116,6 +126,7 @@ class Volunteer extends Controller
         $this->assign('search', $search);
         $this->assign('curPage', 1);
         $this->assign('list', $items);
+        $this->assign('title', '文物保护培训');
         return $this->fetch('volunteer/train_list');
     }
 
@@ -135,6 +146,7 @@ class Volunteer extends Controller
                 return redirect('/');
             }
             $this->assign('train',$trainContent);
+            $this->assign('title',$trainContent->title);
         }catch (Exception $e){
             return redirect('/');
         }
@@ -173,9 +185,10 @@ class Volunteer extends Controller
                 $list = Point::all();
             }
             $this->assign('list', $list);
+            $this->assign('title', '巡查反馈');
             return $this->fetch('volunteer/inspect_back_list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -198,13 +211,18 @@ class Volunteer extends Controller
         $client = new Pointbanner();
         $list = $client->where(['pid' => $id])->select();
         $this->assign('list', $list);
+        $this->assign('title', $base->name.'-巡查反馈');
         //巡查反馈页
 
         return $this->fetch('volunteer/inspect_back_detail');
     }
 
     /**
+     * 任务点证书
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function certificate()
     {
@@ -212,11 +230,13 @@ class Volunteer extends Controller
         $client = new Cert();
         $list = $client->order('sort')->select();
         $this->assign('list',$list);
+        $this->assign('title','任务点证书');
 
         return $this->fetch('volunteer/certificate');
     }
 
     /**
+     * 异步返回
      * @param $code
      * @param string $msg
      * @param array $data

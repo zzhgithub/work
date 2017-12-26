@@ -40,9 +40,7 @@
                             for (var i = 0; i < data.data.length; i++) {
                                 str += '<li><img src="' + data.data[i].img + '" width="100%"/><div class="donate_tile"><h4>' + data.data[i].name + '</h4><a href="/donate/detail/' + data.data[i].id + '">我要捐款</a></div><p>' + data.data[i].des + '</p></li>';
                             }
-                            console.log('currentPage:' + currentPage);
                             $('.donate').find('ul').append(str);
-                            console.log(data);
                         }
                     },
                     error:function (res) {

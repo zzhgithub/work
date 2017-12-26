@@ -25,6 +25,7 @@ use \think\Session;
 class Show extends Controller
 {
     protected $view;
+    protected $openId;
 
     public function __construct(Request $request = null)
     {
@@ -32,9 +33,14 @@ class Show extends Controller
         $this->view = new View();
         $this->assign('_action','index');
         $openId = Session::get('openid');
-        if (!$openId){
-            WeiXin::getOpenidAndAcessToken();
+        if (!$openId) {
+            if ($request->isAjax()) {
+                return self::response(400, '请刷新页面重新登录');
+            } else {
+                WeiXin::getOpenidAndAcessToken();
+            }
         }
+        $this->openId = $openId;
     }
 
     /**
@@ -77,6 +83,7 @@ class Show extends Controller
             }
             $this->assign('list', $items);
             $this->assign('search', $search);
+            $this->assign('title', '历史建筑');
             $this->assign('curPage', 1);
             return $this->view->fetch('point/list');
         } catch (Exception $e) {
@@ -118,6 +125,7 @@ class Show extends Controller
             }
             $this->assign('list', $list);
             $this->assign('search', $search);
+            $this->assign('title', '推荐线路');
             $this->assign('curPage', 1);
             return $this->view->fetch('route/list');
         } catch (Exception $e) {
@@ -146,6 +154,7 @@ class Show extends Controller
                 $list[$k]['name'] = $tmp['name'];
             }
             $this->assign('list', $list);
+            $this->assign('title', '推荐线路详情');
             return $this->view->fetch('route/detail');
         } catch (Exception $e) {
             return $e->getMessage();
@@ -174,6 +183,7 @@ class Show extends Controller
             $inspect_list = $inspect->where(['pid' => $id])
                 ->select();
             $this->assign('inspect', $inspect_list);
+            $this->assign('title', $base->name);
 
             return $this->view->fetch('point/detail');
         } catch (Exception $e) {
@@ -191,6 +201,7 @@ class Show extends Controller
     }
 
     /**
+     * 异步返回
      * @param $code
      * @param string $msg
      * @param array $data

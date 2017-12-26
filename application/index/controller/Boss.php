@@ -655,6 +655,7 @@ class Boss extends Controller
         return json($response);
     }
 
+    // 异步返回
     private function response($code, $msg = '', $data = [])
     {
         $response = new \stdClass();
@@ -770,6 +771,7 @@ class Boss extends Controller
         return $this->response(400, '操作失败');
     }
 
+    // 删除产品图片
     public function productImgDel($id = 0)
     {
         if ($id < 0) {
@@ -839,6 +841,7 @@ class Boss extends Controller
         }
     }
 
+    // 删除公告
     public function newsDel($id)
     {
         $id = intval($id);
@@ -951,6 +954,7 @@ class Boss extends Controller
         }
     }
 
+    // 培训分类列表
     public function cateList(Request $request)
     {
         if ($request->isAjax()) {
@@ -1005,6 +1009,7 @@ class Boss extends Controller
         }
     }
 
+    // 删除培训分类
     public function cateDel($id)
     {
         $id = intval($id);
@@ -1026,6 +1031,7 @@ class Boss extends Controller
         return $this->response(0, '删除成功');
     }
 
+    // 培训内容列表
     public function trainList(Request $request)
     {
         if ($request->isAjax()) {
@@ -1082,6 +1088,7 @@ class Boss extends Controller
         }
     }
 
+    // 删除培训
     public function trainDel($id)
     {
         $id = intval($id);
@@ -1098,7 +1105,7 @@ class Boss extends Controller
         return $this->response(0, '删除成功');
     }
 
-
+    // 证书列表
     public function certList(Request $request){
         if ($request->isAjax()) {
             $limit = $request->request('limit');
@@ -1120,6 +1127,7 @@ class Boss extends Controller
         return $this->view->fetch('boss/cert/list');
     }
 
+    // 保存证书
     public function certSave(Request $request){
         if ($request->isAjax()) {
             $data = $request->post();
@@ -1149,6 +1157,7 @@ class Boss extends Controller
         }
     }
 
+    // 删除证书
     public function certDel($id){
         $id = intval($id);
         if ($id <= 0) {

@@ -13,8 +13,8 @@ use \think\View;
 
 class Index extends Controller
 {
-
     protected $view;
+    protected $openId;
 
     public function __construct(Request $request = null)
     {
@@ -22,18 +22,27 @@ class Index extends Controller
         $this->view = new View();
         $this->assign('_action','index');
         $openId = Session::get('openid');
-        if (!$openId){
-            WeiXin::getOpenidAndAcessToken();
+        if (!$openId) {
+            if ($request->isAjax()) {
+                return self::response(400, '请刷新页面重新登录');
+            } else {
+                WeiXin::getOpenidAndAcessToken();
+            }
         }
+        $this->openId = $openId;
     }
 
+    /**
+     * 首页
+     * @param Request $request
+     * @return string
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function index(Request $request)
     {
-        //获取session登录信息
-        //if(Session::get("openid") == null){
-        //    $helper = new Helper();
-        //    $helper->sendTest();
-        //}
         //获取首页的banner图
         $banner = new Banner();
         $res_banner = $banner->limit(3)->order('sort')->select();
@@ -52,6 +61,7 @@ class Index extends Controller
         $list = $product->where(['state' => 1])->order('id desc')->field('id,name,img,price,store')->paginate(6);
         $items = $list->items();
         $this->assign('curPage', 1);
+        $this->assign('title', '重庆老街');
         $this->assign('productList', $items);
         return $this->view->fetch('index/index');
     }

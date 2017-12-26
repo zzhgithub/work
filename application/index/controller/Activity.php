@@ -44,39 +44,52 @@ class Activity extends Controller
 
     /**
      * 活动列表页
+     * @param Request $request
+     * @return string|\think\response\Json
      */
-    public function activityList()
+    public function activityList(Request $request)
     {
         try {
-            //
             $client = new Act();
-            $list = $client->order('sort')
-                ->select();
+            $list = $client->order('sort ASC,id DESC')->paginate(5);
+            $items = $list->items();
+            if ($request->isAjax()) {
+                if (!empty($items)) {
+                    return self::response(0,'success',$items);
+                }
+                return self::response(400);
+            }
+            $this->assign('curPage', 1);
             $this->assign('list', $list);
+            $this->assign('title', '老街活动');
             return $this->view->fetch('act/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     /**
      * 活动详情页
+     * @param $id
+     * @return string|void
      */
     public function activityDetail($id)
     {
         if (!$id) {
-            return $this->redirect('/');
+            $this->redirect('/');
         }
         try {
             $data = Act::get($id);
             $this->assign('data', $data);
+            $this->assign('title', $data->name);
             return $this->view->fetch('act/detail');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     /**
+     * 活动报名页
      * @param $id
      * @return string|void
      * @throws \Exception
@@ -84,7 +97,7 @@ class Activity extends Controller
     public function joinActivity($id)
     {
         if (!$id) {
-            return $this->redirect('/');
+            $this->redirect('/');
         }
         try {
             $data = Act::get($id);
@@ -103,14 +116,18 @@ class Activity extends Controller
             }
             $this->assign('referer', isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'/act/list');
             $this->assign('data', $data);
+            $this->assign('title', $data->name);
             return $this->view->fetch('act/join');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     /**
      * 报名页表单处理
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \app\index\service\WxPayException
      */
     public function doJoin(Request $request)
     {
@@ -197,6 +214,11 @@ class Activity extends Controller
         }
     }
 
+    /**
+     * 报名失败和取消处理
+     * @param Request $request
+     * @return \think\response\Json
+     */
     public function failJoin(Request $request)
     {
         if (!$request->isAjax()){
@@ -231,13 +253,23 @@ class Activity extends Controller
         }
     }
 
+    /**
+     * 验证姓名
+     * @param $value
+     * @return string
+     */
     private function checkName($value)
     {
         if (mb_strlen($value) < 2 || mb_strlen($value) > 5) {
-            return '用户名长度在2-5之间';
+            return '姓名长度在2-5之间';
         }
     }
 
+    /**
+     * 验证手机号
+     * @param $value
+     * @return string
+     */
     private function checkPhone($value)
     {
         if (mb_strlen($value) !== 11 || intval($value) <= 0 || substr($value, 0, 1) != 1) {
@@ -245,6 +277,13 @@ class Activity extends Controller
         }
     }
 
+    /**
+     * 异步返回
+     * @param $code
+     * @param string $msg
+     * @param array $data
+     * @return \think\response\Json
+     */
     private static function response($code, $msg = '', $data = [])
     {
         $response = new \stdClass();
