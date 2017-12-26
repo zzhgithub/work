@@ -49,46 +49,49 @@
 {/black}
 {block name="javascript"}
 <script type="application/javascript">
-    if($('#pimg').attr('src') == ''){
-        $('#pimg').attr('src','/static/images/no_pic.gif');
-    }
-    $("#upload").click(function () {
-        //获取图片元素
-        var formData = new FormData();
-        formData.append('file',$('#inputfile')[0].files[0]);
-        $.ajax({
-            url:"/index.php?s=helper/upload",
-            type:"post",
-            data:formData,
-            processData:false,
-            contentType:false,
-            success:function (res){
-                $("#img").attr('value',"http://cqlaojie.com/uploads/" + res);
-                $("#pimg").attr("src","http://cqlaojie.com/uploads/" + res);
-                alert("上传成功");
-            }
+    layui.use(['table','jquery'], function() {
+        var $ = layui.jquery;
+//        if ($('#pimg').attr('src') == '') {
+//            $('#pimg').attr('src', '/static/images/no_pic.gif');
+//        }
+        $("#upload").click(function () {
+            //获取图片元素
+            var formData = new FormData();
+            formData.append('file', $('#inputfile')[0].files[0]);
+            $.ajax({
+                url: "/index.php?s=helper/upload",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $("#img").attr('value', "http://cqlaojie.com/uploads/" + res);
+                    $("#pimg").attr("src", "http://cqlaojie.com/uploads/" + res);
+                    alert("上传成功");
+                }
+            });
         });
-    });
 
-    $("#datafrom").submit(function () {
-        var formData = new FormData();
-        formData.append('id',$('#id').attr('value'));
-        formData.append('img',$('#img').attr('value'));
-        formData.append('zone',$("#zone")[0].value);
-        formData.append('name',$("#name")[0].value);
-        formData.append('addr',$("#addr")[0].value);
-        formData.append('level',$("#level")[0].value);
-        formData.append('sort',$("#sort")[0].value);
-        $.ajax({
-            url:"/index.php?s=boss/point/save",
-            type:"post",
-            data:formData,
-            processData:false,
-            contentType:false,
-            success:function (res){
-                alert(res);
-                window.history.back(-1);
-            }
+        $("#datafrom").submit(function () {
+            var formData = new FormData();
+            formData.append('id', $('#id').attr('value'));
+            formData.append('img', $('#img').attr('value'));
+            formData.append('zone', $("#zone")[0].value);
+            formData.append('name', $("#name")[0].value);
+            formData.append('addr', $("#addr")[0].value);
+            formData.append('level', $("#level")[0].value);
+            formData.append('sort', $("#sort")[0].value);
+            $.ajax({
+                url: "/index.php?s=boss/point/save",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    alert(res);
+                    window.history.back(-1);
+                }
+            });
         });
     });
 </script>
