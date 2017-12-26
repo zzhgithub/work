@@ -142,6 +142,7 @@ class Boss extends Controller
     {
         try {
             $list = Point::all();
+            $this->assign("title","文物点列表");
             $this->assign('list', $list);
             return $this->view->fetch('boss/point/list');
         } catch (Exception $e) {
