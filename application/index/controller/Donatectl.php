@@ -113,7 +113,7 @@ class Donatectl extends Controller
         $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
         $this->assign('jsApi', $jsApi);
         $this->assign('detail',$detail);
-        $this->assign('referer', $_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:'/donate/list');
+        $this->assign('referer', isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'/donate/list');
         return $this->view->fetch('donate/pay');
     }
 

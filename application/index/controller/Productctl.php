@@ -220,7 +220,7 @@ class Productctl extends Controller
             $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
             $this->assign('jsApi', $jsApi);
             $this->assign('carts', $carts);
-            $this->assign('referer', $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : '/product/list');
+            $this->assign('referer', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/product/list');
             $this->assign('totalPrice', sprintf("%.2f", $totalPrice));
             return $this->fetch('product/pay');
         }

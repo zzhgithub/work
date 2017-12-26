@@ -101,7 +101,7 @@ class Activity extends Controller
                 $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
                 $this->assign('jsApi', $jsApi);
             }
-            $this->assign('referer', $_SERVER['HTTP_REFERER']?$_SERVER['HTTP_REFERER']:'/act/list');
+            $this->assign('referer', isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'/act/list');
             $this->assign('data', $data);
             return $this->view->fetch('act/join');
         } catch (Exception $e) {
