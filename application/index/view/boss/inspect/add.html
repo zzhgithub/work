@@ -129,6 +129,9 @@
     var $;
     layui.use(['jquery'], function () {
         $ = layui.jquery;
+        if($('.preview').attr('src') == ''){
+            $('.preview').attr('src','/static/images/no_pic.gif');
+        }
     });
     // 删除图片
     function delImg(obj) {

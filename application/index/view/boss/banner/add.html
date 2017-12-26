@@ -41,6 +41,9 @@
     </div>
 </div>
 <script type="application/javascript">
+    if($('#pimg').attr('src') == ''){
+        $('#pimg').attr('src','/static/images/no_pic.gif');
+    }
     $("#upload").click(function () {
         //获取图片元素
         var formData = new FormData();

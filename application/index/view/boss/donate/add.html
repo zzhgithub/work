@@ -64,7 +64,9 @@
         var layedit = layui.layedit;
         var form = layui.form;
         var layer = layui.layer;
-
+        if($('.preview').attr('src') == ''){
+            $('.preview').attr('src','/static/images/no_pic.gif');
+        }
         layedit.set({
             uploadImage: {
                 url: '/boss/upload' //接口url
