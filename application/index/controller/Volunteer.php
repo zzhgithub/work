@@ -10,6 +10,7 @@ namespace app\index\controller;
  * Time: 下午5:24
  */
 use app\index\model\Cert;
+use app\index\model\Inspect;
 use \app\index\model\Member;
 use \app\index\model\Point;
 use \app\index\model\Pointbanner;
@@ -210,6 +211,11 @@ class Volunteer extends Controller
 
         $client = new Pointbanner();
         $list = $client->where(['pid' => $id])->select();
+
+        $inspect_Client = new Inspect();
+        $inspect = $inspect_Client->where(['pid'=>$id])->select();
+
+        $this->assign("inspect",$inspect);
         $this->assign('list', $list);
         $this->assign('title', $base->name.'-巡查反馈');
         //巡查反馈页
