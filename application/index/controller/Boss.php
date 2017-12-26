@@ -409,7 +409,7 @@ class Boss extends Controller
                 ->order('sort')
                 ->select();
             $this->assign('list', $list);
-
+            $this->assign("title","推荐路线文物点设置");
             return $this->view->fetch('boss/route/point/list');
         } catch (Exception $e) {
             var_dump($e->getMessage());
@@ -432,7 +432,7 @@ class Boss extends Controller
                     $this->assign('data', null);
                 }
             }
-            return $this->view->fetch('boss/route/point/add');
+            return $this->view->fetch('boss/route/point/newadd');
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }

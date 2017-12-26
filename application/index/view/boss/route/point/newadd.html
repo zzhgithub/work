@@ -1,0 +1,58 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<!-- 修改添加页 关键是看有没有值传过来 -->
+<div class="container">
+    <div class="row" >
+        <div class="col-xs-6 col-md-offset-3">
+            <form class="layui-form" role="form" enctype="multipart/form-data" id="datafrom">
+                <input type="hidden" id="rid" value="{$rid}">
+                <input type="hidden" id="id" value="{$data.id}">
+
+                <!-- 异步上传图片的按钮 和图片处理 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="pid">文物点id</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{$data.pid}" class="layui-input" id="pid" placeholder="请输入介绍">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="sort">排序</label>
+                    <div class="layui-input-block">
+                        <input type="number" value="{$data.sort}" class="layui-input" id="sort" placeholder="请输入跳转地址">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn layui-btn" id="submit">继续</button>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script type="application/javascript">
+    layui.use(['table','jquery'], function() {
+        var $ = layui.jquery;
+        $("#datafrom").submit(function () {
+            var formData = new FormData();
+            formData.append('id', $('#id').attr('value'));
+            formData.append('rid', $('#rid').attr('value'));
+            formData.append('pid', $("#pid")[0].value);
+            formData.append('sort', $("#sort")[0].value);
+            $.ajax({
+                url: "/index.php?s=boss/route/point/save",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    alert(res);
+                    window.history.back(-1);
+                }
+            });
+        });
+    });
+</script>
+{/block}
