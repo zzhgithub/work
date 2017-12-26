@@ -45,7 +45,7 @@ class Person extends Controller
         if ($orderList){
             foreach ($orderList as $order) {
                 $orderItemObj = new OrderItem();
-                $orderItems = $orderItemObj->alias('a')->order('id DESC')->join($prefix.'product b','a.pro_id = b.id','LEFT')->field('a.count,a.price,a.pro_id,b.name,b.img')->where(['a.order_no'=>$order->order_no])->select();
+                $orderItems = $orderItemObj->alias('a')->order('a.id DESC')->join($prefix.'product b','a.pro_id = b.id','LEFT')->field('a.count,a.price,a.pro_id,b.name,b.img')->where(['a.order_no'=>$order->order_no])->select();
                 $order->orderItems = $orderItems;
             }
         }
