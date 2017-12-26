@@ -163,7 +163,7 @@ class Boss extends Controller
                 $res = Point::get($id);
                 $this->assign('data', $res);
             }
-            return $this->view->fetch('boss/point/add');
+            return $this->view->fetch('boss/point/newadd');
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
