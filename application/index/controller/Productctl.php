@@ -169,11 +169,14 @@ class Productctl extends Controller
                 }
                 // 查询产品信息
                 $product = new Product();
-                $products = $product->where('id', 'exp', ' IN (' . implode(',',
-                        $ids) . ') ')->where(['state' => 1])->field('id,name,img,price,store')->select();
+                $products = $product->where('id', 'exp', ' IN (' . implode(',', $ids) . ') ')->where(['state' => 1])->field('id,name,img,price,store')->select();
                 if ($products) {
-                    foreach ($products as &$product) {
-                        $product->count = $count[$product->id];
+                    foreach ($products as $k=>&$product) {
+                        if ($count[$product->id] <= $product->store){
+                            $product->count = $count[$product->id];
+                        }else{
+                            unset($products[$k]);
+                        }
                     }
                     return $products;
                 } else {
@@ -302,6 +305,7 @@ class Productctl extends Controller
             $res = $productObj->save(['store' => ['exp', 'store-' . $_cart->count]],
                 ['id' => $_cart->id, 'state' => 1]);
             if (!$res) {
+                echo $productObj->getLastSql();
                 return self::response(400, '产品' . $_cart->name . '库存不足', ['token' => $request->token()]);
             }
             $productName[] = $_cart->name;
