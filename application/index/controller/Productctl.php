@@ -300,7 +300,7 @@ class Productctl extends Controller
         $productName = [];
         foreach ($carts as $_cart) {
             $res = $productObj->save(['store' => ['exp', 'store-' . $_cart->count]],
-                ['id' => $_cart->id, ['store' => ['exp', 'store > 0']], 'state' => 1]);
+                ['id' => $_cart->id, 'state' => 1]);
             if (!$res) {
                 return self::response(400, '产品' . $_cart->name . '库存不足', ['token' => $request->token()]);
             }
