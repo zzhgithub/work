@@ -79,7 +79,7 @@
             $.ajax({
                 type: 'post',
                 url: "/product/pay",
-                data: {'name': name, 'phone': phone, '__token__': token,'address':address},
+                data: {'name': name, 'phone': phone, 'ids':ids.join(), '__token__': token,'address':address},
                 dataType: "json",
                 beforeSend: function () {
                     flag = false;
