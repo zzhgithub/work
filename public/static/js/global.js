@@ -34,18 +34,31 @@ $(document).ready(function() {
 })
  $('.nav').click(function(e){
 	if($(".pief_xla").is(":hidden")){
-		$(".pief_xla").animate({left:'0'});	
 		$(".pief_xla").show();
 		}else{
-		$(".pief_xla").animate({left:'-50%'});
-		$(".pief_xla").hide(1000);
+		$(".pief_xla").hide();
 	}
  });
-$(document).bind("click",function(e){
+var obj = document;
+obj.addEventListener('touchmove', function(e) {
+  var target  = $(e.target);
+	if(target.closest(".nav,.pief_xla").length == 0){
+	  $(".pief_xla").hide();	
+	};
+	e.stopPropagation();
+}, false);
+obj.addEventListener('touchstart', function(e) {
+  var target  = $(e.target);
+	if(target.closest(".nav,.pief_xla").length == 0){
+	  $(".pief_xla").hide();	
+	};
+	e.stopPropagation();
+}, false);
+//点击事件
+$(document).on("click",function(e){
 	var target  = $(e.target);
 	if(target.closest(".nav,.pief_xla").length == 0){
-	  $(".pief_xla").animate({left:'-50%'});	
-	  $(".pief_xla").hide(1000);	
+	  $(".pief_xla").hide();	
 	};
 	e.stopPropagation();
 })
