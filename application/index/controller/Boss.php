@@ -882,7 +882,7 @@ class Boss extends Controller
             return json($response);
         }
         $this->assign('title', '反馈管理-' . $this->title);
-        return $this->view->fetch('boss/news/list');
+        return $this->view->fetch('boss/inspect/list');
     }
 
     //添加反馈
