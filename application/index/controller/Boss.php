@@ -477,6 +477,7 @@ class Boss extends Controller
             $list = $client->order('sort')
                 ->select();
             $this->assign('list', $list);
+            $this->assign("title","活动列表");
             return $this->view->fetch('boss/act/list');
         } catch (Exception $e) {
             var_dump($e->getMessage());
@@ -495,7 +496,7 @@ class Boss extends Controller
                 $this->assign('title', '活动 添加');
                 $this->assign('data', null);
             }
-            return $this->view->fetch('boss/act/add');
+            return $this->view->fetch('boss/act/newadd');
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
