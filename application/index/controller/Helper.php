@@ -175,7 +175,7 @@ class Helper extends Controller
                         $log->save();
                         $msg = '交易成功';
                         $result['return_code'] = 'SUCCESS';
-                        $result['return_msg'] = '';
+                        $result['return_msg'] = 'OK';
                     } else {
                         $msg = '交易失败';
                         $result['return_code'] = 'FAIL';
@@ -209,7 +209,7 @@ class Helper extends Controller
                         $log->save();
                         $msg = '交易成功';
                         $result['return_code'] = 'SUCCESS';
-                        $result['return_msg'] = '';
+                        $result['return_msg'] = 'OK';
                     } else {
                         $msg = '交易失败';
                         $result['return_code'] = 'FAIL';
@@ -243,7 +243,7 @@ class Helper extends Controller
                         $log->save();
                         $msg = '交易成功';
                         $result['return_code'] = 'SUCCESS';
-                        $result['return_msg'] = '';
+                        $result['return_msg'] = 'OK';
                     } else {
                         $msg = '交易失败';
                         $result['return_code'] = 'FAIL';
@@ -270,6 +270,6 @@ class Helper extends Controller
             FILE_APPEND);
         flock($fp,LOCK_UN);     //释放锁
         fclose($fp);
-        echo $returnStr;
+        echo exit($returnStr);
     }
 }
