@@ -11,10 +11,19 @@
     <div class="doing_gd">我参与的活动</div>
     <ul>
         {volist name="actList" id="act"}
-        <li>
-            <a href="/act/detail/{$act.id}"><img src="{$act.img}"/><h4>{$act.name}</h4></a>
-            <p>{$act.des}</p>
-        </li>
+        {if condition="$act.need_pay eq 1"}
+                {if condition="$act.is_paied eq 1"}
+                <li>
+                    <a href="/act/detail/{$act.id}"><img src="{$act.img}"/><h4>{$act.name}</h4></a>
+                    <p>{$act.des}</p>
+                </li>
+                {/if}
+            {else/}
+            <li>
+                <a href="/act/detail/{$act.id}"><img src="{$act.img}"/><h4>{$act.name}</h4></a>
+                <p>{$act.des}</p>
+            </li>
+        {/if}
         {/volist}
     </ul>
 </div>
