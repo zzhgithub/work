@@ -1184,7 +1184,7 @@ class Boss extends Controller
             $limit = $request->request('limit');
             $limit = $limit ? intval($limit) : 10;
             $cert = new Pointnear();
-            $list = $cert->order('sort')->paginate($limit);
+            $list = $cert->paginate($limit);
             $response = new \stdClass();
             $response->code = 0;
             $response->count = $list->total();
