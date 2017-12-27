@@ -139,6 +139,12 @@ class Helper extends Controller
      */
     public function notify()
     {
+        $fp = fopen("notifylock.txt", "w+");
+        if(!flock($fp,LOCK_EX | LOCK_NB)){
+            file_put_contents('../data/log/notify/' . date('Y-m-d') . '-notify.log',
+                date('Y-m-d H:i:s') . ':-----系统繁忙，稍后继续------'. PHP_EOL . '------------------------------------------' . PHP_EOL,FILE_APPEND);
+            return false;
+        }
         $xml = file_get_contents('php://input');
         $data = WeiXin::fromXmlToArray($xml);
         $sign = WeiXin::makeSign($data);
@@ -262,6 +268,8 @@ class Helper extends Controller
         file_put_contents('../data/log/notify/' . date('Y-m-d') . '-notify.log',
             date('Y-m-d H:i:s') . ':' . $data['out_trade_no'] . ':' . $data['transaction_id'] . '-----' . $msg . PHP_EOL . $returnStr . PHP_EOL . '------------------------------------------' . PHP_EOL,
             FILE_APPEND);
+        flock($fp,LOCK_UN);     //释放锁
+        fclose($fp);
         echo $returnStr;
     }
 }
