@@ -139,7 +139,7 @@
                                 cancel: function (res) {
                                     //支付取消
                                     $.post("/act/fail", {'order_no':order,'msg':'cancel'}, function (r) {
-                                        alertMsg('支付取消');
+                                        alertMsg('支付取消,报名失败');
                                         setTimeout(function () {
                                             location.href = referer;
                                         },1000);
@@ -147,7 +147,7 @@
                                 },
                                 fail: function(res){       // 支付失败回调函数
                                     $.post("/act/fail", {'order_no':order,'msg':'fail'}, function (r) {
-                                        alertMsg('支付失败');
+                                        alertMsg('支付失败,报名失败');
                                         setTimeout(function () {
                                             location.href = referer;
                                         },1000);

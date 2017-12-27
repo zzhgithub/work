@@ -101,7 +101,19 @@ class Activity extends Controller
         }
         try {
             $data = Act::get($id);
-
+            if (empty($data)){
+                $this->redirect('/');
+            }
+            // 查询是否已报名
+            $actRecordsObj = new ActRecords();
+            if ($data['isfree']){   // 公益活动
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data['id']])->find();
+            }else{                  // 付费活动
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data['id'],'is_paied' => 1])->find();
+            }
+            if ($actRecords){
+                return $this->fail('抱歉,你已经报过名了~','/act/detail/'.$id);
+            }
             // 返回微信参数
             if ($data->isfree != 1) {
                 $accessToken = WeiXin::getAccessToken();
@@ -291,5 +303,18 @@ class Activity extends Controller
         $response->data = $data;
         $response->msg = $msg;
         return json($response);
+    }
+
+    /**
+     * @param string $msg
+     * @param string $url
+     * @param string $icon
+     * @param int $time
+     * @return string
+     */
+    private function fail($msg='',$url='',$icon='',$time=3){
+        $str = '<script type="text/javascript" src="/static/js/jquery-1.11.3.min.js"></script><script type="text/javascript" src="/static/js/layer/layer.js"></script>';//加载jquery和layer
+        $str.= '<script>$(function(){layer.msg("'.$msg.'",{icon:'.$icon.',time:'.($time*1000).'});setTimeout(function(){self.location.href="'.$url.'"},2000)});</script>';//主要方法
+        return $str;
     }
 }
