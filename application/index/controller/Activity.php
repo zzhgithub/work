@@ -112,7 +112,7 @@ class Activity extends Controller
                 $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data['id'],'is_paied' => 1])->find();
             }
             if ($actRecords){
-                echo $this->fail('抱歉,你已经报过名了~','/act/detail/'.$id,6,3);
+                echo $this->fail('抱歉,你已经报过名了~','/act/detail/'.$id,5,3);
                 exit;
             }
             // 返回微信参数
@@ -315,7 +315,7 @@ class Activity extends Controller
      */
     private function fail($msg='',$url='',$icon='',$time=3){
         $str = '<script type="text/javascript" src="/static/js/jquery-1.11.3.min.js"></script><script type="text/javascript" src="/static/js/layer/layer.js"></script>';//加载jquery和layer
-        $str .= '<script>$(function(){layer.msg("'.$msg.'",{icon:'.$icon.',time:'.($time*1000).'});setTimeout(function(){self.location.href="'.$url.'"},2000)});</script>';//主要方法
+        $str .= '<script>$(function(){layer.msg("<span style=font-size:20px;width:200px;height:100px;>'.$msg.'</span>",{icon:'.$icon.',time:'.($time*1000).'});setTimeout(function(){self.location.href="'.$url.'"},2000)});</script>';//主要方法
         return $str;
     }
 }
