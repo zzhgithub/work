@@ -313,9 +313,9 @@ class Activity extends Controller
      * @param int $time
      * @return string
      */
-    private function fail($msg='',$url='',$icon='',$time=3){
+    private function fail($msg='',$url='',$time=3){
         $str = '<script type="text/javascript" src="/static/js/jquery-1.11.3.min.js"></script><script type="text/javascript" src="/static/js/layer/layer.js"></script>';//加载jquery和layer
-        $str .= '<script>$(function(){layer.msg("<span style=font-size:20px;width:200px;height:100px;>'.$msg.'</span>",{icon:'.$icon.',time:'.($time*1000).'});setTimeout(function(){self.location.href="'.$url.'"},2000)});</script>';//主要方法
+        $str .= '<script>$(function(){layer.alert(e, {icon: 5,time: '.$time*1000.',offset: "auto",closeBtn: 0,title: "'.$msg.'",btn: [],anim: 2,shade: 0});setTimeout(function(){self.location.href="'.$url.'"},2000)});</script>';//主要方法
         return $str;
     }
 }
