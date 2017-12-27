@@ -14,8 +14,18 @@ class OrderItem extends Model
 {
     protected $updateTime = false;
     protected $createTime = false;
+
     public function getOneByOrder($orderNo)
     {
         return $this->where(['order_no' => $orderNo])->find();
+    }
+
+    /**
+     * 关联 product
+     * @return \think\model\relation\HasOne
+     */
+    public function product()
+    {
+        return $this->hasOne('Product','id','pro_id',[],'LEFT')->field('name,store,state');
     }
 }

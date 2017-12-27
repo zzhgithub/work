@@ -112,7 +112,7 @@ class Activity extends Controller
                 $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data['id'],'is_paied' => 1])->find();
             }
             if ($actRecords){
-                echo $this->fail('抱歉,你已经报过名了~','/act/detail/'.$id,5,3);
+                echo $this->fail('抱歉,你已经报过名了~','/act/detail/'.$id,3);
                 exit;
             }
             // 返回微信参数
@@ -309,7 +309,6 @@ class Activity extends Controller
     /**
      * @param string $msg
      * @param string $url
-     * @param string $icon
      * @param int $time
      * @return string
      */
