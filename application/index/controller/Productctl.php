@@ -135,7 +135,7 @@ class Productctl extends Controller
         if (empty($product) || $product->state != 1) {
             return self::response(400, '产品不存在~');
         }
-        if ($product->store < $num) {
+        if ($product->store < $num || !$product->store) {
             return self::response(400, '库存不足~');
         }
         $ids = [];
