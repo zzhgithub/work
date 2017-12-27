@@ -13,6 +13,7 @@ use app\index\model\Inspect;
 use app\index\model\Point;
 use app\index\model\Pointbanner;
 use app\index\model\Pointdetail;
+use app\index\model\Pointnear;
 use app\index\model\Route;
 use app\index\model\Routepoint;
 use think\Controller;
@@ -184,6 +185,10 @@ class Show extends Controller
                 ->select();
             $this->assign('inspect', $inspect_list);
             $this->assign('title', $base->name);
+
+            $nearcleint = new Pointnear();
+            $near = $nearcleint->where(['pid'=>$id])->select();
+            $this->assign("nearlist",$near);
 
             return $this->view->fetch('point/detail');
         } catch (Exception $e) {

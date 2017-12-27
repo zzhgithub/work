@@ -45,21 +45,9 @@
     <span>周边一公里范围内文物点｜</span><a href="#">各点位可点开查看详情</a>
 </div>
 <div class="tube_xq">
-    <a href="shove1.html">· 曾家岩50号<span>(距离0.45km)</span></a>
-    <a href="shove2.html">· 国民政府警察局旧址<span>(距离0.45km)</span></a>
-    <a href="shove.html">· 戴笠公馆旧址<span>(距离0.45km)</span></a>
-    <a href="shove3.html">· 潘文华旧居<span>(距离0.45km)</span></a>
-    <a href="shove4.html">· 蒋介石侍从室旧址<span>(距离0.45km)</span></a>
-    <a href="shove5.html">· 宋美龄旧居<span>(距离0.45km)</span></a>
-    <a href="shove6.html">· 康心远公馆旧址<span>(距离0.45km)</span></a>
-    <a href="shove7.html">· 李宗仁公馆旧址<span>(距离0.45km)</span></a>
-    <a href="shove8.html">· 国民政府行政院旧址<span>(距离0.45km)</span></a>
-    <a href="shove9.html">· 桂园（张治中公馆旧址）<span>(距离0.45km)</span></a>
-    <a href="shove10.html">· 中国国民党中央执行委员会旧址（原张骧公馆）<span>(距离0.45km)</span></a>
-    <a href="shove11.html">· 晋冀鲁豫军区子弟学校<span>(距离0.45km)</span></a>
-    <a href="shove12.html">· 民主党派陈列馆<span>(距离0.45km)</span></a>
-    <a href="shove13.html">· 嘉陵桥西村<span>(距离0.45km)</span></a>
-    <a href="shove14.html">· 怡园<span>(距离0.45km)</span></a>
+    {volist name="nearlist" id="vo3"}
+    <a href="/point/detail/{$vo3.nid}">· {$vo3.name}<span>(距离{$vo3.distance})</span></a>
+    {/volist}
 </div>
 <div class="tube_notr">
     <span></span>
