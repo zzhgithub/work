@@ -34,13 +34,6 @@
                        class="layui-input" value="{$near.distance}" style="width: 300px;">
             </div>
         </div>
-        <!--<div class="layui-form-item">-->
-        <!--<label class="layui-form-label">公告内容</label>-->
-        <!--<div class="layui-input-block">-->
-        <!--<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入公告标题"-->
-        <!--class="layui-input" value="{$near.title}" style="width: 300px;">-->
-        <!--</div>-->
-        <!--</div>-->
         <div class="layui-form-item">
             <div class="layui-input-block">
                 {if condition="$near.id gt 0"}
@@ -72,15 +65,15 @@
 //            }
 //        });
 //        var editor = layedit.build('editor'); //建立编辑器
-        form.verify({
-            title: function (value) { //value：表单的值、item：表单的DOM对象
-                if (/^\d+\d+\d$/.test(value)) {
-                    return '公告标题不能全为数字';
-                }
-                if (value.length < 5) {
-                    return '公告标题至少得5个字符啊';
-                }
-            }
+//        form.verify({
+//            title: function (value) { //value：表单的值、item：表单的DOM对象
+//                if (/^\d+\d+\d$/.test(value)) {
+//                    return '公告标题不能全为数字';
+//                }
+//                if (value.length < 5) {
+//                    return '公告标题至少得5个字符啊';
+//                }
+//            }
 //            , des: function (value) {
 //                if (!value) {
 //                    return '请输入公告描述';
@@ -95,7 +88,7 @@
 //                    return '请输入详细信息';
 //                }
 //            }
-        });
+
         form.on('submit(go)', function (data) {
 //            layedit.sync(editor);
             $.post("/boss/near/add", data.field, function (res) {
