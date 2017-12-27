@@ -97,6 +97,7 @@
         countObj.find(".count_ji").show();
         if (parseInt(count) >= countObj.data('store')) {
             countObj.find("i").html(countObj.data('store'));
+            alert('库存不足');
             return false;
         }
         // 请求服务
@@ -138,7 +139,7 @@
         $.ajax({
             type: 'post',
             url: "/product/addcart",
-            data: {'id': countObj.data('id'), 'num': parseInt(count) - 1},
+            data: {'id': countObj.data('id'), 'num': parseInt(count) - 1 < 0 ? 0: parseInt(count) - 1},
             dataType: "json",
             success: function (data) {
                 if (data.code === 0) {

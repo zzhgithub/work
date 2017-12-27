@@ -127,13 +127,16 @@ class Productctl extends Controller
         $id = (int)$request->param('id');
         $num = (int)$request->param('num');
         if (!$id || $num < 0 || !$request->isAjax()) {
-            return self::response(400, '非法请求');
+            return self::response(400, '非法请求~');
         }
         $cart = Session::get('cart');
         $cartArr = $cart != null ? explode(',', $cart) : [];
         $product = Product::get($id);
         if (empty($product) || $product->state != 1) {
-            return self::response(400, '产品不存在');
+            return self::response(400, '产品不存在~');
+        }
+        if ($product->store < $num || !$product->store) {
+            return self::response(400, '库存不足~');
         }
         $ids = [];
         if (!empty($cartArr)) {
