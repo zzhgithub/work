@@ -338,7 +338,7 @@ class Boss extends Controller
                 ->order('sort')
                 ->select();
             $this->assign('list', $list);
-
+            $this->assign("title","推荐路线");
             return $this->view->fetch('boss/route/list');
         } catch (Exception $e) {
             var_dump($e->getMessage());
@@ -358,7 +358,7 @@ class Boss extends Controller
                 $this->assign('title', '推荐路线添加');
                 $this->assign('data', null);
             }
-            return $this->view->fetch('boss/route/add');
+            return $this->view->fetch('boss/route/newadd');
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
@@ -409,7 +409,7 @@ class Boss extends Controller
                 ->order('sort')
                 ->select();
             $this->assign('list', $list);
-
+            $this->assign("title","推荐路线文物点设置");
             return $this->view->fetch('boss/route/point/list');
         } catch (Exception $e) {
             var_dump($e->getMessage());
@@ -432,7 +432,7 @@ class Boss extends Controller
                     $this->assign('data', null);
                 }
             }
-            return $this->view->fetch('boss/route/point/add');
+            return $this->view->fetch('boss/route/point/newadd');
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
@@ -477,6 +477,7 @@ class Boss extends Controller
             $list = $client->order('sort')
                 ->select();
             $this->assign('list', $list);
+            $this->assign("title","活动列表");
             return $this->view->fetch('boss/act/list');
         } catch (Exception $e) {
             var_dump($e->getMessage());
@@ -495,7 +496,7 @@ class Boss extends Controller
                 $this->assign('title', '活动 添加');
                 $this->assign('data', null);
             }
-            return $this->view->fetch('boss/act/add');
+            return $this->view->fetch('boss/act/newadd');
         } catch (Exception $e) {
             var_dump($e->getMessage());
         }
@@ -881,7 +882,7 @@ class Boss extends Controller
             return json($response);
         }
         $this->assign('title', '反馈管理-' . $this->title);
-        return $this->view->fetch('boss/news/list');
+        return $this->view->fetch('boss/inspect/list');
     }
 
     //添加反馈

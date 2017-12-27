@@ -1,7 +1,7 @@
-{extend name="base" /}
-{block name="title"}Boss 推荐路线 列表页{/block}
-{block name="content"}
-<table class="table table-striped">
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<table class="table layui-table">
     <caption>Boss 推荐路线 列表页</caption>
     <thead>
     <tr>
@@ -28,13 +28,13 @@
         <td>{$vo.name}</td>
         <td>{$vo.sort}</td>
         <td>
-            <a href="/index.php?s=boss/route/mod/{$vo.id}" class="btn btn-primary" role="button">
+            <a href="/index.php?s=boss/route/mod/{$vo.id}" class="btn layui-btn" role="button">
                 修改
             </a>
-            <a href="/index.php?s=boss/route/add" class="btn btn-primary" role="button">
+            <a href="/index.php?s=boss/route/add" class="btn layui-btn" role="button">
                 添加
             </a>
-            <a href="/index.php?s=boss/route/dell/{$vo.id}" class="btn btn-danger" role="button">
+            <a href="/index.php?s=boss/route/dell/{$vo.id}" class="btn layui-btn" role="button">
                 删除
             </a>
         </td>
