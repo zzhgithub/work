@@ -164,6 +164,14 @@ return [
     'boss/cert/add' =>'index/boss/certSave',
     'boss/cert/mod/:id' =>'index/boss/certSave',
     'boss/cert/del' =>'index/boss/certDel',
+
+    /**
+     * 附近文物点管理
+     */
+    'boss/near/list' => 'index/boss/nearList',
+    'boss/near/add' => 'index/boss/nearSave',
+    'boss/near/mod/:id' => 'index/boss/nearSave',
+    'boss/near/del' => 'index/boss/nearDel',
     /**
      * 登录 登出
      */

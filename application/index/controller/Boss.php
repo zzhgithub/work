@@ -17,6 +17,7 @@ use app\index\model\Inspect;
 use app\index\model\Point;
 use app\index\model\Pointbanner;
 use app\index\model\Pointdetail;
+use app\index\model\Pointnear;
 use app\index\model\Product;
 use app\index\model\ProductContent;
 use app\index\model\ProductImg;
@@ -1172,6 +1173,71 @@ class Boss extends Controller
             return $this->response(400, '非法请求');
         }
         $res = Cert::destroy($id);
+        if (!$res) {
+            return $this->response(400, '删除失败');
+        }
+        return $this->response(0, '删除成功');
+    }
+
+    public function nearList(Request $request){
+        if ($request->isAjax()) {
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $cert = new Pointnear();
+            $list = $cert->order('sort')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '附近管理-' . $this->title);
+        return $this->view->fetch('boss/near/list');
+    }
+
+    public function nearSave(Request $request){
+        if ($request->isAjax()) {
+            $data = $request->post();
+            if (empty($data)) {
+                return $this->response(400, '非法请求');
+            }
+            $cert = new Pointnear();
+            unset($data['file']);
+            if (isset($data['id']) && intval($data['id'])) { // 修改
+                $data['id'] = intval($data['id']);
+                $res = $cert->save($data, ['id' => $data['id']]);
+            } else {              //添加
+                $cert->data($data);
+                $res = $cert->save();
+            }
+            if ($res) {
+                return $this->response(0, '操作成功');
+            } else {
+                return $this->response(400, '操作失败');
+            }
+        } else {
+            $id = intval($request->param('id'));
+            $cert = Pointnear::get($id);
+            $this->assign('near', $cert);
+            $this->assign('title', '添加/修改附近文物点-' . $this->title);
+            return $this->view->fetch('boss/near/add');
+        }
+    }
+
+    public function nearDel($id){
+        $id = intval($id);
+        if ($id <= 0) {
+            return $this->response(400, '非法请求');
+        }
+        if (!Request::instance()->isAjax()) {
+            return $this->response(400, '非法请求');
+        }
+        $res = Pointnear::destroy($id);
         if (!$res) {
             return $this->response(400, '删除失败');
         }
