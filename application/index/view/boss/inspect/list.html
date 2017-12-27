@@ -12,13 +12,13 @@
             <th lay-data="{field:'img', width:160}">头像</th>
             <th lay-data="{field:'pid', width:160}">文物点id</th>
             <th lay-data="{field:'des', width:160}">反馈介绍</th>
-            <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barNews'}">操作</th>
+            <th lay-data="{fixed: 'right', width:180, align:'center', toolbar: '#barNews'}">操作</th>
         </tr>
         </thead>
     </table>
     <script type="text/html" id="barNews">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">下架</a>
+        <a class="btn layui-btn" style="line-height: inherit;" lay-event="edit">编辑</a>
+        <a class="btn layui-btn layui-btn-danger" style="line-height: inherit;" lay-event="del">删除</a>
     </script>
 </div>
 {/block}

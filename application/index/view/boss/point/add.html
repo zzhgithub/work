@@ -65,8 +65,8 @@
                 processData: false,
                 contentType: false,
                 success: function (res) {
-                    $("#img").attr('value', "http://cqlaojie.com/uploads/" + res);
-                    $("#pimg").attr("src", "http://cqlaojie.com/uploads/" + res);
+                    $("#img").attr('value', "/uploads/" + res);
+                    $("#pimg").attr("src", "/uploads/" + res);
                     alert("上传成功");
                 }
             });

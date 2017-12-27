@@ -1,7 +1,11 @@
 {extend name="boss/public/layout"/}
 {block name="body"}
+<div style="height: 38px;padding-top: 20px;">
+    <span style="float: left;">Boss 文物点详情 banner 列表页</span>
+    <a href="/boss/point/banner/add/{$pid}" class="btn layui-btn" role="button" style="float: right;margin-right: 20px;">添加</a>
+</div>
+
 <table class="table layui-table">
-    <caption>Boss 文物点详情 banner 列表页</caption>
     <thead>
     <tr>
         <th>id</th>

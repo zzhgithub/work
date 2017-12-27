@@ -13,7 +13,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="preview">预览图</label>
                     <div class="thumbnail" id="preview">
-                        <img id="pimg" src="{$data.img}">
+                        <img id="pimg" style="width: 100px;" src="{if condition='isset($data.img)'}{$data.img}{else/}/static/images/no_pic.gif{/if}">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -80,8 +80,8 @@
                 processData:false,
                 contentType:false,
                 success:function (res){
-                    $("#img").attr('value',"http://cqlaojie.com/uploads/" + res);
-                    $("#pimg").attr("src","http://cqlaojie.com/uploads/" + res);
+                    $("#img").attr('value',"/uploads/" + res);
+                    $("#pimg").attr("src","/uploads/" + res);
                     alert("上传成功");
                 }
             });
@@ -90,24 +90,25 @@
 
         $("#datafrom").submit(function () {
             var formData = new FormData();
-            formData.append('id',$('#id').attr('value'));
-            formData.append('img',$('#img').attr('value'));
-            formData.append('num',$("#num")[0].value);
-            formData.append('des',$("#des")[0].value);
-            formData.append('name',$("#name")[0].value);
-            formData.append('sort',$("#sort")[0].value);
-            formData.append('cost',$("#cost")[0].value);
+            formData.append('id', $('#id').attr('value'));
+            formData.append('img', $('#img').attr('value'));
+            formData.append('num', $("#num")[0].value);
+            formData.append('des', $("#des")[0].value);
+            formData.append('name', $("#name")[0].value);
+            formData.append('sort', $("#sort")[0].value);
+            formData.append('cost', $("#cost")[0].value);
             $.ajax({
-                url:"/index.php?s=boss/route/save",
-                type:"post",
-                data:formData,
-                processData:false,
-                contentType:false,
-                success:function (res){
+                url: "/index.php?s=boss/route/save",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
                     alert(res);
                     window.history.back(-1);
                 }
             });
+        });
     });
 </script>
 {/block}

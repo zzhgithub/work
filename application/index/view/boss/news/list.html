@@ -11,13 +11,13 @@
             <th lay-data="{field:'url', width:180,templet: '#urlTpl'}" >公告外链</th>
             <th lay-data="{field:'create_time', width:150,sort: true}">添加时间</th>
             <th lay-data="{field:'update_time', width:150, sort: true}">更新时间</th>
-            <th lay-data="{fixed: 'right', width:120, align:'center', toolbar: '#barNews'}">操作</th>
+            <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barNews'}">操作</th>
         </tr>
         </thead>
     </table>
     <script type="text/html" id="barNews">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        <a class="btn layui-btn" style="line-height: inherit;" lay-event="edit">编辑</a>
+        <a class="btn layui-btn layui-btn-danger" style="line-height: inherit;" lay-event="del">删除</a>
     </script>
     <script type="text/html" id="urlTpl">
         <a href="{{d.url}}" class="layui-table-link" target="_blank">{{d.url}}</a>

@@ -10,7 +10,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="preview">预览图</label>
                     <div class="thumbnail" id="preview">
-                        <img id="pimg" src="{$data.img}">
+                        <img id="pimg" style="width: 100px;" src="{if condition='isset($data.img)'}{$data.img}{else/}/static/images/no_pic.gif{/if}">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -19,13 +19,6 @@
                     <a role="button" id="upload" href="#" class="btn layui-btn">确认上传</a>
                 </div>
                 <input type="hidden" value="{$data.img}" id="img">
-                <!-- 异步上传图片的按钮 和图片处理 -->
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="des">banner介绍</label>
-                    <div class="layui-input-block">
-                        <input type="text" value="{$data.des}" class="layui-input" id="des" placeholder="请输入介绍">
-                    </div>
-                </div>
 
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="name">名称</label>
@@ -83,8 +76,8 @@
                 processData: false,
                 contentType: false,
                 success: function (res) {
-                    $("#img").attr('value', "http://cqlaojie.com/uploads/" + res);
-                    $("#pimg").attr("src", "http://cqlaojie.com/uploads/" + res);
+                    $("#img").attr('value', "/uploads/" + res);
+                    $("#pimg").attr("src", "/uploads/" + res);
                     alert("上传成功");
                 }
             });

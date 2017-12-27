@@ -40,8 +40,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">昵称</label>
             <div class="layui-input-block">
-                <input type="text" name="nickname" lay-verify="nickname" autocomplete="off" placeholder="请输入产品名称"
-                       class="layui-input" value="{inspect.nickname}" style="width: 300px;">
+                <input type="text" name="nickname" lay-verify="nickname" autocomplete="off" placeholder="请输入昵称"
+                       class="layui-input" value="{$inspect.nickname}" style="width: 300px;">
             </div>
         </div>
 
@@ -60,13 +60,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">介绍</label>
             <div class="layui-input-block">
-                <input type="text" name="des" lay-verify="des" autocomplete="off" placeholder="请输入产品价格" class="layui-input" value="{$inspect.price}" style="width: 200px;" onkeypress="return noNumbers(event)" onblur="return checkNumber(event,2)">
+                <input type="text" name="des" lay-verify="des" autocomplete="off" placeholder="请输入介绍" class="layui-input" value="{$inspect.price}" style="width: 200px;">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">文物点id</label>
             <div class="layui-input-block">
-                <input type="number" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入产品库存" class="layui-input" value="{$inspect.pid}" style="width: 200px;" onkeypress="return noNumbers(event)" onblur="return checkNumber(event,0)">
+                <input type="number" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入文物点id" class="layui-input" value="{$inspect.pid}" style="width: 200px;" onkeypress="return noNumbers(event)" onblur="return checkNumber(event,0)">
             </div>
         </div>
         <div class="layui-form-item">
@@ -133,20 +133,6 @@
             $('.preview').attr('src','/static/images/no_pic.gif');
         }
     });
-    // 删除图片
-    function delImg(obj) {
-        var id = $(obj).data('id');
-        if (Number(id) > 0){
-            $.post("/boss/productimg/del", {id:id}, function (res) {
-                layer.msg(res.msg);
-                if (res.code === 0) {
-                    $(obj).parents('.img_box').remove();
-                }
-            });
-        }else {
-            $(obj).parents('.img_box').remove();
-        }
-    }
     layui.use(['form', 'layedit', 'layer', 'upload'], function () {
         var upload = layui.upload;
         var layedit = layui.layedit;
@@ -165,7 +151,7 @@
         var uploadInst = upload.render({
             elem: '#img' //绑定元素
             , url: '/boss/upload' //上传接口
-            , data: {type: 'product'}
+            , data: {type: 'inspect'}
             , done: function (res) {
                 $('.done').css({"color": "#000"}).text('');
                 //上传完毕回调
@@ -180,25 +166,6 @@
             , error: function () {
                 //请求异常回调
                 $('.done').css({"color": "red"}).text('服务异常');
-            }
-        });
-
-        //多图片上传
-        upload.render({
-            elem: '#multiUpload'
-            ,url: '/boss/upload/'
-            ,data:{type: 'product'}
-            ,multiple: true
-            ,before: function(obj){
-            }
-            ,done: function(res, index, upload){
-                if (res.code === 0){
-                    var str = '<div class="img_box"><div class="img_preview"><img src="'+res.data.src+'" class="layui-upload-img img"></div><span class="spandel"><a data-id onclick="delImg(this)">删除</a></span></div>';
-                    $('#multiPreview').append(str);
-                    var imgs = $('#imgs');
-                    var imgsPath = imgs.val();
-                    imgs.val(imgsPath + '|' + res.data.src);
-                }
             }
         });
 

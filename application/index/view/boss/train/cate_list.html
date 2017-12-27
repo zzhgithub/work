@@ -10,13 +10,13 @@
             <th lay-data="{field:'name', width:400}">培训分类标题</th>
             <th lay-data="{field:'create_time', width:150,sort: true}">添加时间</th>
             <th lay-data="{field:'update_time', width:150, sort: true}">更新时间</th>
-            <th lay-data="{fixed: 'right', width:120, align:'center', toolbar: '#barCate'}">操作</th>
+            <th lay-data="{fixed: 'right', width:180, align:'center', toolbar: '#barCate'}">操作</th>
         </tr>
         </thead>
     </table>
     <script type="text/html" id="barCate">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        <a class="btn layui-btn" style="line-height: inherit;" lay-event="edit">编辑</a>
+        <a class="btn layui-btn layui-btn-danger" style="line-height: inherit;" lay-event="del">删除</a>
     </script>
 </div>
 {/block}

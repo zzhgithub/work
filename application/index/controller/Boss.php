@@ -264,6 +264,7 @@ class Boss extends Controller
             $res = $client->where(['pid' => $id])->select();
             $this->assign("title","banner列表");
             $this->assign('list', $res);
+            $this->assign('pid', $id);
             return $this->view->fetch('boss/point/banner/list');
         } catch (Exception $e) {
             var_dump($e->getMessage());
@@ -1114,8 +1115,8 @@ class Boss extends Controller
         if ($request->isAjax()) {
             $limit = $request->request('limit');
             $limit = $limit ? intval($limit) : 10;
-            $train = new Cert();
-            $list = $train->order('sort')->paginate($limit);
+            $cert = new Cert();
+            $list = $cert->order('sort')->paginate($limit);
             $response = new \stdClass();
             $response->code = 0;
             $response->count = $list->total();
@@ -1138,14 +1139,14 @@ class Boss extends Controller
             if (empty($data)) {
                 return $this->response(400, '非法请求');
             }
-            $news = new Cert();
+            $cert = new Cert();
             unset($data['file']);
             if (isset($data['id']) && intval($data['id'])) { // 修改
                 $data['id'] = intval($data['id']);
-                $res = $news->save($data, ['id' => $data['id']]);
+                $res = $cert->save($data, ['id' => $data['id']]);
             } else {              //添加
-                $news->data($data);
-                $res = $news->save();
+                $cert->data($data);
+                $res = $cert->save();
             }
             if ($res) {
                 return $this->response(0, '操作成功');
@@ -1154,8 +1155,8 @@ class Boss extends Controller
             }
         } else {
             $id = intval($request->param('id'));
-            $news = News::get($id);
-            $this->assign('news', $news);
+            $cert = Cert::get($id);
+            $this->assign('cert', $cert);
             $this->assign('title', '添加/修改证书-' . $this->title);
             return $this->view->fetch('boss/cert/add');
         }

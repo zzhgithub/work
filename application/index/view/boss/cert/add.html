@@ -9,39 +9,32 @@
         <div class="layui-form-item">
             <label class="layui-form-label">证书编号</label>
             <div class="layui-input-block">
-                <input type="text" name="num" lay-verify="num" autocomplete="off" placeholder="请输入公告标题"
-                       class="layui-input" value="{$news.num}" style="width: 300px;">
+                <input type="text" name="num" lay-verify="num" autocomplete="off" placeholder="请输入证书编号"
+                       class="layui-input" value="{$cert.num}" style="width: 300px;">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">上传封面</label>
             <div class="layui-input-block">
-                <input type="hidden" name="img" lay-verify="img" autocomplete="off" placeholder="" class="layui-input" value="{$news.img}">
+                <input type="hidden" name="img" lay-verify="img" autocomplete="off" placeholder="" class="layui-input" value="{$cert.img}">
                 <button type="button" class="layui-btn" id="img">
                     <i class="layui-icon">&#xe67c;</i>上传封面
                 </button>
                 <span class="done"></span>
-                <div><img class="preview" src="{$news.img}" style="width: 100px;"/></div>
+                <div><img class="preview" src="{$cert.img}" style="width: 100px;"/></div>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">要求</label>
+            <label class="layui-form-label">要求描述</label>
             <div class="layui-input-block">
-                <input type="text" name="des" lay-verify="" autocomplete="off" placeholder="请输入公告标题"
-                       class="layui-input" value="{$news.des}" style="width: 300px;">
+                <input type="text" name="des" lay-verify="require" autocomplete="off" placeholder="请输入要求"
+                       class="layui-input" value="{$cert.des}" style="width: 300px;">
             </div>
         </div>
-        <!--<div class="layui-form-item">-->
-        <!--<label class="layui-form-label">公告内容</label>-->
-        <!--<div class="layui-input-block">-->
-        <!--<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入公告标题"-->
-        <!--class="layui-input" value="{$news.title}" style="width: 300px;">-->
-        <!--</div>-->
-        <!--</div>-->
         <div class="layui-form-item">
             <div class="layui-input-block">
-                {if condition="$news.id gt 0"}
-                <input type="hidden" name="id" value="{$news.id}">
+                {if condition="$cert.id gt 0"}
+                <input type="hidden" name="id" value="{$cert.id}">
                 {/if}
                 <button class="layui-btn" lay-submit="" lay-filter="go">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -60,44 +53,52 @@
             $('.preview').attr('src','/static/images/no_pic.gif');
         }
     });
-    layui.use(['form', 'layedit', 'layer'], function () {
-        //var layedit = layui.layedit;
+    layui.use(['form', 'layer', 'upload'], function () {
+        var upload = layui.upload;
         var form = layui.form;
         var layer = layui.layer;
 
-//        layedit.set({
-//            uploadImage: {
-//                url: '/boss/upload?type=product' //接口url
-//                , type: 'post' //默认post
-//            }
-//        });
-//        var editor = layedit.build('editor'); //建立编辑器
-        form.verify({
-            title: function (value) { //value：表单的值、item：表单的DOM对象
-                if (/^\d+\d+\d$/.test(value)) {
-                    return '公告标题不能全为数字';
-                }
-                if (value.length < 5) {
-                    return '公告标题至少得5个字符啊';
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#img' //绑定元素
+            , url: '/boss/upload' //上传接口
+            , data: {type: 'cert'}
+            , done: function (res) {
+                $('.done').css({"color": "#000"}).text('');
+                //上传完毕回调
+                if (res.code === 0) {
+                    $('input[name="img"]').val(res.data.src);
+                    $('.done').css({"color": "green"}).text(res.msg);
+                    $('.preview').attr('src', res.data.src);
+                } else {
+                    $('.done').css({"color": "red"}).text(res.msg);
                 }
             }
-//            , des: function (value) {
-//                if (!value) {
-//                    return '请输入公告描述';
-//                }
-//                if (value.length < 20) {
-//                    return '产品描述不能少于20字';
-//                }
-//            }
-//            , content: function (value) {
-//                layedit.sync(editor);
-//                if (!value) {
-//                    return '请输入详细信息';
-//                }
-//            }
+            , error: function () {
+                //请求异常回调
+                $('.done').css({"color": "red"}).text('服务异常');
+            }
         });
+
+        form.verify({
+            num: function (value) { //value：表单的值、item：表单的DOM对象
+                if (value == '') {
+                    return '请输入编号';
+                }
+            }
+            , img: function (value) {
+                if (value === '' || value.length === 0) {
+                    return '请上传封面';
+                }
+            }
+            , require:function (value) {
+                if (value === '' || value.length === 0) {
+                    return '请输入要求描述';
+                }
+            }
+        });
+
         form.on('submit(go)', function (data) {
-//            layedit.sync(editor);
             $.post("/boss/cert/add", data.field, function (res) {
                 layer.msg(res.msg);
                 if (res.code === 0) {

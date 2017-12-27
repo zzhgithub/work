@@ -11,7 +11,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="preview">预览图</label>
                     <div class="thumbnail" id="preview">
-                        <img id="pimg" src="{$data.img}">
+                        <img id="pimg" style="width: 100px;" src="{if condition='isset($data.img)'}{$data.img}{else/}/static/images/no_pic.gif{/if}">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -65,8 +65,8 @@
                 processData: false,
                 contentType: false,
                 success: function (res) {
-                    $("#img").attr('value', "http://cqlaojie.com/uploads/" + res);
-                    $("#pimg").attr("src", "http://cqlaojie.com/uploads/" + res);
+                    $("#img").attr('value', "/uploads/" + res);
+                    $("#pimg").attr("src", "/uploads/" + res);
                     alert("上传成功");
                 }
             });
