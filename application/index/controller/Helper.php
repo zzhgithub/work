@@ -149,86 +149,104 @@ class Helper extends Controller
             if ($type == 'act') {
                 // 更新订单状态
                 $actRecordsObj = new ActRecords();
-                $res = $actRecordsObj->save([
-                    'is_paied' => 1,
-                    'transaction_id' => $data['transaction_id']
-                ], ['order_no' => $data['out_trade_no']]);
-                if ($res) {
-                    // 更新日志
-                    // 根据订单 查询信息
-                    $actRecords = $actRecordsObj->getOneByOrder($data['out_trade_no']);
-                    $log = new Log();
-                    $log->order_no = $data['out_trade_no'];
-                    $log->user_id = $actRecords->user_id;
-                    $log->open_id = $actRecords->open_id;
-                    $log->type = WeiXin::ORDER_ACT;
-                    $log->content = '支付成功';
-                    $log->price = $actRecords->price;
-                    $log->transaction_id = $data['transaction_id'];
-                    $log->save();
-                    $msg = '交易成功';
-                    $result['return_code'] = 'SUCCESS';
-                    $result['return_msg'] = '';
-                } else {
+                // 根据订单 查询信息
+                $actRecords = $actRecordsObj->getOneByOrder($data['out_trade_no']);
+                if ($actRecords->price * 100 == $data['total_fee']){
+                    $res = $actRecordsObj->save([
+                        'is_paied' => 1,
+                        'transaction_id' => $data['transaction_id']
+                    ], ['order_no' => $data['out_trade_no']]);
+                    if ($res) {
+                        // 更新日志
+                        $log = new Log();
+                        $log->order_no = $data['out_trade_no'];
+                        $log->user_id = $actRecords->user_id;
+                        $log->open_id = $actRecords->open_id;
+                        $log->type = WeiXin::ORDER_ACT;
+                        $log->content = '支付成功';
+                        $log->price = $actRecords->price;
+                        $log->transaction_id = $data['transaction_id'];
+                        $log->save();
+                        $msg = '交易成功';
+                        $result['return_code'] = 'SUCCESS';
+                        $result['return_msg'] = '';
+                    } else {
+                        $msg = '交易失败';
+                        $result['return_code'] = 'FAIL';
+                        $result['return_msg'] = '业务处理失败';
+                    }
+                }else{
                     $msg = '交易失败';
                     $result['return_code'] = 'FAIL';
-                    $result['return_msg'] = '业务处理失败';
+                    $result['return_msg'] = '签名失败';
                 }
             } elseif ($type == 'don') {   // 捐款
                 // 更新订单状态
                 $donateRecordsObj = new DonateRecords();
-                $res = $donateRecordsObj->save([
-                    'is_paied' => 1,
-                    'transaction_id' => $data['transaction_id']
-                ], ['order_no' => $data['out_trade_no']]);
-                if ($res) {
-                    // 更新日志
-                    // 根据订单 查询信息
-                    $donateRecords = $donateRecordsObj->getOneByOrder($data['out_trade_no']);
-                    $log = new Log();
-                    $log->order_no = $data['out_trade_no'];
-                    $log->user_id = $donateRecords->user_id;
-                    $log->open_id = $donateRecords->open_id;
-                    $log->type = WeiXin::ORDER_DONATE;
-                    $log->content = '支付成功';
-                    $log->price = $donateRecords->money;
-                    $log->transaction_id = $data['transaction_id'];
-                    $log->save();
-                    $msg = '交易成功';
-                    $result['return_code'] = 'SUCCESS';
-                    $result['return_msg'] = '';
-                } else {
+                // 根据订单 查询信息
+                $donateRecords = $donateRecordsObj->getOneByOrder($data['out_trade_no']);
+                if ($donateRecords->money * 100 == $data['total_fee']){
+                    $res = $donateRecordsObj->save([
+                        'is_paied' => 1,
+                        'transaction_id' => $data['transaction_id']
+                    ], ['order_no' => $data['out_trade_no']]);
+                    if ($res) {
+                        // 更新日志
+                        $log = new Log();
+                        $log->order_no = $data['out_trade_no'];
+                        $log->user_id = $donateRecords->user_id;
+                        $log->open_id = $donateRecords->open_id;
+                        $log->type = WeiXin::ORDER_DONATE;
+                        $log->content = '支付成功';
+                        $log->price = $donateRecords->money;
+                        $log->transaction_id = $data['transaction_id'];
+                        $log->save();
+                        $msg = '交易成功';
+                        $result['return_code'] = 'SUCCESS';
+                        $result['return_msg'] = '';
+                    } else {
+                        $msg = '交易失败';
+                        $result['return_code'] = 'FAIL';
+                        $result['return_msg'] = '业务处理失败';
+                    }
+                }else{
                     $msg = '交易失败';
                     $result['return_code'] = 'FAIL';
-                    $result['return_msg'] = '业务处理失败';
+                    $result['return_msg'] = '签名失败';
                 }
             } elseif ($type == 'pro') {
                 // 更新订单状态
                 $orderObj = new Order();
-                $res = $orderObj->save([
-                    'is_paied' => 1,
-                    'transaction_id' => $data['transaction_id']
-                ], ['order_no' => $data['out_trade_no']]);
-                if ($res) {
-                    // 更新日志
-                    // 根据订单 查询信息
-                    $order = $orderObj->getOneByOrder($data['out_trade_no']);
-                    $log = new Log();
-                    $log->order_no = $data['out_trade_no'];
-                    $log->user_id = $order->user_id;
-                    $log->open_id = $order->open_id;
-                    $log->type = WeiXin::ORDER_PRODUCT;
-                    $log->content = '支付成功';
-                    $log->price = $order->total_price;
-                    $log->transaction_id = $data['transaction_id'];
-                    $log->save();
-                    $msg = '交易成功';
-                    $result['return_code'] = 'SUCCESS';
-                    $result['return_msg'] = '';
-                } else {
+                // 根据订单 查询信息
+                $order = $orderObj->getOneByOrder($data['out_trade_no']);
+                if ($order->total_price * 100 == $data['total_fee']){
+                    $res = $orderObj->save([
+                        'is_paied' => 1,
+                        'transaction_id' => $data['transaction_id']
+                    ], ['order_no' => $data['out_trade_no']]);
+                    if ($res) {
+                        // 更新日志
+                        $log = new Log();
+                        $log->order_no = $data['out_trade_no'];
+                        $log->user_id = $order->user_id;
+                        $log->open_id = $order->open_id;
+                        $log->type = WeiXin::ORDER_PRODUCT;
+                        $log->content = '支付成功';
+                        $log->price = $order->total_price;
+                        $log->transaction_id = $data['transaction_id'];
+                        $log->save();
+                        $msg = '交易成功';
+                        $result['return_code'] = 'SUCCESS';
+                        $result['return_msg'] = '';
+                    } else {
+                        $msg = '交易失败';
+                        $result['return_code'] = 'FAIL';
+                        $result['return_msg'] = '业务处理失败';
+                    }
+                }else{
                     $msg = '交易失败';
                     $result['return_code'] = 'FAIL';
-                    $result['return_msg'] = '业务处理失败';
+                    $result['return_msg'] = '签名失败';
                 }
             } else {
                 $msg = '交易失败';
