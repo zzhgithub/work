@@ -7,9 +7,9 @@
         <thead>
         <tr>
             <th lay-data="{field:'id', width:60, sort: true, fixed: true}">ID</th>
-            <th lay-data="{field:'img', width:200,templet: '#imgTpl'}">图片</th>
             <th lay-data="{field:'num', width:180}">编号</th>
             <th lay-data="{field:'des', width:400}" >要求描述</th>
+            <th lay-data="{field:'img', width:200,templet: '#imgTpl'}">图片</th>
             <th lay-data="{fixed: 'right', width:180, align:'center', toolbar: '#barNews'}">操作</th>
         </tr>
         </thead>
@@ -19,7 +19,7 @@
         <a class="btn layui-btn layui-btn-danger" style="line-height: inherit;" lay-event="del">删除</a>
     </script>
     <script type="text/html" id="imgTpl">
-       <img src="{{d.img}}" style="width: 100px;"/>
+       <a href="{{d.img}}" target="_blank" style="text-decoration:underline;">点击查看</a>
     </script>
 </div>
 {/block}

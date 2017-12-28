@@ -178,5 +178,12 @@ return [
     'boss/login' =>'index/BossLogin/login',
     'boss/logout' =>'index/BossLogin/logout',
     'boss/verify' =>'index/BossLogin/verify',
+    'boss/modify' =>'index/boss/modify',
 
+    /**
+     * 订单相关
+     */
+    '/boss/order/product' =>'index/boss/proOrder',
+    '/boss/order/act' =>'index/boss/actOrder',
+    '/boss/order/donate' =>'index/boss/donOrder',
 ];

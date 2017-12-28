@@ -1,0 +1,306 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+    <div class="layui-table-box">
+        <!--<div class="layui-table-header">-->
+            <!--<table cellspacing="0" cellpadding="0" border="0" class="layui-table">-->
+                <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th data-field="order_no">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span><span-->
+                                <!--class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i-->
+                                <!--class="layui-edge layui-table-sort-desc"></i></span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="orderItemObj">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-orderItemObj"><span>产品名</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="img">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-img"><span>产品图</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="price">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-price"><span>产品下单价</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="count">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-count"><span>产品数量</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="total_price">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-total_price"><span>订单总价</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="name">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-name"><span>订单姓名</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="phone">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-phone"><span>订单电话</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="address">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-address"><span>订单地址</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="create_time">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-create_time"><span>订单时间</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="transaction_id">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-transaction_id"><span>微信交易单号</span></div>-->
+                    <!--</th>-->
+                    <!--<th data-field="11">-->
+                        <!--<div class="layui-table-cell laytable-cell-1-11" align="center"><span>操作</span></div>-->
+                    <!--</th>-->
+                <!--</tr>-->
+                <!--</thead>-->
+            <!--</table>-->
+        <!--</div>-->
+        <div class="layui-table-body layui-table-main">
+            <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                <thead>
+                <tr>
+                    <th data-field="order_no">
+                        <div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span><span
+                                class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i
+                                class="layui-edge layui-table-sort-desc"></i></span></div>
+                    </th>
+                    <th data-field="orderItemObj">
+                        <div class="layui-table-cell laytable-cell-1-orderItemObj"><span>产品名</span></div>
+                    </th>
+                    <th data-field="img">
+                        <div class="layui-table-cell laytable-cell-1-img"><span>产品图</span></div>
+                    </th>
+                    <th data-field="price">
+                        <div class="layui-table-cell laytable-cell-1-price"><span>产品下单价</span></div>
+                    </th>
+                    <th data-field="count">
+                        <div class="layui-table-cell laytable-cell-1-count"><span>产品数量</span></div>
+                    </th>
+                    <th data-field="total_price">
+                        <div class="layui-table-cell laytable-cell-1-total_price"><span>订单总价</span></div>
+                    </th>
+                    <th data-field="name">
+                        <div class="layui-table-cell laytable-cell-1-name"><span>订单姓名</span></div>
+                    </th>
+                    <th data-field="phone">
+                        <div class="layui-table-cell laytable-cell-1-phone"><span>订单电话</span></div>
+                    </th>
+                    <th data-field="address">
+                        <div class="layui-table-cell laytable-cell-1-address"><span>订单地址</span></div>
+                    </th>
+                    <th data-field="create_time">
+                        <div class="layui-table-cell laytable-cell-1-create_time"><span>订单时间</span></div>
+                    </th>
+                    <th data-field="transaction_id">
+                        <div class="layui-table-cell laytable-cell-1-transaction_id"><span>微信交易单号</span></div>
+                    </th>
+                    <th data-field="11">
+                        <div class="layui-table-cell laytable-cell-1-11" align="center"><span>操作</span></div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="orderList" id="order"}
+                <tr data-index="{$key}" class="">
+                    <td data-field="order_no">
+                        <div class="layui-table-cell laytable-cell-1-order_no">{$order.order_no}</div>
+                    </td>
+                    <td data-field="orderItemObj">
+                        <div class="layui-table-cell laytable-cell-1-orderItemObj">
+                            <table>
+                                {volist name="order.orderItems" id="product"}
+                                <tr>
+                                    <td style="border: none;">{$product.name}</td>
+                                </tr>
+                                {/volist}
+                            </table>
+                        </div>
+                    </td>
+                    <td data-field="img">
+                        <div class="layui-table-cell laytable-cell-1-img">
+                            <a href="{$order.order_no}" target="_blank">点击查看</a>
+                        </div>
+                    </td>
+                    <td data-field="price">
+                        <div class="layui-table-cell laytable-cell-1-price">
+                            <table>
+                                {volist name="order.orderItems" id="product"}
+                                <tr>
+                                    <td style="border: none;">￥{$product.price}</td>
+                                </tr>
+                                {/volist}
+                            </table>
+                        </div>
+                    </td>
+                    <td data-field="count">
+                        <div class="layui-table-cell laytable-cell-1-count">
+                            <table>
+                                {volist name="order.orderItems" id="product"}
+                                <tr>
+                                    <td style="border: none;">{$product.count}</td>
+                                </tr>
+                                {/volist}
+                            </table>
+                        </div>
+                    </td>
+                    <td data-field="total_price">
+                        <div class="layui-table-cell laytable-cell-1-total_price">￥{$order.total_price}</div>
+                    </td>
+                    <td data-field="name">
+                        <div class="layui-table-cell laytable-cell-1-name">{$order.name}</div>
+                    </td>
+                    <td data-field="phone">
+                        <div class="layui-table-cell laytable-cell-1-phone">{$order.phone}</div>
+                    </td>
+                    <td data-field="address">
+                        <div class="layui-table-cell laytable-cell-1-address">{$order.address}</div>
+                    </td>
+                    <td data-field="create_time">
+                        <div class="layui-table-cell laytable-cell-1-create_time">{$order.create_time}</div>
+                    </td>
+                    <td data-field="transaction_id">
+                        <div class="layui-table-cell laytable-cell-1-transaction_id">{$order.transaction_id}</div>
+                    </td>
+                    <td data-field="11" align="center" data-off="true">
+                        <div class="layui-table-cell laytable-cell-1-11"><a class="btn layui-btn"
+                                                                            style="line-height: inherit;"
+                                                                            lay-event="edit">添加备注</a></div>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+        <div class="layui-table-fixed layui-table-fixed-l">
+            <div class="layui-table-header">
+                <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                    <thead>
+                    <tr>
+                        <th data-field="order_no">
+                            <div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span><span
+                                    class="layui-table-sort layui-inline"><i
+                                    class="layui-edge layui-table-sort-asc"></i><i
+                                    class="layui-edge layui-table-sort-desc"></i></span></div>
+                        </th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="layui-table-body" style="height: auto;">
+                <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                    <tbody>
+                    {volist name="orderList" id="order"}
+                    <tr data-index="{$key}" class="">
+                        <td data-field="order_no">
+                            <div class="layui-table-cell laytable-cell-1-order_no">{$order.order_no}</div>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-table-fixed layui-table-fixed-r" style="right: -1px;">
+            <div class="layui-table-header">
+                <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                    <thead>
+                    <tr>
+                        <th data-field="11">
+                            <div class="layui-table-cell laytable-cell-1-11" align="center"><span>操作</span></div>
+                        </th>
+                    </tr>
+                    </thead>
+                </table>
+                <div class="layui-table-mend"></div>
+            </div>
+            <div class="layui-table-body" style="height: auto;">
+                <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+                    <tbody>
+                    {volist name="orderList" id="order"}
+                    <tr data-index="{$key}" class="">
+                        <td data-field="11" align="center" data-off="true">
+                            <div class="layui-table-cell laytable-cell-1-11"><a class="btn layui-btn"
+                                                                                style="line-height: inherit;"
+                                                                                lay-event="edit">添加备注</a></div>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .laytable-cell-1-order_no {
+        width: 200px;
+    }
+
+    .laytable-cell-1-orderItemObj {
+        width: 180px;
+    }
+
+    .laytable-cell-1-img {
+        width: 90px;
+    }
+
+    .laytable-cell-1-price {
+        width: 100px;
+    }
+
+    .laytable-cell-1-count {
+        width: 90px;
+    }
+
+    .laytable-cell-1-total_price {
+        width: 90px;
+    }
+
+    .laytable-cell-1-name {
+        width: 90px;
+    }
+
+    .laytable-cell-1-phone {
+        width: 120px;
+    }
+
+    .laytable-cell-1-address {
+        width: 300px;
+    }
+
+    .laytable-cell-1-create_time {
+        width: 160px;
+    }
+
+    .laytable-cell-1-transaction_id {
+        width: 250px;
+    }
+
+    .laytable-cell-1-11 {
+        width: 120px;
+    }
+    </style>
+
+</div>
+<div id="page"></div>
+{/block}
+
+{block name="javascript"}
+<script>
+    layui.use(['laypage'], function () {
+        //自定义首页、尾页、上一页、下一页文本
+        var laypage = layui.laypage;
+        laypage.render({
+            elem: 'page'
+            ,count: {$totalSize}
+            ,limit: {$limit}
+            ,first: '首页'
+            ,last: '尾页'
+            ,prev: '<em>←</em>'
+            ,next: '<em>→</em>'
+            ,curr: {$page}
+            ,jump: function(obj, first){
+                //obj包含了当前分页的所有参数，比如：
+                //首次不执行
+                if(!first){
+                    location.href = '/boss/order/product?page=' + obj.curr
+                }
+            }
+        });
+    });
+</script>
+{/block}

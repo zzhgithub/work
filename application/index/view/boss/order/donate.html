@@ -1,0 +1,38 @@
+{extend name="boss/public/layout"/}
+
+{block name="body"}
+<div style="width: 98%;margin: 10px auto;">
+    <div class="layui-tab">
+        <div class="layui-tab layui-tab-card">
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <table class="layui-table" lay-data="{ url:'/boss/order/donate',page:true,id:'idDonate'}"
+                           lay-filter="donate">
+                        <thead>
+                        <tr>
+                            <th lay-data="{field:'id', width:120, sort: true, fixed: true}">捐款行为ID</th>
+                            <th lay-data="{field:'order_no', width:220}">捐款订单ID</th>
+                            <th lay-data="{field:'donate_id', width:100}">捐款活动ID</th>
+                            <th lay-data="{field:'name', width:160}">捐款项目名</th>
+                            <th lay-data="{field:'money', width:90}">捐款金额</th>
+                            <th lay-data="{field:'nickname', width:120}">微信昵称</th>
+                            <th lay-data="{field:'transaction_id', width:250}">微信订单号</th>
+                            <th lay-data="{field:'create_time', width:150,sort: true,fixed: 'right'}">捐款时间</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    layui.use(['table', 'jquery'], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+    });
+</script>
+{/block}

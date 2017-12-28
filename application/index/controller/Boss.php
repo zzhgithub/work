@@ -10,10 +10,15 @@ namespace app\index\controller;
  * Time: 下午6:06
  */
 use app\index\model\Act;
+use app\index\model\ActRecords;
+use app\index\model\Admin;
 use app\index\model\Banner;
 use app\index\model\Cert;
 use app\index\model\Donate;
+use app\index\model\DonateRecords;
 use app\index\model\Inspect;
+use app\index\model\Order;
+use app\index\model\OrderItem;
 use app\index\model\Point;
 use app\index\model\Pointbanner;
 use app\index\model\Pointdetail;
@@ -37,6 +42,7 @@ class Boss extends Controller
 {
     protected $view;
     protected $title;
+    protected $admin;
 
     public function __construct(Request $request = null)
     {
@@ -51,8 +57,9 @@ class Boss extends Controller
         }
         $this->view = new View();
         $this->title = Config::get('boss_title');
+        $this->admin = explode('|',$admin); // [id, name]
         if (!$request->isAjax()){
-            $this->assign('admin',explode('|',$admin));
+            $this->assign('admin',$this->admin);
         }
     }
     //boss后台设计
@@ -1242,5 +1249,161 @@ class Boss extends Controller
             return $this->response(400, '删除失败');
         }
         return $this->response(0, '删除成功');
+    }
+
+    /**
+     * 修改密码
+     * @param Request $request
+     * @return mixed|\think\response\Json
+     * @throws \think\exception\DbException
+     */
+    public function modify(Request $request)
+    {
+        if ($request->isAjax()){
+            $data = $request->post();
+            $result = $this->validate(
+                $data,
+                [
+                    'oldpasswd' => 'require|min:6',
+                    'passwd' => 'require|min:6|different:oldpasswd',
+                    'repasswd' => 'require|min:6|confirm:passwd'
+                ],
+                [
+                    'oldpasswd.require' => '旧密码不能为空',
+                    'oldpasswd.min' => '旧密码长度不能小于6',
+                    'passwd.require' => '新密码不能为空',
+                    'passwd.min' => '新密码长度不能小于6',
+                    'passwd.different' => '新旧密码不能相同~',
+                    'repasswd.require' => '确认密码不能为空',
+                    'repasswd.min' => '确认密码长度不能小于6',
+                    'repasswd.confirm' => '两次密码输入不一致',
+                ]
+            );
+            if (true !== $result) {
+                // 验证失败 输出错误信息
+                return self::response(400, $result);
+            }
+            $admin = Admin::get($this->admin[0]);
+            if (empty($admin)){
+                return self::response(400, '管理员不存在~');
+            }
+            if ($admin->passwd != sha1(md5($data['oldpasswd']))){
+                return self::response(400, '旧密码错误~');
+            }
+            if ($admin->passwd == sha1(md5($data['passwd']))){
+                return self::response(400, '新旧密码不能相同~');
+            }
+            $admin->passwd = sha1(md5($data['passwd']));
+            $res = $admin->save();
+            if (!$res){
+                return self::response(400, '密码修改失败');
+            }
+            Session::set('admin',null);
+            return self::response(0, '密码修改成功');
+        }
+        $this->assign('title', '修改密码-' . $this->title);
+        return $this->fetch('boss/login/passwd');
+    }
+
+    /**
+     * 产品订单
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function proOrder(Request $request)
+    {
+        $prefix = config("database.prefix");
+        $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
+        $limit = 1;
+        // 查询订单 付款成功的订单
+        $orderObj = new Order();
+        $totalSize = $orderObj->where(['is_paied' => 1])->count();
+        $totalPage = ceil($totalSize / $limit);
+        $orderList = $orderObj->where(['is_paied' => 1])->order('id DESC')->field('order_no,total_price,total_price,name,phone,address,transaction_id,create_time')->limit(($page - 1) * $limit, $limit)->select();
+        if ($orderList) {
+            foreach ($orderList as $order) {
+                $orderItemObj = new OrderItem();
+                $orderItems = $orderItemObj->alias('a')->order('a.id DESC')->join($prefix . 'product b',
+                    'a.pro_id = b.id', 'LEFT')->field('a.count,a.price,a.pro_id,b.name,b.img')->where(['a.order_no' => $order->order_no])->select();
+                $order->orderItems = $orderItems;
+            }
+        }
+        $this->assign('page', $page);
+        $this->assign('limit', $limit);
+        $this->assign('totalPage', $totalPage);
+        $this->assign('totalSize', $totalSize);
+        $this->assign('orderList', $orderList);
+        $this->assign('title', '产品订单-' . $this->title);
+        return $this->fetch('boss/order/product');
+    }
+
+    /**
+     * 活动报名
+     * @param Request $request
+     * @return string|\think\response\Json
+     * @throws Exception
+     * @throws \think\exception\DbException
+     */
+    public function actOrder(Request $request)
+    {
+        $isfree = $request->request('isfree') ? 1 : 0;
+        if ($request->isAjax()) {
+            $prefix = config("database.prefix");
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $actRecordsObj = new ActRecords();
+            $list = $actRecordsObj->alias('a')->order('a.id desc')->join($prefix . 'act b', 'a.act_id = b.id','LEFT')->field('a.id,a.act_id,a.order_no,a.need_pay,a.price,a.name as user,a.phone,a.transaction_id,a.create_time,b.name')->where(['a.is_paied' => 1,'a.need_pay' => 1 - $isfree])->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '活动报名-' . $this->title);
+        $this->assign('isfree', $isfree);
+        return $this->view->fetch('boss/order/act');
+    }
+
+    /**
+     * 捐款信息
+     * @param Request $request
+     * @return string|\think\response\Json
+     * @throws Exception
+     * @throws \think\exception\DbException
+     */
+    public function donOrder(Request $request)
+    {
+        if ($request->isAjax()) {
+            $prefix = config("database.prefix");
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $donateRecordsObj = new DonateRecords();
+            $list = $donateRecordsObj->alias('a')->
+            order('a.id desc')->
+            join($prefix . 'donate b', 'a.donate_id = b.id','LEFT')->
+            join($prefix . 'user c', 'c.id = a.user_id','LEFT')->
+            field('a.id,a.donate_id,a.order_no,a.money,a.transaction_id,a.create_time,b.name,c.nickname')->
+            where(['a.is_paied' => 1])->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '捐款信息-' . $this->title);
+        return $this->view->fetch('boss/order/donate');
     }
 }

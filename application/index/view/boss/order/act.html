@@ -1,0 +1,75 @@
+{extend name="boss/public/layout"/}
+
+{block name="css"}
+<style>
+    #tab{
+        position: relative;
+        left: 0;
+        height: 40px;
+        white-space: nowrap;
+        font-size: 0;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        transition: all .2s;
+        -webkit-transition: all .2s;
+    }
+    #tab li {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 14px;
+        transition: all .2s;
+        -webkit-transition: all .2s;
+        position: relative;
+        line-height: 40px;
+        min-width: 65px;
+        padding: 0 15px;
+        text-align: center;
+        cursor: pointer;
+    }
+</style>
+{/block}}
+{block name="body"}
+<ul class="layui-tab-title" style="margin-top: 10px;">
+    <li {if condition="$isfree eq 0"}class="layui-this"{/if}><a href="/boss/order/act">付费活动</a></li>
+    <li {if condition="$isfree eq 1"}class="layui-this"{/if}><a href="/boss/order/act?isfree=1">公益活动</a></li>
+</ul>
+<div style="width: 98%;margin: 10px auto;">
+    <div class="layui-tab">
+        <div class="layui-tab layui-tab-card">
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <table class="layui-table" lay-data="{ url:'/boss/order/act?isfree={$isfree}',page:true,id:'idAct'}"
+                           lay-filter="act">
+                        <thead>
+                        <tr>
+                            <th lay-data="{field:'id', width:80, sort: true, fixed: true}">报名ID</th>
+                            {if condition="$isfree eq 0"}
+                            <th lay-data="{field:'order_no', width:200}">订单ID</th>
+                            {/if}
+                            <th lay-data="{field:'act_id', width:80}">活动ID</th>
+                            <th lay-data="{field:'name', width:160}">活动名</th>
+                            <th lay-data="{field:'price', width:90}">报名价格</th>
+                            <th lay-data="{field:'user', width:90}">报名姓名</th>
+                            <th lay-data="{field:'phone', width:140}">报名电话</th>
+                            {if condition="$isfree eq 0"}
+                            <th lay-data="{field:'transaction_id', width:250}">微信订单号</th>
+                            {/if}
+                            <th lay-data="{field:'create_time', width:150,sort: true,fixed: 'right'}">报名时间</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    layui.use(['table', 'jquery'], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+    });
+</script>
+{/block}
