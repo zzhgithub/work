@@ -183,7 +183,8 @@ return [
     /**
      * 订单相关
      */
-    '/boss/order/product' =>'index/boss/proOrder',
-    '/boss/order/act' =>'index/boss/actOrder',
-    '/boss/order/donate' =>'index/boss/donOrder',
+    'boss/order/product' =>'index/boss/proOrder',
+    'boss/order/act' =>'index/boss/actOrder',
+    'boss/order/donate' =>'index/boss/donOrder',
+    'boss/order/attention' =>'index/boss/addOrderAttention'
 ];

@@ -1317,12 +1317,12 @@ class Boss extends Controller
     {
         $prefix = config("database.prefix");
         $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
-        $limit = 1;
+        $limit = 10;
         // 查询订单 付款成功的订单
         $orderObj = new Order();
         $totalSize = $orderObj->where(['is_paied' => 1])->count();
         $totalPage = ceil($totalSize / $limit);
-        $orderList = $orderObj->where(['is_paied' => 1])->order('id DESC')->field('order_no,total_price,total_price,name,phone,address,transaction_id,create_time')->limit(($page - 1) * $limit, $limit)->select();
+        $orderList = $orderObj->where(['is_paied' => 1])->order('id DESC')->field('order_no,total_price,total_price,name,phone,address,option,transaction_id,create_time')->limit(($page - 1) * $limit, $limit)->select();
         if ($orderList) {
             foreach ($orderList as $order) {
                 $orderItemObj = new OrderItem();
@@ -1405,5 +1405,27 @@ class Boss extends Controller
         }
         $this->assign('title', '捐款信息-' . $this->title);
         return $this->view->fetch('boss/order/donate');
+    }
+
+    /**
+     * 添加备注信息
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\exception\DbException
+     */
+    public function addOrderAttention(Request $request)
+    {
+        $orderNo = $request->post('order_no','','htmlspecialchars');
+        $option = $request->post('option','','htmlspecialchars');
+        if (!$orderNo || !$option){
+            return self::response(400,'非法请求');
+        }
+        $order = Order::get(['order_no' => $orderNo]);
+        $order->option = $option;
+        $res = $order->save();
+        if (!$res){
+            return self::response(400,'添加备注失败');
+        }
+        return self::response(0,'添加成功');
     }
 }

@@ -88,6 +88,9 @@
                     <th data-field="transaction_id">
                         <div class="layui-table-cell laytable-cell-1-transaction_id"><span>微信交易单号</span></div>
                     </th>
+                    <th data-field="transaction_id">
+                        <div class="layui-table-cell laytable-cell-1-transaction_id"><span>备注</span></div>
+                    </th>
                     <th data-field="11">
                         <div class="layui-table-cell laytable-cell-1-11" align="center"><span>操作</span></div>
                     </th>
@@ -155,10 +158,13 @@
                     <td data-field="transaction_id">
                         <div class="layui-table-cell laytable-cell-1-transaction_id">{$order.transaction_id}</div>
                     </td>
+                    <td data-field="transaction_id">
+                        <div class="layui-table-cell laytable-cell-1-transaction_id">{$order.option}</div>
+                    </td>
                     <td data-field="11" align="center" data-off="true">
-                        <div class="layui-table-cell laytable-cell-1-11"><a class="btn layui-btn"
-                                                                            style="line-height: inherit;"
-                                                                            lay-event="edit">添加备注</a></div>
+                        <div class="layui-table-cell laytable-cell-1-11">
+                            <a class="btn layui-btn option" style="line-height: inherit;" lay-event="edit" data-order="{$order->order_no}">添加备注</a>
+                        </div>
                     </td>
                 </tr>
                 {/volist}
@@ -213,9 +219,9 @@
                     {volist name="orderList" id="order"}
                     <tr data-index="{$key}" class="">
                         <td data-field="11" align="center" data-off="true">
-                            <div class="layui-table-cell laytable-cell-1-11"><a class="btn layui-btn"
-                                                                                style="line-height: inherit;"
-                                                                                lay-event="edit">添加备注</a></div>
+                            <div class="layui-table-cell laytable-cell-1-11">
+                                <a class="btn layui-btn option" style="line-height: inherit;" lay-event="edit" data-order="{$order->order_no}">添加备注</a>
+                            </div>
                         </td>
                     </tr>
                     {/volist}
@@ -274,16 +280,17 @@
         width: 120px;
     }
     </style>
-
 </div>
 <div id="page"></div>
 {/block}
 
 {block name="javascript"}
 <script>
-    layui.use(['laypage'], function () {
+    layui.use(['jquery','laypage','layer'], function () {
         //自定义首页、尾页、上一页、下一页文本
         var laypage = layui.laypage;
+        var layer = layui.layer;
+        var $ = layui.jquery;
         laypage.render({
             elem: 'page'
             ,count: {$totalSize}
@@ -300,6 +307,27 @@
                     location.href = '/boss/order/product?page=' + obj.curr
                 }
             }
+        });
+
+        $('.option').click(function () {
+            var order = $(this).data('order');
+            if (order == ''){
+                layer.msg('订单有误~');
+                return false;
+            }
+            layer.open({
+                content: '<div class="layui-form-item layui-form-text"><label class="layui-form-label" style="padding: 9px 8px;text-align: left;">文本域</label><div class="layui-input-block"  style="margin-left: 0;"><textarea placeholder="备注信息" class="layui-textarea" id="option"></textarea></div></div>',
+                yes: function(index, layero){
+                    var option = $('#option').val();
+                    if (option == '' || option.length < 4){
+                        layer.msg('备注信息不少与4个字');
+                        return false;
+                    }
+                    $.post("/boss/order/attention", {'order_no':order,'option':option}, function (r) {
+                        layer.msg(r.msg);
+                    });
+                }
+            });
         });
     });
 </script>
