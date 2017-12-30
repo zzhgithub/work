@@ -115,7 +115,9 @@
                         // 免费
                         {if condition="$data['isfree'] eq 1"}
                             alertMsg(data.msg);
-                            location.href = '/';
+                            setTimeout(function () {
+                                location.href = referer;
+                            },3000);
                         {/if}
                         {if condition="$data['isfree'] eq 0"}
                             if(data.data.token != 'undefined' && data.data.token != ''){

@@ -106,10 +106,10 @@ class Activity extends Controller
             }
             // 查询是否已报名
             $actRecordsObj = new ActRecords();
-            if ($data['isfree']){   // 公益活动
-                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data['id']])->find();
+            if ($data->isfree){   // 公益活动
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id])->find();
             }else{                  // 付费活动
-                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data['id'],'is_paied' => 1])->find();
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id,'is_paied' => 1])->find();
             }
             if ($actRecords){
                 echo $this->fail('抱歉,你已经报过名了~','/act/detail/'.$id,3);
@@ -180,7 +180,16 @@ class Activity extends Controller
         try {
             $act = Act::get($data['id']);
             if (empty($act)) {
-                return self::response(400, $result, ['token' => $request->token()]);
+                return self::response(400, '活动不存在', ['token' => $request->token()]);
+            }
+            $actRecordsObj = new ActRecords();
+            if ($data->isfree){   // 公益活动
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id])->find();
+            }else{                  // 付费活动
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id,'is_paied' => 1])->find();
+            }
+            if ($actRecords){
+                return self::response(400, '抱歉,你已经报过名了~', ['token' => $request->token()]);
             }
             // 创建活动订单
             $actRecords = new ActRecords();
