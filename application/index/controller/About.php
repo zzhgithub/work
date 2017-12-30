@@ -21,7 +21,8 @@ class About extends Controller
             if ($request->isAjax()) {
                 return self::response(400, '请刷新页面重新登录');
             } else {
-                WeiXin::getOpenidAndAcessToken();
+                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+                WeiXin::getOpenidAndAcessToken($url);
             }
         }
         $this->openId = $openId;

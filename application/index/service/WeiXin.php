@@ -158,12 +158,12 @@ class WeiXin
      * @return openid
      * @throws \Exception
      */
-    public static function getOpenidAndAcessToken()
+    public static function getOpenidAndAcessToken($from='')
     {
         //通过code获得openid
         if (!isset($_GET['code'])) {
             //触发微信返回code码
-            $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . '/helper/back');
+            $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . '/helper/back?from='.$from);
             $url = self::createOauthUrlForCode($baseUrl);
             header("Location: $url");
             exit();

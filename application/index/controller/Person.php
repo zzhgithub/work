@@ -28,7 +28,8 @@ class Person extends Controller
     public function index(){
         $openId = Session::get('openid');
         if (!$openId) {
-            WeiXin::getOpenidAndAcessToken();
+            $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            WeiXin::getOpenidAndAcessToken($url);
         }
         $this->openId = $openId;
         $prefix = config("database.prefix");

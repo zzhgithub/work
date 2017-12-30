@@ -18,6 +18,7 @@ use app\index\model\User;
 use app\index\service\WeiXin;
 use think\Controller;
 use think\Exception;
+use think\Request;
 use think\Session;
 use \app\index\model\Log;
 
@@ -130,7 +131,8 @@ class Helper extends Controller
             //设置登录的cookie
             Session::set("openid", $userObj->openid);
         }
-        $this->redirect("/");
+        $from = Request::instance()->get('from','','htmlspecialchars');
+        $this->redirect($from ? $from : '/');
     }
 
     /**
