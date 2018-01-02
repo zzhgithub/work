@@ -141,7 +141,7 @@ class Helper extends Controller
      */
     public function notify()
     {
-        $fp = fopen("notifylock.txt", "w+");
+        $fp = fopen("../notifylock.txt", "w+");
         if(!flock($fp,LOCK_EX | LOCK_NB)){
             file_put_contents('../data/log/notify/' . date('Y-m-d') . '-notify.log',
                 date('Y-m-d H:i:s') . ':-----系统繁忙，稍后继续------'. PHP_EOL . '------------------------------------------' . PHP_EOL,FILE_APPEND);
