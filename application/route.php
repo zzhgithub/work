@@ -186,5 +186,7 @@ return [
     'boss/order/product' =>'index/boss/proOrder',
     'boss/order/act' =>'index/boss/actOrder',
     'boss/order/donate' =>'index/boss/donOrder',
-    'boss/order/attention' =>'index/boss/addOrderAttention'
+    'boss/order/attention' =>'index/boss/addOrderAttention',
+
+    'boss/register/list' =>'index/boss/registerList'
 ];

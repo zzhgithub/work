@@ -17,6 +17,7 @@ use app\index\model\Cert;
 use app\index\model\Donate;
 use app\index\model\DonateRecords;
 use app\index\model\Inspect;
+use app\index\model\Member;
 use app\index\model\Order;
 use app\index\model\OrderItem;
 use app\index\model\Point;
@@ -1427,5 +1428,29 @@ class Boss extends Controller
             return self::response(400,'添加备注失败');
         }
         return self::response(0,'添加成功');
+    }
+
+    public function registerList(Request $request)
+    {
+        $state = $request->request('state') ? 1 : 0;
+        if ($request->isAjax()) {
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $memberObj = new Member();
+            $list = $memberObj->order('id desc')->where(['`state`' => $state])->field('id,name,gender,id_cards,email,phone,career,reason,from,create_time')->paginate($limit);
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = $list->total();
+            $response->msg = '';
+            $response->data = array();
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('state', $state);
+        $this->assign('title', '注册信息-' . $this->title);
+        return $this->view->fetch('boss/register/list');
     }
 }

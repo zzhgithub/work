@@ -3,13 +3,13 @@
 {block name="body"}
 <div style="width: 98%;margin: 10px auto;">
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-        <legend>添加/编辑 附件文物点</legend>
+        <legend>添加/编辑 附近文物点</legend>
     </fieldset>
     <form class="layui-form" action="">
         <div class="layui-form-item">
             <label class="layui-form-label">文物点名称</label>
             <div class="layui-input-block">
-                <input type="text" name="name" lay-verify="name" autocomplete="off" placeholder="请输入公告标题"
+                <input type="text" name="name" lay-verify="name" autocomplete="off" placeholder="请输入文物点名称"
                        class="layui-input" value="{$near.name}" style="width: 300px;">
             </div>
         </div>
@@ -23,14 +23,14 @@
         <div class="layui-form-item">
             <label class="layui-form-label">文物点id</label>
             <div class="layui-input-block">
-                <input type="text" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入公告标题"
+                <input type="text" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入文物点id"
                        class="layui-input" value="{$near.pid}" style="width: 300px;">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">距离</label>
             <div class="layui-input-block">
-                <input type="text" name="distance" lay-verify="" autocomplete="off" placeholder="请输入外链"
+                <input type="text" name="distance" lay-verify="" autocomplete="off" placeholder="请输入距离"
                        class="layui-input" value="{$near.distance}" style="width: 300px;">
             </div>
         </div>

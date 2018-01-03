@@ -46,7 +46,7 @@ class Index extends Controller
     {
         //获取首页的banner图
         $banner = new Banner();
-        $res_banner = $banner->limit(3)->order('sort')->select();
+        $res_banner = $banner->order('sort')->select();
         $this->assign('banner',$res_banner);
 
         // 获取公告
