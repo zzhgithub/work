@@ -55,7 +55,7 @@ class Productctl extends Controller
     public function productList(Request $request)
     {
         $product = new Product();
-        $list = $product->where(['state' => 1])->order('id desc')->field('id,name,img,price,store')->paginate(4);
+        $list = $product->where(['state' => 1])->order('id desc')->field('id,name,img,price,store')->paginate(8);
         $items = $list->items();
         $cart = Session::get('cart');
         $cartArr = $cart != null ? explode(',', $cart) : [];

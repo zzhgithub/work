@@ -228,7 +228,7 @@ class Activity extends Controller
                 return self::response(0, '支付创建成功', $wxPayConfig);
             }
             if ($recordsid) {
-                return self::response(0, '报名成功');
+                return self::response(0, '你的报名已成功提交，工作人员稍后和你联系！');
             } else {
                 return self::response(400, '报名失败', ['token' => $request->token()]);
             }

@@ -83,7 +83,7 @@ class Volunteer extends Controller
                 $member = New Member();
                 $res = $member->data($data)->save();
                 if ($res){
-                    return self::response(0, '注册成功');
+                    return self::response(0, '你的信息已提交成功，工作人员稍后会和你联系！');
                 }else{
                     return self::response(400, '注册失败',['token'=>$request->token()]);
                 }
