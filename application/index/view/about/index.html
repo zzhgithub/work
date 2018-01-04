@@ -32,7 +32,7 @@
     // 百度地图API功能
     map = new BMap.Map("allmapt");
     map.centerAndZoom(new BMap.Point(longitude,latitude), 15);
-    var address = '地址：{$about.address} <a style="color:#6bb1f7;" href="http://api.map.baidu.com/marker?location='+latitude+','+longitude+'&title=&output=html">导航</a>';
+    var address = '地址：{$about.address} <a style="color:#6bb1f7;" href="http://api.map.baidu.com/marker?location='+latitude+','+longitude+'&title={$about.address}&output=html">导航</a>';
     var data_info = [longitude,latitude,address];
     var opts = {
         width : 250,     // 信息窗口宽度
