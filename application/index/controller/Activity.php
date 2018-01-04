@@ -76,6 +76,7 @@ class Activity extends Controller
      */
     public function activityDetail($id)
     {
+        $id = intval($id);
         if (!$id) {
             $this->redirect('/');
         }
@@ -97,6 +98,7 @@ class Activity extends Controller
      */
     public function joinActivity($id)
     {
+        $id = intval($id);
         if (!$id) {
             $this->redirect('/');
         }
@@ -148,7 +150,7 @@ class Activity extends Controller
         if (!$request->isAjax()) {
             return self::response(400, '非法请求');
         }
-        $data = $request->post();
+        $data = $request->post('',null,'htmlspecialchars');
         if (empty($data)) {
             return self::response(400, '非法请求');
         }
@@ -179,15 +181,16 @@ class Activity extends Controller
         }
 
         try {
-            $act = Act::get($data['id']);
+            $id = intval($data['id']);
+            $act = Act::get($id);
             if (empty($act)) {
                 return self::response(400, '活动不存在', ['token' => $request->token()]);
             }
             $actRecordsObj = new ActRecords();
-            if ($data->isfree){   // 公益活动
-                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id])->find();
+            if ($act->isfree){   // 公益活动
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $id])->find();
             }else{                  // 付费活动
-                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id,'is_paied' => 1])->find();
+                $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $id,'is_paied' => 1])->find();
             }
             if ($actRecords){
                 return self::response(400, '抱歉,你已经报过名了~', ['token' => $request->token()]);
@@ -247,8 +250,8 @@ class Activity extends Controller
         if (!$request->isAjax()){
             return self::response(400, '非法请求');
         }
-        $orderNo = $request->param('order_no');
-        $msg = $request->param('msg');
+        $orderNo = $request->param('order_no',null,'htmlspecialchars');
+        $msg = $request->param('msg',null,'htmlspecialchars');
         if (!$orderNo || !$msg){
             return self::response(400, '非法请求');
         }

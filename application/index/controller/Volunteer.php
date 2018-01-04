@@ -51,7 +51,7 @@ class Volunteer extends Controller
     public function register(Request $request)
     {
         if ($request->isPost()) {
-            $data = $request->post();
+            $data = $request->post('',null,'htmlspecialchars');
             unset($data['know']);
             // 表单验证
             $validate = new Validate([
@@ -157,13 +157,14 @@ class Volunteer extends Controller
 
     /**
      * 巡查反馈列表页
-     * @param null $query
-     * @return mixed
+     * @param Request $request
+     * @return string|\think\response\Json
      */
-    public function inspectBackList($query = null)
+    public function inspectBackList(Request $request)
     {
         try {
             $search = Request::instance()->param('search', null, 'stripslashes');
+            $point = new Point();
             if ($search) {
                 $levelArr = [
                     '市宝' => 1,
@@ -172,23 +173,30 @@ class Volunteer extends Controller
                     '文物点' => 4
                 ];
                 if (key_exists($search, $levelArr)) {
-                    $point = new Point();
-                    $list = $point->where('name', 'like', '%' . $search)
-                        ->whereOr('zone', 'like', '%' . $search)
+                    $list = $point->where('name', 'like', '%' . $search . '%')
+                        ->whereOr('zone', 'like', '%' . $search . '%')
                         ->whereOr('level', $levelArr[$search])
-                        ->select();
+                        ->paginate(8);
                 } else {
-                    $point = new Point();
-                    $list = $point->where('name', 'like', '%' . $search)
-                        ->whereOr('zone', 'like', '%' . $search)
-                        ->select();
+                    $list = $point->where('name', 'like', '%' . $search . '%')
+                        ->whereOr('zone', 'like', '%' . $search . '%')
+                        ->paginate(8);
                 }
             } else {
-                $list = Point::all();
+                $list = $point->paginate(8);
             }
-            $this->assign('list', $list);
-            $this->assign('title', '巡查反馈');
-            return $this->fetch('volunteer/inspect_back_list');
+            $items = $list->items();
+            if ($request->isAjax()) {
+                if (!empty($items)) {
+                    return self::response(0, 'success', $items);
+                }
+                return self::response(400);
+            }
+            $this->assign('list', $items);
+            $this->assign('search', $search);
+            $this->assign('title', '历史建筑');
+            $this->assign('curPage', 1);
+            return $this->view->fetch('point/list');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -204,6 +212,7 @@ class Volunteer extends Controller
      */
     public function inspectBackDetail($id)
     {
+        $id = intval($id);
         $base = Point::get($id);
         $this->assign('base', $base);
 

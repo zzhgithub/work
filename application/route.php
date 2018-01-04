@@ -54,7 +54,7 @@ return [
     /**
      * boss 后台相关功能
      */
-    'boss/index' => 'index/boss/index',//banner 列表
+    'boss/index' => 'index/boss/index',//后台首页
 
     'boss/banner/list' => 'index/boss/bannerList',//banner 列表
     'boss/banner/add'  => 'index/boss/bannerAddOrModify',//banner添加页
@@ -188,5 +188,6 @@ return [
     'boss/order/donate' =>'index/boss/donOrder',
     'boss/order/attention' =>'index/boss/addOrderAttention',
 
-    'boss/register/list' =>'index/boss/registerList'
+    'boss/register/list' =>'index/boss/registerList',
+    'boss/register/pass' =>'index/boss/registerPass'
 ];

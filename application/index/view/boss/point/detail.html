@@ -5,7 +5,7 @@
     <div class="row" >
         <div class="col-xs-6 col-md-offset-3">
             <form class="center-block" role="form" enctype="multipart/form-data" id="datafrom">
-                <a href="/index.php?s=boss/point/banner/list/{$data.id}" class="btn layui-btn" role="button">
+                <a href="/boss/point/banner/list/{$data.id}" class="btn layui-btn" role="button">
                     编辑文物点详情的banner
                 </a>
                 <input type="hidden" id="id" value="{$data.id}">
@@ -39,7 +39,7 @@
             formData.append('x', $("#x")[0].value);
             formData.append('y', $("#y")[0].value);
             $.ajax({
-                url: "/index.php?s=boss/point/detail/save",
+                url: "/boss/point/detail/save",
                 type: "post",
                 data: formData,
                 processData: false,

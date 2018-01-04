@@ -50,7 +50,7 @@
         var formData = new FormData();
         formData.append('file',$('#inputfile')[0].files[0]);
         $.ajax({
-            url:"/index.php?s=helper/upload",
+            url:"/helper/upload",
             type:"post",
             data:formData,
             processData:false,
@@ -73,7 +73,7 @@
         formData.append('des',$("#des")[0].value);
         formData.append('sort',$("#sort")[0].value);
         $.ajax({
-            url:"/index.php?s=boss/point/banner/save",
+            url:"/boss/point/banner/save",
             type:"post",
             data:formData,
             processData:false,

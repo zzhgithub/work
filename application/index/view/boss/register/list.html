@@ -78,22 +78,23 @@
 
 {block name="javascript"}
 <script>
-    layui.use(['table','jquery'], function(){
+    layui.use(['table','jquery','layer'], function(){
         var table = layui.table;
         var $ = layui.jquery;
+        var layer = layui.layer;
         //监听工具条
         table.on('tool(register)', function(obj){
             var data = obj.data;
-            if(obj.event === 'pass'){
-                $.post("/boss/product/state",{id:data.id},function(res){
+            if(obj.event === 'pass' || obj.event === 'cancel'){
+                $.post("/boss/register/pass",{id:data.id},function(res){
                     layer.msg(res.msg);
                     if (res.code===0){
                         obj.del();
                     }
                 });
                 layer.close(index);
-            }else if(obj.event === 'cancel'){
-                location.href = '/boss/product/mod/' + data.id;
+            }else{
+                layer.msg('非法请求~');
             }
         });
     });

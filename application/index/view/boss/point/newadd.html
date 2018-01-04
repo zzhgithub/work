@@ -63,14 +63,16 @@
 
 {block name="javascript"}
 <script type="application/javascript">
-    layui.use(['table','jquery'], function() {
+    layui.use(['table','jquery','layer'], function() {
         var $ = layui.jquery;
+        var layer = layui.layer;
+
         $("#upload").click(function () {
             //获取图片元素
             var formData = new FormData();
             formData.append('file', $('#inputfile')[0].files[0]);
             $.ajax({
-                url: "/index.php?s=helper/upload",
+                url: "/helper/upload",
                 type: "post",
                 data: formData,
                 processData: false,
@@ -93,14 +95,16 @@
             formData.append('level', $("#level")[0].value);
             formData.append('sort', $("#sort")[0].value);
             $.ajax({
-                url: "/index.php?s=boss/point/save",
+                url: "/boss/point/save",
                 type: "post",
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function (res) {
-                    alert(res);
-                    window.history.back(-1);
+                    layer.msg('操作成功');
+                    setTimeout(function () {
+                        window.history.back(-1);
+                    },2000);
                 }
             });
         });

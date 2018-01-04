@@ -6,7 +6,7 @@
     <div class="row" >
         <div class="col-xs-6 col-md-offset-3">
             <form class="layui-form" role="form" enctype="multipart/form-data" id="datafrom">
-                <a href="/index.php?s=boss/route/point/list/{$data.id}" class="btn btn-primary" role="button">
+                <a href="/boss/route/point/list/{$data.id}" class="btn btn-primary" role="button">
                     编辑推荐路线的文物点
                 </a>
                 <input type="hidden" id="id" value="{$data.id}">
@@ -74,7 +74,7 @@
             var formData = new FormData();
             formData.append('file',$('#inputfile')[0].files[0]);
             $.ajax({
-                url:"/index.php?s=helper/upload",
+                url:"/helper/upload",
                 type:"post",
                 data:formData,
                 processData:false,
@@ -98,7 +98,7 @@
             formData.append('sort', $("#sort")[0].value);
             formData.append('cost', $("#cost")[0].value);
             $.ajax({
-                url: "/index.php?s=boss/route/save",
+                url: "/boss/route/save",
                 type: "post",
                 data: formData,
                 processData: false,

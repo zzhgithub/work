@@ -143,6 +143,7 @@ class Show extends Controller
     public function pathDetail($id)
     {
         try {
+            $id = intval($id);
             $data = Route::get($id);
             $this->assign('data', $data);
             // 获文物点地址
@@ -171,6 +172,7 @@ class Show extends Controller
     public function ponitDetail($id)
     {
         try {
+            $id = intval($id);
             $base = Point::get($id);
             $this->assign('base', $base);
 

@@ -61,6 +61,7 @@ class Boss extends Controller
         $this->admin = explode('|',$admin); // [id, name]
         if (!$request->isAjax()){
             $this->assign('admin',$this->admin);
+            $this->assign('pathInfo',$_SERVER['PATH_INFO']);
         }
     }
     //boss后台设计
@@ -78,14 +79,10 @@ class Boss extends Controller
             $res = $banners
                 ->order('sort')
                 ->select();
-            if ($res === false) {
-                throw new Exception($banners->getLastSql());
-            }
             $this->assign('list', $res);
             $this->assign('title', "轮播图列表");
             return $this->view->fetch('boss/banner/newlist');
         } catch (Exception $e) {
-            //
         }
     }
 
@@ -98,6 +95,7 @@ class Boss extends Controller
                 $this->assign('title', '添加banner图');
                 $this->assign('data', null);
             } else {
+                $id = intval($id);
                 // 获取单条数据
                 $this->assign('title', '修改banner图');
                 $res = Banner::get($id);
@@ -105,43 +103,42 @@ class Boss extends Controller
             }
             return $this->view->fetch('boss/banner/newadd');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     //banner 图片保存加载一条龙图片
-    public function bannerSave()
+    public function bannerSave(Request $request)
     {
         try {
+            $inputData = $request->param('',null,'htmlspecialchars');
             $banner = new Banner();
             $data = new \stdClass();
-            $data->img = $_POST['img'];
-            $data->des = $_POST['des'];
-            $data->url = $_POST['url'];
-            $data->sort = $_POST['sort'];
-            if (isset($_POST['id']) && $_POST['id'] > 0) {
-                $res = $banner->save($data, ['id' => $_POST['id']]);
+            $data->img = $inputData['img'];
+            $data->des = $inputData['des'];
+            $data->url = $inputData['url'];
+            $data->sort = $inputData['sort'];
+            if (isset($inputData['id']) && intval($inputData['id']) > 0) {
+                $res = $banner->save($data, ['id' => intval($inputData['id'])]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
-
             echo $res;
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+           return $e->getMessage();
         }
-        //redirect('/index.php?s=boss/banner/list', 5, '页面跳转中...');
     }
 
     //首页的banner删除
     public function bannerDel($id)
     {
         try {
-            Banner::destroy($id);
+            Banner::destroy(intval($id));
             //删除后加载列表页
             return $this->bannerList();
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -155,7 +152,7 @@ class Boss extends Controller
             $this->assign('list', $list);
             return $this->view->fetch('boss/point/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -169,29 +166,30 @@ class Boss extends Controller
             } else {
                 // 获取单条数据
                 $this->assign('title', '修改文物点');
-                $res = Point::get($id);
+                $res = Point::get(intval($id));
                 $this->assign('data', $res);
             }
             return $this->view->fetch('boss/point/newadd');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     //  文物点保存加载一条龙图片
-    public function pointSave()
+    public function pointSave(Request $request)
     {
         try {
+            $inputData = $request->param('',null,'htmlspecialchars');
             $banner = new Point();
             $data = new \stdClass();
-            $data->img = $_POST['img'];
-            $data->name = $_POST['name'];
-            $data->addr = $_POST['addr'];
-            $data->level = $_POST['level'];
-            $data->zone = $_POST['zone'];
-            $data->sort = $_POST['sort'];
-            if (isset($_POST['id']) && $_POST['id'] > 0) {
-                $res = $banner->save($data, ['id' => $_POST['id']]);
+            $data->img = $inputData['img'];
+            $data->name = $inputData['name'];
+            $data->addr = $inputData['addr'];
+            $data->level = $inputData['level'];
+            $data->zone = $inputData['zone'];
+            $data->sort = $inputData['sort'];
+            if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
+                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
@@ -199,20 +197,19 @@ class Boss extends Controller
 
             echo $res;
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
-        //redirect('/index.php?s=boss/banner/list', 5, '页面跳转中...');
     }
 
     //删除 文物点
     public function pointDel($id)
     {
         try {
-            Point::destroy($id);
+            Point::destroy((int)$id);
             //删除后加载列表页
             return $this->pointList();
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -221,6 +218,7 @@ class Boss extends Controller
     {
         try {
             //先获取 详情的值 如果不存在就什么也不显示
+            $id = intval($id);
             $test = Pointdetail::get($id);
             if ($test == null) {
                 $data = array(
@@ -241,26 +239,27 @@ class Boss extends Controller
     }
 
     //文物点详情保存
-    public function pointDetailSave()
+    public function pointDetailSave(Request $request)
     {
         try {
+            $inputData = $request->param('',null,'htmlspecialchars');
             $client = new Pointdetail();
             $data = new \stdClass();
-            $data->des = $_POST['des'];
-            $data->x = $_POST['x'];
-            $data->y = $_POST['y'];
-
-            $test = Pointdetail::get($_POST['id']);
+            $data->des = $inputData['des'];
+            $data->x = $inputData['x'];
+            $data->y = $inputData['y'];
+            $id = intval($inputData['id']);
+            $test = Pointdetail::get($id);
 
             if ($test == null) {
-                $data->id = $_POST['id'];
+                $data->id = $id;
                 $res = $client->data($data)->save();
             } else {
-                $res = $client->save($data, ['id' => $_POST['id']]);
+                $res = $client->save($data, ['id' => $id]);
             }
             return $res;
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -269,6 +268,7 @@ class Boss extends Controller
     {
         try {
             //获取相应的banner列表
+            $id = intval($id);
             $client = new Pointbanner();
             $res = $client->where(['pid' => $id])->select();
             $this->assign("title","banner列表");
@@ -276,7 +276,7 @@ class Boss extends Controller
             $this->assign('pid', $id);
             return $this->view->fetch('boss/point/banner/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -285,44 +285,45 @@ class Boss extends Controller
     {
         try {
             if ($id != null) {
-                $data = Pointbanner::get($id);
+                $data = Pointbanner::get(intval($id));
                 $this->assign('title', '文物点 修改banner图');
                 $this->assign('pid', $data->pid);
                 $this->assign('data', $data);
             } else {
                 if ($pid != null) {
                     $this->assign('title', '文物点 添加banner图');
-                    $this->assign('pid', $pid);
+                    $this->assign('pid', intval($pid));
                     $this->assign('data', null);
                 }
             }
 
             return $this->view->fetch('boss/point/banner/newadd');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     // 添加或保存
-    public function pointBannerSave()
+    public function pointBannerSave(Request $request)
     {
         try {
+            $inputData = $request->param('',null,'htmlspecialchars');
             $banner = new Pointbanner();
             $data = new \stdClass();
-            $data->img = $_POST['img'];
-            $data->des = $_POST['des'];
-            $data->url = $_POST['url'];
-            $data->sort = $_POST['sort'];
-            $data->pid = $_POST['pid'];
-            if (isset($_POST['id']) && $_POST['id'] > 0) {
-                $res = $banner->save($data, ['id' => $_POST['id']]);
+            $data->img = $inputData['img'];
+            $data->des = $inputData['des'];
+            $data->url = $inputData['url'];
+            $data->sort = $inputData['sort'];
+            $data->pid = $inputData['pid'];
+            if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
+                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
             echo $res;
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -330,13 +331,12 @@ class Boss extends Controller
     public function pointBannerDell($id, $pid)
     {
         try {
-            $res = Pointbanner::destroy($id);
-            return $this->pointBannerList($pid);
+            $res = Pointbanner::destroy(intval($id));
+            return $this->pointBannerList(intval($pid));
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
-
 
     //推荐路线列表
     public function routeList()
@@ -351,7 +351,7 @@ class Boss extends Controller
             $this->assign("title","推荐路线");
             return $this->view->fetch('boss/route/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -361,7 +361,7 @@ class Boss extends Controller
         try {
             //
             if ($id != null) {
-                $data = Route::get($id);
+                $data = Route::get((int)$id);
                 $this->assign('title', "推荐路线修改");
                 $this->assign('data', $data);
             } else {
@@ -370,32 +370,33 @@ class Boss extends Controller
             }
             return $this->view->fetch('boss/route/newadd');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     //ajax 保存推荐路线
-    public function routeSave()
+    public function routeSave(Request $request)
     {
         try {
+            $inputData = $request->param('',null,'htmlspecialchars');
             $banner = new Route();
             $data = new \stdClass();
-            $data->img = $_POST['img'];
-            $data->des = $_POST['des'];
-            $data->name = $_POST['name'];
-            $data->sort = $_POST['sort'];
-            $data->num = $_POST['num'];
-            $data->cost = $_POST['cost'];
+            $data->img = $inputData['img'];
+            $data->des = $inputData['des'];
+            $data->name = $inputData['name'];
+            $data->sort = $inputData['sort'];
+            $data->num = $inputData['num'];
+            $data->cost = $inputData['cost'];
 
-            if (isset($_POST['id']) && $_POST['id'] > 0) {
-                $res = $banner->save($data, ['id' => $_POST['id']]);
+            if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
+                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
             echo $res;
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -403,10 +404,10 @@ class Boss extends Controller
     public function routeDell($id)
     {
         try {
-            Route::destroy($id);
+            Route::destroy(intval($id));
             return $this->routeList();
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -415,14 +416,14 @@ class Boss extends Controller
     {
         try {
             $client = new Routepoint();
-            $list = $client->where(['rid' => $rid])
+            $list = $client->where(['rid' => (int)$rid])
                 ->order('sort')
                 ->select();
             $this->assign('list', $list);
             $this->assign("title","推荐路线文物点设置");
             return $this->view->fetch('boss/route/point/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -431,40 +432,41 @@ class Boss extends Controller
     {
         try {
             if ($id != null) {
-                $data = Routepoint::get($id);
+                $data = Routepoint::get((int)$id);
                 $this->assign('title', '修改 推荐路线文物点');
                 $this->assign('rid', $data->rid);
                 $this->assign('data', $data);
             } else {
                 if ($rid != null) {
                     $this->assign('title', '添加 推荐路线文物点');
-                    $this->assign('rid', $rid);
+                    $this->assign('rid', (int)$rid);
                     $this->assign('data', null);
                 }
             }
             return $this->view->fetch('boss/route/point/newadd');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
-    public function routePointSave()
+    public function routePointSave(Request $request)
     {
         try {
+            $inputData = $request->param('',null,'htmlspecialchars');
             $banner = new Routepoint();
             $data = new \stdClass();
-            $data->pid = $_POST['pid'];
-            $data->rid = $_POST['rid'];
-            $data->sort = $_POST['sort'];
-            if (isset($_POST['id']) && $_POST['id'] > 0) {
-                $res = $banner->save($data, ['id' => $_POST['id']]);
+            $data->pid = $inputData['pid'];
+            $data->rid = $inputData['rid'];
+            $data->sort = $inputData['sort'];
+            if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
+                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
             echo $res;
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -472,10 +474,10 @@ class Boss extends Controller
     public function routepointDell($id, $rid)
     {
         try {
-            Routepoint::destroy($id);
-            return $this->routePointList($rid);
+            Routepoint::destroy((int)$id);
+            return $this->routePointList((int)$rid);
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -490,7 +492,7 @@ class Boss extends Controller
             $this->assign("title","活动列表");
             return $this->view->fetch('boss/act/list');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -499,7 +501,7 @@ class Boss extends Controller
     {
         try {
             if ($id != null) {
-                $data = Act::get($id);
+                $data = Act::get((int)$id);
                 $this->assign('title', "活动 修改");
                 $this->assign('data', $data);
             } else {
@@ -508,33 +510,34 @@ class Boss extends Controller
             }
             return $this->view->fetch('boss/act/newadd');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
     //保存 活动
-    public function actSave()
+    public function actSave(Request $request)
     {
         try {
+            $inputData = $request->param('',null,'htmlspecialchars');
             $banner = new Act();
             $data = new \stdClass();
-            $data->name = $_POST['name'];
-            $data->isfree = $_POST['isfree'];
-            $data->cost = $_POST['cost'];
-            $data->des = $_POST['des'];
-            $data->isindex = $_POST['isindex'];
-            $data->zone = $_POST['zone'];
-            $data->img = $_POST['img'];
-            $data->sort = $_POST['sort'];
-            if (isset($_POST['id']) && $_POST['id'] > 0) {
-                $res = $banner->save($data, ['id' => $_POST['id']]);
+            $data->name = $inputData['name'];
+            $data->isfree = $inputData['isfree'];
+            $data->cost = $inputData['cost'];
+            $data->des = $inputData['des'];
+            $data->isindex = $inputData['isindex'];
+            $data->zone = $inputData['zone'];
+            $data->img = $inputData['img'];
+            $data->sort = $inputData['sort'];
+            if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
+                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
             echo $res;
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -542,10 +545,10 @@ class Boss extends Controller
     public function delSave($id)
     {
         try {
-            Act::destroy($id);
+            Act::destroy(intval($id));
             return $this->actList();
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -616,7 +619,7 @@ class Boss extends Controller
     // 删除捐款
     public function donateState()
     {
-        $id = intval($_POST['id']);
+        $id = intval($this->request->post('id'));
         if ($id <= 0) {
             return $this->response(400, '非法请求');
         }
@@ -642,7 +645,7 @@ class Boss extends Controller
         if (!Request::instance()->isPost()) {
             return json($response);
         }
-        $type = Request::instance()->param('type');
+        $type = Request::instance()->param('type','','htmlspecailchars');
         if (!$type) {
             $type = '';
         }
@@ -709,14 +712,14 @@ class Boss extends Controller
     public function productSave(Request $request)
     {
         if ($request->isAjax()) {
-            $data = $request->post();
+            $data = $request->post('',null,'htmlspecailchars');
             if (empty($data)) {
                 return $this->response(400, '非法请求');
             }
             $product = new Product();
             $productContent = new ProductContent();
             $productImg = new ProductImg();
-            $content = $data['content'];
+            $content = $_POST['content'];
             $imgs = $data['imgs'];
             unset($data['file'], $data['content'], $data['imgs']);
             if (isset($data['id']) && intval($data['id'])) { // 修改
@@ -773,7 +776,7 @@ class Boss extends Controller
     // 上架 下架 产品
     public function productState()
     {
-        $id = intval($_POST['id']);
+        $id = intval($this->request->post('id'));
         if ($id <= 0) {
             return $this->response(400, '非法请求');
         }
@@ -788,6 +791,7 @@ class Boss extends Controller
     // 删除产品图片
     public function productImgDel($id = 0)
     {
+        $id = intval($id);
         if ($id < 0) {
             return $this->response(400, '删除失败');
         }
@@ -799,9 +803,7 @@ class Boss extends Controller
         }
     }
 
-    /**
-     * 网站公告管理
-     */
+    // 网站公告管理
     public function newsList(Request $request)
     {
         if ($request->isAjax()) {
@@ -828,7 +830,7 @@ class Boss extends Controller
     public function newsSave(Request $request)
     {
         if ($request->isAjax()) {
-            $data = $request->post();
+            $data = $request->post('',null,'htmlspecialchars');
             if (empty($data)) {
                 return $this->response(400, '非法请求');
             }
@@ -899,7 +901,7 @@ class Boss extends Controller
     public function inspectSave(Request $request)
     {
         if ($request->isAjax()) {
-            $data = $request->post();
+            $data = $request->post('',null,'htmlspecialchars');
             if (empty($data)) {
                 return $this->response(400, '非法请求');
             }
@@ -953,7 +955,7 @@ class Boss extends Controller
                 if ($about == null) {
                     $res = $config->data($data)->save();
                 } else {
-                    $config->where(['id'=>$data['id']])->update($data);
+                    $config->where(['id'=>(int)$data['id']])->update($data);
                 }
                 if (!$res) {
                     return $this->response(400, '操作失败');
@@ -1068,7 +1070,7 @@ class Boss extends Controller
         return $this->view->fetch('boss/train/list');
     }
 
-    // 培训分类添加和编辑
+    // 培训添加和编辑
     public function trainSave(Request $request)
     {
         if ($request->isAjax()) {
@@ -1416,6 +1418,9 @@ class Boss extends Controller
      */
     public function addOrderAttention(Request $request)
     {
+        if (!$request->isAjax()){
+            return self::response(400,'非法请求~');
+        }
         $orderNo = $request->post('order_no','','htmlspecialchars');
         $option = $request->post('option','','htmlspecialchars');
         if (!$orderNo || !$option){
@@ -1430,6 +1435,13 @@ class Boss extends Controller
         return self::response(0,'添加成功');
     }
 
+    /**
+     * 报名信息
+     * @param Request $request
+     * @return string|\think\response\Json
+     * @throws Exception
+     * @throws \think\exception\DbException
+     */
     public function registerList(Request $request)
     {
         $state = $request->request('state') ? 1 : 0;
@@ -1452,5 +1464,27 @@ class Boss extends Controller
         $this->assign('state', $state);
         $this->assign('title', '注册信息-' . $this->title);
         return $this->view->fetch('boss/register/list');
+    }
+
+    /**
+     * 修改注册审核状态
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function registerPass(Request $request)
+    {
+        if (!$request->isAjax()){
+            return self::response(400,'非法请求');
+        }
+        $id = (int)$request->post('id');
+        if (!$id){
+            return self::response(400,'非法请求');
+        }
+        $memberObj = new Member();
+        $res = $memberObj->save(['state' => ['exp', '1-state']],['id'=>$id]);
+        if (!$res){
+            return self::response(400,'操作失败');
+        }
+        return self::response(0,'操作成功');
     }
 }
