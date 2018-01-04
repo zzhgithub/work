@@ -22,9 +22,6 @@
             {volist name="list" id="vo1"}
             <li class="swiper-slide"><a href="{$vo1.url}"><img src="{$vo1.img}" width="100%"/><dt><span>{$vo1.des}</span></dt></a></li>
             {/volist}
-            <!--<li class="swiper-slide"><a href="#"><img src="images/banner_02.jpg" width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>-->
-            <!--<li class="swiper-slide"><a href="#"><img src="images/banner_02.jpg"width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>-->
-            <!--<li class="swiper-slide"><a href="#"><img src="images/banner_02.jpg"width="100%"/><dt><span>戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址戴笠公馆旧址</span></dt></a></li>-->
         </ul>
         <!--结束切换内容-->
         <div class="live_partner">
@@ -55,6 +52,7 @@
 {/block}
 {block name="javascript"}
 <script src="/static/js/swiper.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fBdXTR51bqAmfP5taFKRcQv5"></script>
 <script type="text/javascript">
     $(function(){
         var gao=$(".partner ul li img").height();
@@ -89,24 +87,23 @@
     })
 
     // 百度地图API功能
+    var latitude = {$ext.y};
+    var longitude = {$ext.x};
     map = new BMap.Map("allmap");
     map.centerAndZoom(new BMap.Point({$ext.x},{$ext.y}), 15);
-    var data_info = [[106.52693,29.579323,"地址：北京市东城区王府井大街88号乐天银泰百货八层 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.610119,106.5564&title=&output=html'>导航</a>"],
-        [106.525017,29.579221,"地址：北京市东城区东华门大街 <a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=29.567963,106.529872&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"],
-        [106.525799,29.580391,"地址：北京市东城区正义路甲5号<a style='color:#6bb1f7;' href='http://api.map.baidu.com/marker?location=39.916979519873,116.41004950566&title=我的位置&content=百度奎科大厦&output=html'>导航</a>"]
-    ];
+    var address = '地址：{$base.addr} <a style="color:#6bb1f7;" href="http://api.map.baidu.com/marker?location='+latitude+','+longitude+'&title=&output=html">导航</a>';
+    var data_info = [longitude,latitude,address];
     var opts = {
         width : 250,     // 信息窗口宽度
         height: 80,     // 信息窗口高度
         title : "信息窗口" , // 信息窗口标题
         enableMessage:true//设置允许信息窗发送短息
     };
-    for(var i=0;i<data_info.length;i++){
-        var marker = new BMap.Marker(new BMap.Point(data_info[i][0],data_info[i][1]));  // 创建标注
-        var content = data_info[i][2];
-        map.addOverlay(marker);               // 将标注添加到地图中
-        addClickHandler(content,marker);
-    }
+    var marker = new BMap.Marker(new BMap.Point(data_info[0],data_info[1]));  // 创建标注
+    var content = data_info[2];
+    map.addOverlay(marker);               // 将标注添加到地图中
+    addClickHandler(content,marker);
+
     function addClickHandler(content,marker){
         marker.addEventListener("click",function(e){
             openInfo(content,e)}

@@ -13,8 +13,8 @@
         <div class="layui-logo">重庆老街后台管理系统</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="/boss/news/list">公告管理</a></li>
-            <li class="layui-nav-item"><a href="/boss/about">关于我们</a></li>
+            <li {if condition="$pathInfo eq '/boss/news/list'"}class="layui-nav-item layui-this"{else/}class="layui-nav-item"{/if}><a href="/boss/news/list">公告管理</a></li>
+            <li {if condition="$pathInfo eq '/boss/about'"}class="layui-nav-item layui-this"{else/}class="layui-nav-item" {/if}><a href="/boss/about">关于我们</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
@@ -33,7 +33,7 @@
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree">
+            <ul class="layui-nav layui-nav-tree leftnav">
                 <li class="layui-nav-item">
                     <a class="" href="javascript:;">文物点管理</a>
                     <dl class="layui-nav-child">
@@ -143,23 +143,46 @@
 </div>
 <script src="/static/boss/layui.js"></script>
 <script>
+    //是否被包含,是返回true,不是返回false
+    function isContained(a, b){
+        if(!(a instanceof Array) || !(b instanceof Array)) return false;
+        if(a.length < b.length) return false;
+        var aStr = a.toString();
+        for(var i = 0, len = b.length; i < len; i++){
+            if(aStr.indexOf(b[i]) == -1) return false;
+        }
+        return true;
+    }
     //JavaScript代码区域
     layui.use(['element','jquery'], function(){
         var element = layui.element;
         var $ = layui.jquery;
         var _url = '{$pathInfo}';
         var _urlArr = _url.split('/');
-        $('.layui-nav-child dd a').each(function (e) {
-            console.log($(this).parents('li').find('dd').eq(0).find('a').attr('href'));
+        var _selected = false;
+        $('.leftnav .layui-nav-child dd a').each(function (e) {
             var href = $(this).attr('href');
             var hrefArr = href.split('/');
-            if (href === _url){
+            hrefArr.pop();
+            if (href == _url){
                 $(this).addClass('layui-this');
                 $(this).parents('li').addClass('layui-nav-itemed');
-            }else if(href){
-
+                _selected = true;
+                return false;
             }
         });
+        if (!_selected){
+            $('.leftnav .layui-nav-child dd a').each(function (e) {
+                var href = $(this).attr('href');
+                var hrefArr = href.split('/');
+                hrefArr.pop();
+                if(isContained(_urlArr,hrefArr)){
+                    $(this).parents('li').find('dd').eq(0).find('a').addClass('layui-this');
+                    $(this).parents('li').addClass('layui-nav-itemed');
+                    return false;
+                }
+            });
+        }
     });
 </script>
 {block name="javascript"}{/block}
