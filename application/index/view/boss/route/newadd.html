@@ -6,7 +6,7 @@
         <legend>添加/编辑推荐线路</legend>
     </fieldset>
     <form class="layui-form" role="form" enctype="multipart/form-data" id="datafrom">
-        <input type="hidden" id="id" value="{$data.id}">
+        <input type="hidden" id="id" name="id" value="{$data.id}">
         <div class="layui-form-item">
             <label class="layui-form-label" for="preview">预览图</label>
             <div class="thumbnail" id="preview">
@@ -97,7 +97,6 @@
             $.post("/boss/route/save",data.field,function(res){
                 layer.msg(res.msg);
                 if (res.code===0){
-                    console.log(1232);
                     setTimeout(function () {
                         location.href = '/boss/route/list';
                     },2000);
