@@ -68,18 +68,17 @@ class Boss extends Controller
     public function index()
     {
         $this->assign('title',$this->title);
-        return $this->fetch('boss/index/index');
+        $this->redirect('/boss/point/list');
+        //return $this->fetch('boss/index/index');
     }
 
     // banner显示列表
     public function bannerList()
     {
         try {
-            $banners = new Banner();
-            $res = $banners
-                ->order('sort')
-                ->select();
-            $this->assign('list', $res);
+            $bannerObj = new Banner();
+            $list = $bannerObj->order('sort')->select();
+            $this->assign('list', $list);
             $this->assign('title', "轮播图列表");
             return $this->view->fetch('boss/banner/newlist');
         } catch (Exception $e) {
@@ -117,14 +116,22 @@ class Boss extends Controller
             $data->img = $inputData['img'];
             $data->des = $inputData['des'];
             $data->url = $inputData['url'];
+            foreach ((array)$data as $v){
+                if (!$v){
+                    return self::response(400,'请输入完整信息');
+                }
+            }
             $data->sort = $inputData['sort'];
             if (isset($inputData['id']) && intval($inputData['id']) > 0) {
-                $res = $banner->save($data, ['id' => intval($inputData['id'])]);
+                $banner->save($data, ['id' => intval($inputData['id'])]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
-            echo $res;
+            if(isset($res) && !$res){
+                return self::response(400,'操作失败');
+            }
+            return self::response(0,'操作成功');
         } catch (Exception $e) {
            return $e->getMessage();
         }
@@ -144,10 +151,22 @@ class Boss extends Controller
 
     // 获取文物点列表
 
-    public function pointList()
+    public function pointList(Request $request)
     {
         try {
-            $list = Point::all();
+            $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
+            $limit = 10;
+            $pointObj = new Point();
+            $totalSize = $pointObj->count();
+            $totalPage = ceil($totalSize / $limit);
+            if ($page >= $totalPage){
+                $page = $totalPage;
+            }
+            $list = $pointObj->order('sort')->limit(($page-1)*$limit, $limit)->select();
+            $this->assign('page', $page);
+            $this->assign('limit', $limit);
+            $this->assign('totalPage', $totalPage);
+            $this->assign('totalSize', $totalSize);
             $this->assign("title","文物点列表");
             $this->assign('list', $list);
             return $this->view->fetch('boss/point/list');
@@ -187,15 +206,22 @@ class Boss extends Controller
             $data->addr = $inputData['addr'];
             $data->level = $inputData['level'];
             $data->zone = $inputData['zone'];
+            foreach ((array)$data as $v){
+                if (!$v){
+                    return self::response(400,'请输入完整信息');
+                }
+            }
             $data->sort = $inputData['sort'];
             if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
+                $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
-
-            echo $res;
+            if(isset($res) && !$res){
+                return self::response(400,'操作失败');
+            }
+            return self::response(0,'操作成功');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -207,7 +233,7 @@ class Boss extends Controller
         try {
             Point::destroy((int)$id);
             //删除后加载列表页
-            return $this->pointList();
+            return $this->pointList($this->request);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -234,7 +260,7 @@ class Boss extends Controller
             $this->assign("title","文物点详情");
             return $this->view->fetch('boss/point/detail');
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -248,6 +274,11 @@ class Boss extends Controller
             $data->des = $inputData['des'];
             $data->x = $inputData['x'];
             $data->y = $inputData['y'];
+            foreach ((array)$data as $v){
+                if (!$v){
+                    return self::response(400,'请输入完整信息');
+                }
+            }
             $id = intval($inputData['id']);
             $test = Pointdetail::get($id);
 
@@ -255,9 +286,12 @@ class Boss extends Controller
                 $data->id = $id;
                 $res = $client->data($data)->save();
             } else {
-                $res = $client->save($data, ['id' => $id]);
+                $client->save($data, ['id' => $id]);
             }
-            return $res;
+            if(isset($res) && !$res){
+                return self::response(400,'操作失败');
+            }
+            return self::response(0,'操作成功');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -296,7 +330,6 @@ class Boss extends Controller
                     $this->assign('data', null);
                 }
             }
-
             return $this->view->fetch('boss/point/banner/newadd');
         } catch (Exception $e) {
             return $e->getMessage();
@@ -313,15 +346,23 @@ class Boss extends Controller
             $data->img = $inputData['img'];
             $data->des = $inputData['des'];
             $data->url = $inputData['url'];
-            $data->sort = $inputData['sort'];
             $data->pid = $inputData['pid'];
+            foreach ((array)$data as $v){
+                if (!$v){
+                    return self::response(400,'请输入完整信息');
+                }
+            }
+            $data->sort = $inputData['sort'];
             if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
+                $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
-            echo $res;
+            if(isset($res) && !$res){
+                return self::response(400,'操作失败');
+            }
+            return self::response(0,'操作成功');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -339,14 +380,22 @@ class Boss extends Controller
     }
 
     //推荐路线列表
-    public function routeList()
+    public function routeList(Request $request)
     {
         try {
-            //
+            $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
+            $limit = 10;
             $client = new Route();
-            $list = $client
-                ->order('sort')
-                ->select();
+            $totalSize = $client->count();
+            $totalPage = ceil($totalSize / $limit);
+            if ($page >= $totalPage){
+                $page = $totalPage;
+            }
+            $list = $client->order('sort')->limit(($page-1)*$limit, $limit)->select();
+            $this->assign('page', $page);
+            $this->assign('limit', $limit);
+            $this->assign('totalPage', $totalPage);
+            $this->assign('totalSize', $totalSize);
             $this->assign('list', $list);
             $this->assign("title","推荐路线");
             return $this->view->fetch('boss/route/list');
@@ -384,17 +433,24 @@ class Boss extends Controller
             $data->img = $inputData['img'];
             $data->des = $inputData['des'];
             $data->name = $inputData['name'];
-            $data->sort = $inputData['sort'];
             $data->num = $inputData['num'];
             $data->cost = $inputData['cost'];
-
+            foreach ((array)$data as $v){
+                if (!$v){
+                    return self::response(400,'请输入完整信息');
+                }
+            }
+            $data->sort = $inputData['sort'];
             if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
+                $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
-            echo $res;
+            if(isset($res) && !$res){
+                return self::response(400,'操作失败');
+            }
+            return self::response(0,'操作成功');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -405,7 +461,7 @@ class Boss extends Controller
     {
         try {
             Route::destroy(intval($id));
-            return $this->routeList();
+            return $this->routeList($this->request);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -420,6 +476,7 @@ class Boss extends Controller
                 ->order('sort')
                 ->select();
             $this->assign('list', $list);
+            $this->assign('rid', $rid);
             $this->assign("title","推荐路线文物点设置");
             return $this->view->fetch('boss/route/point/list');
         } catch (Exception $e) {
@@ -457,14 +514,22 @@ class Boss extends Controller
             $data = new \stdClass();
             $data->pid = $inputData['pid'];
             $data->rid = $inputData['rid'];
+            foreach ((array)$data as $v){
+                if (!$v){
+                    return self::response(400,'请输入完整信息');
+                }
+            }
             $data->sort = $inputData['sort'];
             if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
+                $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
-            echo $res;
+            if(isset($res) && !$res){
+                return self::response(400,'操作失败');
+            }
+            return self::response(0,'操作成功');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -482,12 +547,22 @@ class Boss extends Controller
     }
 
     // 获取活动编辑列表
-    public function actList()
+    public function actList(Request $request)
     {
         try {
+            $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
+            $limit = 10;
             $client = new Act();
-            $list = $client->order('sort')
-                ->select();
+            $totalSize = $client->count();
+            $totalPage = ceil($totalSize / $limit);
+            if ($page >= $totalPage){
+                $page = $totalPage;
+            }
+            $list = $client->order('sort')->limit(($page-1)*$limit, $limit)->select();
+            $this->assign('page', $page);
+            $this->assign('limit', $limit);
+            $this->assign('totalPage', $totalPage);
+            $this->assign('totalSize', $totalSize);
             $this->assign('list', $list);
             $this->assign("title","活动列表");
             return $this->view->fetch('boss/act/list');
@@ -522,20 +597,31 @@ class Boss extends Controller
             $banner = new Act();
             $data = new \stdClass();
             $data->name = $inputData['name'];
-            $data->isfree = $inputData['isfree'];
-            $data->cost = $inputData['cost'];
             $data->des = $inputData['des'];
-            $data->isindex = $inputData['isindex'];
             $data->zone = $inputData['zone'];
             $data->img = $inputData['img'];
+            foreach ((array)$data as $v){
+                if (!$v){
+                    return self::response(400,'请输入必填信息');
+                }
+            }
+            $data->isfree = $inputData['isfree'];
+            $data->cost = $inputData['cost'];
+            if (!$data->isfree && !$data->cost){
+                return self::response(400,'请输入报名费');
+            }
+            $data->isindex = $inputData['isindex'];
             $data->sort = $inputData['sort'];
             if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $res = $banner->save($data, ['id' => (int)$inputData['id']]);
+                $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
                 $banner->data($data);
                 $res = $banner->save();
             }
-            echo $res;
+            if(isset($res) && !$res){
+                return self::response(400,'操作失败');
+            }
+            return self::response(0,'操作成功');
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -546,7 +632,7 @@ class Boss extends Controller
     {
         try {
             Act::destroy(intval($id));
-            return $this->actList();
+            return $this->actList($this->request);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -836,9 +922,10 @@ class Boss extends Controller
             }
             $news = new News();
             unset($data['file']);
+            $res =  true;
             if (isset($data['id']) && intval($data['id'])) { // 修改
                 $data['id'] = intval($data['id']);
-                $res = $news->save($data, ['id' => $data['id']]);
+                $news->save($data, ['id' => $data['id']]);
             } else {              //添加
                 $news->data($data);
                 $res = $news->save();
@@ -907,9 +994,10 @@ class Boss extends Controller
             }
             $news = new Inspect();
             unset($data['file'], $data['content'], $data['imgs']);
+            $res =  true;
             if (isset($data['id']) && intval($data['id'])) { // 修改
                 $data['id'] = intval($data['id']);
-                $res = $news->save($data, ['id' => $data['id']]);
+                $news->save($data, ['id' => $data['id']]);
             } else {              //添加
                 $news->data($data);
                 $res = $news->save();
@@ -1325,6 +1413,9 @@ class Boss extends Controller
         $orderObj = new Order();
         $totalSize = $orderObj->where(['is_paied' => 1])->count();
         $totalPage = ceil($totalSize / $limit);
+        if ($page >= $totalPage){
+            $page = $totalPage;
+        }
         $orderList = $orderObj->where(['is_paied' => 1])->order('id DESC')->field('order_no,total_price,total_price,name,phone,address,option,transaction_id,create_time')->limit(($page - 1) * $limit, $limit)->select();
         if ($orderList) {
             foreach ($orderList as $order) {

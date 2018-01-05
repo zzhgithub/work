@@ -85,11 +85,11 @@ return [
     'boss/route/save' => 'index/boss/routeSave', //保存 添加的ajax
     'boss/route/dell/:id' => 'index/boss/routeDell',//删除推荐路线
 
-    'boss/route/point/list/:rid' => 'index/boss/routePointList',//推荐路线 文物点列表
-    'boss/route/point/add/:rid' => 'index/boss/routePointAddOrSave',//推荐路线 添加文物点
-    'boss/route/point/mod/:id' => 'index/boss/routePointAddOrSave',//推荐路线 修改文物点
-    'boss/route/point/save' => 'index/boss/routePointSave',//ajax
-    'boss/route/point/del/:id/rid/:rid' => 'index/boss/routepointDell',//删除推荐路线的文物点
+    'boss/route/plist/:rid' => 'index/boss/routePointList',//推荐路线 文物点列表
+    'boss/route/padd/:rid' => 'index/boss/routePointAddOrSave',//推荐路线 添加文物点
+    'boss/route/pmod/:id' => 'index/boss/routePointAddOrSave',//推荐路线 修改文物点
+    'boss/route/psave' => 'index/boss/routePointSave',//ajax
+    'boss/route/pdel/:id/rid/:rid' => 'index/boss/routepointDell',//删除推荐路线的文物点
 
     //活动
     'boss/act/list' =>'index/boss/actList',

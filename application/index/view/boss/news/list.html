@@ -2,6 +2,9 @@
 
 {block name="body"}
 <div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>公告列表</legend>
+    </fieldset>
     <table class="layui-table" lay-data="{ url:'/boss/news/list',page:true,id:'idNews'}"
            lay-filter="news">
         <thead>

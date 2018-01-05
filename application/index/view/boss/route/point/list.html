@@ -1,37 +1,39 @@
 {extend name="boss/public/layout"/}
 
 {block name="body"}
-<table class="table layui-table">
-    <caption>Boss 推荐路线 列表页</caption>
-    <thead>
-    <tr>
-        <th>id</th>
-        <th>rid</th>
-        <th>文物点pid</th>
-        <th>排序</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    {volist name="list" id="vo"}
-    <tr>
-        <td>{$vo.id}</td>
-        <td>{$vo.rid}</td>
-        <td>{$vo.pid}</td>
-        <td>{$vo.sort}</td>
-        <td>
-            <a href="/boss/route/point/mod/{$vo.id}" class="btn btn-primary" role="button">
-                修改
-            </a>
-            <a href="/boss/route/point/add/{$vo.rid}" class="btn btn-primary" role="button">
-                添加
-            </a>
-            <a href="/boss/route/point/dell/{$vo.id}/rid/{$vo.rid}" class="btn btn-danger" role="button">
-                删除
-            </a>
-        </td>
-    </tr>
-    {/volist}
-    </tbody>
-</table>
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>Boss 推荐路线文物点列表</legend>
+        <a href="/boss/route/padd/{$rid}" class="btn layui-btn" role="button" style="float: right;margin-right: 20px;">添加</a>
+    </fieldset>
+    <table class="table layui-table">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>rid</th>
+            <th>文物点pid</th>
+            <th>排序</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr>
+            <td>{$vo.id}</td>
+            <td>{$vo.rid}</td>
+            <td>{$vo.pid}</td>
+            <td>{$vo.sort}</td>
+            <td>
+                <a href="/boss/route/pmod/{$vo.id}" class="btn layui-btn" role="button">
+                    修改
+                </a>
+                <a href="/boss/route/pdel/{$vo.id}/rid/{$vo.rid}" class="btn layui-btn layui-btn-danger" role="button">
+                    删除
+                </a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>
 {/block}

@@ -1,49 +1,79 @@
 {extend name="boss/public/layout"/}
 
 {block name="body"}
-<table class="table layui-table">
-    <caption>活动 列表页</caption>
-    <thead>
-    <tr>
-        <th>id</th>
-        <th>活动图片</th>
-        <th>活动标题</th>
-        <th>是否是公益 公益是1</th>
-        <th>报名费</th>
-        <th>活动介绍</th>
-        <th>是否是首页推荐 1 是推荐</th>
-        <th>排序</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    {volist name="list" id="vo"}
-    <tr>
-        <td>{$vo.id}</td>
-        <td>
-            <div class="thumbnail">
-                <img src="{$vo.img}">
-            </div>
-        </td>
-        <td>{$vo.name}</td>
-        <td>{$vo.isfree}</td>
-        <td>{$vo.cost}</td>
-        <td>{$vo.des}</td>
-        <td>{$vo.isindex}</td>
-        <td>{$vo.sort}</td>
-        <td>
-            <a href="/boss/act/mod/{$vo.id}" class="btn btn-primary" role="button">
-                修改
-            </a>
-            <a href="/boss/act/add" class="btn btn-primary" role="button">
-                添加
-            </a>
-            <a href="/boss/atc/dell/{$vo.id}" class="btn btn-danger" role="button">
-                删除
-            </a>
-        </td>
-    </tr>
-    {/volist}
-    </tbody>
-</table>
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>活动 列表</legend>
+        <a href="/boss/act/add" class="btn layui-btn" role="button" style="float: right;margin-right: 20px;">添加</a>
+    </fieldset>
+    <table class="table layui-table">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>活动图片</th>
+            <th>活动标题</th>
+            <th>是否公益</th>
+            <th>报名费</th>
+            <th width="200">活动介绍</th>
+            <th>首页推荐</th>
+            <th>排序</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr>
+            <td>{$vo.id}</td>
+            <td>
+                <div class="thumbnail">
+                    <img src="{$vo.img}">
+                </div>
+            </td>
+            <td>{$vo.name}</td>
+            <td>{if condition="$vo.isfree eq 1"}是{else/}否{/if}</td>
+            <td>{$vo.cost}</td>
+            <td title="{$vo.des}">{$vo.des}</td>
+            <td>{if condition="$vo.isindex eq 1"}是{else/}否{/if}</td>
+            <td>{$vo.sort}</td>
+            <td>
+                <a href="/boss/act/mod/{$vo.id}" class="btn layui-btn" role="button">
+                    修改
+                </a>
+                <a href="/boss/act/del/{$vo.id}" class="btn layui-btn layui-btn-danger" role="button">
+                    删除
+                </a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div id="page"></div>
+</div>
+{/block}
+{block name="javascript"}
+<script>
+    layui.use(['jquery','laypage','layer'], function () {
+        //自定义首页、尾页、上一页、下一页文本
+        var laypage = layui.laypage;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        laypage.render({
+            elem: 'page'
+            ,count: {$totalSize}
+            ,limit: {$limit}
+            ,first: '首页'
+            ,last: '尾页'
+            ,prev: '<em>←</em>'
+            ,next: '<em>→</em>'
+            ,curr: {$page}
+            ,jump: function(obj, first){
+                //obj包含了当前分页的所有参数，比如：
+                //首次不执行
+                if(!first){
+                    location.href = '/boss/act/list?page=' + obj.curr
+                }
+            }
+        });
+    });
+</script>
 {/block}

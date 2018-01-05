@@ -53,42 +53,9 @@
     layui.use(['jquery'], function () {
         $ = layui.jquery;
     });
-    layui.use(['form', 'layedit', 'layer'], function () {
-        //var layedit = layui.layedit;
+    layui.use(['form', 'layer'], function () {
         var form = layui.form;
         var layer = layui.layer;
-
-//        layedit.set({
-//            uploadImage: {
-//                url: '/boss/upload?type=product' //接口url
-//                , type: 'post' //默认post
-//            }
-//        });
-//        var editor = layedit.build('editor'); //建立编辑器
-//        form.verify({
-//            title: function (value) { //value：表单的值、item：表单的DOM对象
-//                if (/^\d+\d+\d$/.test(value)) {
-//                    return '公告标题不能全为数字';
-//                }
-//                if (value.length < 5) {
-//                    return '公告标题至少得5个字符啊';
-//                }
-//            }
-//            , des: function (value) {
-//                if (!value) {
-//                    return '请输入公告描述';
-//                }
-//                if (value.length < 20) {
-//                    return '产品描述不能少于20字';
-//                }
-//            }
-//            , content: function (value) {
-//                layedit.sync(editor);
-//                if (!value) {
-//                    return '请输入详细信息';
-//                }
-//            }
-
         form.on('submit(go)', function (data) {
 //            layedit.sync(editor);
             $.post("/boss/near/add", data.field, function (res) {
