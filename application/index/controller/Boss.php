@@ -731,7 +731,7 @@ class Boss extends Controller
         if (!Request::instance()->isPost()) {
             return json($response);
         }
-        $type = Request::instance()->param('type','','htmlspecailchars');
+        $type = Request::instance()->param('type','','htmlspecialchars');
         if (!$type) {
             $type = '';
         }
@@ -798,7 +798,7 @@ class Boss extends Controller
     public function productSave(Request $request)
     {
         if ($request->isAjax()) {
-            $data = $request->post('',null,'htmlspecailchars');
+            $data = $request->post('',null,'htmlspecialchars');
             if (empty($data)) {
                 return $this->response(400, '非法请求');
             }
