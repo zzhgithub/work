@@ -21,13 +21,6 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">文物点id</label>
-            <div class="layui-input-block">
-                <input type="text" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入文物点id"
-                       class="layui-input" value="{$near.pid}" style="width: 300px;">
-            </div>
-        </div>
-        <div class="layui-form-item">
             <label class="layui-form-label">距离</label>
             <div class="layui-input-block">
                 <input type="text" name="distance" lay-verify="" autocomplete="off" placeholder="请输入距离"
@@ -39,6 +32,7 @@
                 {if condition="$near.id gt 0"}
                 <input type="hidden" name="id" value="{$near.id}">
                 {/if}
+                <input type="hidden" name="pid" value="{$pid}">
                 <button class="layui-btn" lay-submit="" lay-filter="go">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
@@ -58,12 +52,12 @@
         var layer = layui.layer;
         form.on('submit(go)', function (data) {
 //            layedit.sync(editor);
-            $.post("/boss/near/add", data.field, function (res) {
+            $.post("/boss/point/near/add/{$pid}", data.field, function (res) {
                 layer.msg(res.msg);
                 if (res.code === 0) {
                     setTimeout(function () {
-                        location.reload();
-                    },1000);
+                        location.href = '/boss/point/near/list/{$pid}';
+                    },2000);
                 }
             });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。

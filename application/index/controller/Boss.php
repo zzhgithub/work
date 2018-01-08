@@ -1277,31 +1277,40 @@ class Boss extends Controller
         return $this->response(0, '删除成功');
     }
 
-    public function nearList(Request $request){
+    public function nearList(Request $request)
+    {
+        $pid = $request->param('pid');
+        $pid = $pid ? intval($pid) : 0;
         if ($request->isAjax()) {
-            $limit = $request->request('limit');
-            $limit = $limit ? intval($limit) : 10;
-            $cert = new Pointnear();
-            $list = $cert->paginate($limit);
             $response = new \stdClass();
-            $response->code = 0;
-            $response->count = $list->total();
+            $response->code = 400;
+            $response->count = 0;
             $response->msg = '';
             $response->data = array();
+            if (!$pid){
+                return json($response);
+            }
+            $limit = $request->param('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $cert = new Pointnear();
+            $list = $cert->where(['pid' => $pid])->paginate($limit);
+            $response->count = $list->total();
             if (!empty($list)) {
                 $response->code = 0;
                 $response->data = $list->items();
             }
             return json($response);
         }
+        $this->assign('pid', $pid);
         $this->assign('title', '附近管理-' . $this->title);
         return $this->view->fetch('boss/near/list');
     }
 
     public function nearSave(Request $request){
+        $pid = intval($request->param('pid'));
         if ($request->isAjax()) {
             $data = $request->post();
-            if (empty($data)) {
+            if (empty($data) || !$pid) {
                 return $this->response(400, '非法请求');
             }
             $cert = new Pointnear();
@@ -1320,8 +1329,10 @@ class Boss extends Controller
             }
         } else {
             $id = intval($request->param('id'));
+            $cert = array();
             $cert = Pointnear::get($id);
             $this->assign('near', $cert);
+            $this->assign('pid', $pid);
             $this->assign('title', '添加/修改附近文物点-' . $this->title);
             return $this->view->fetch('boss/near/add');
         }

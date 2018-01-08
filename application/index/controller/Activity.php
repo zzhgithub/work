@@ -326,7 +326,9 @@ class Activity extends Controller
      * @return string
      */
     private function fail($msg='',$url='',$time=3){
-        $str = '<script type="text/javascript" src="/static/js/jquery-1.11.3.min.js"></script><script type="text/javascript" src="/static/js/layer/layer.js"></script>';//加载jquery和layer
+        $str = '<title>信息提示</title>';
+        $str .= '<meta content="width=device-width,user-scalable=no,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" name="viewport">';
+        $str .= '<script type="text/javascript" src="/static/js/jquery-1.11.3.min.js"></script><script type="text/javascript" src="/static/js/layer/layer.js"></script>';//加载jquery和layer
         $str .= '<script>$(function(){layer.alert("'.$msg.'", {icon: 5,time:'.$time.'*1000,offset: "auto",closeBtn: 0,title: "信息提示",btn: [],anim: 2,shade: 0});setTimeout(function(){self.location.href="'.$url.'"},'.$time.'*1000)});</script>';//主要方法
         return $str;
     }

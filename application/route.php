@@ -168,10 +168,10 @@ return [
     /**
      * 附近文物点管理
      */
-    'boss/near/list' => 'index/boss/nearList',
-    'boss/near/add' => 'index/boss/nearSave',
-    'boss/near/mod/:id' => 'index/boss/nearSave',
-    'boss/near/del' => 'index/boss/nearDel',
+    'boss/point/near/list/:pid' => 'index/boss/nearList',
+    'boss/point/near/add/:pid' => 'index/boss/nearSave',
+    'boss/point/near/mod/:id' => 'index/boss/nearSave',
+    'boss/point/near/del' => 'index/boss/nearDel',
     /**
      * 登录 登出
      */
