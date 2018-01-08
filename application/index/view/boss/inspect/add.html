@@ -133,20 +133,10 @@
             $('.preview').attr('src','/static/images/no_pic.gif');
         }
     });
-    layui.use(['form', 'layedit', 'layer', 'upload'], function () {
+    layui.use(['form', 'layer', 'upload'], function () {
         var upload = layui.upload;
-        var layedit = layui.layedit;
         var form = layui.form;
         var layer = layui.layer;
-
-        layedit.set({
-            uploadImage: {
-                url: '/boss/upload?type=product' //接口url
-                , type: 'post' //默认post
-            }
-        });
-        var editor = layedit.build('editor'); //建立编辑器
-
         //执行实例
         var uploadInst = upload.render({
             elem: '#img' //绑定元素
@@ -201,12 +191,6 @@
                     return '产品描述不能少于20字';
                 }
             }
-            , content: function (value) {
-                layedit.sync(editor);
-                if (!value) {
-                    return '请输入详细信息';
-                }
-            }
             , imgs: function (value) {
                 if (value === '' || value.length === 0) {
                     return '请上传产品图片';
@@ -215,7 +199,6 @@
         });
 
         form.on('submit(go)', function (data) {
-            layedit.sync(editor);
             $.post("/boss/inspect/add", data.field, function (res) {
                 layer.msg(res.msg);
                 if (res.code === 0) {

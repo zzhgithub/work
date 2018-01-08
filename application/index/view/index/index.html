@@ -3,8 +3,8 @@
 {block name="body"}
 <!--搜索-->
 <div class="search">
-    <form method="post">
-        <input type="text" placeholder="请输入名称/级别/区位进行搜索"/>
+    <form method="post" action="/point/list">
+        <input type="text" placeholder="请输入名称/级别/区位进行搜索" name="search" value=""/>
         <button type="submit"></button>
     </form>
 </div>
@@ -68,6 +68,7 @@
         {/volist}
     </ul>
     <p style="display: none;" class="nodata">已到底部了</p>
+    <p><a href="http://www.miitbeian.gov.cn/">渝ICP备17015867号-1</a></p>
 </div>
 {/block}
 

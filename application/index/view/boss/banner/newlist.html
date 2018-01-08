@@ -1,8 +1,12 @@
 {extend name="boss/public/layout"/}
 
 {block name="body"}
-<table class="table layui-table">
-    <caption>Boss banner 列表页</caption>
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>Boss banner 列表</legend>
+        <a href="/boss/banner/add" class="btn layui-btn" role="button" style="float: right;margin-right: 20px;">添加</a>
+    </fieldset>
+    <table class="table layui-table">
     <thead>
     <tr>
         <th>id</th>
@@ -26,21 +30,17 @@
         <td>{$vo.url}</td>
         <td>{$vo.sort}</td>
         <td>
-            <a href="/index.php?s=boss/banner/mod/{$vo.id}" class="layui-btn layui-btn-primary" role="button">
+            <a href="/boss/banner/mod/{$vo.id}" class="btn layui-btn" role="button">
                 修改
             </a>
-            <a href="/index.php?s=boss/banner/add" class="layui-btn layui-btn-normal" role="button">
-                添加
-            </a>
-            <a href="/index.php?s=boss/banner/dell/{$vo.id}" class="layui-btn layui-btn-danger" role="button">
+            <a href="/boss/banner/del/{$vo.id}" class="btn layui-btn layui-btn-danger" role="button">
                 删除
             </a>
         </td>
     </tr>
     {/volist}
     </tbody>
-</table>
-{/block}
-
-{block name="javascript"}
+    </table>
+</div>
+<div id="page"></div>
 {/block}

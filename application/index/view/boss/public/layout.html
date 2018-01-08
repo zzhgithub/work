@@ -13,8 +13,8 @@
         <div class="layui-logo">重庆老街后台管理系统</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="/boss/news/list">公告管理</a></li>
-            <li class="layui-nav-item"><a href="/boss/about">关于我们</a></li>
+            <li {if condition="$pathInfo eq '/boss/news/list'"}class="layui-nav-item layui-this"{else/}class="layui-nav-item"{/if}><a href="/boss/news/list">公告管理</a></li>
+            <li {if condition="$pathInfo eq '/boss/about'"}class="layui-nav-item layui-this"{else/}class="layui-nav-item" {/if}><a href="/boss/about">关于我们</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
@@ -33,7 +33,7 @@
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+            <ul class="layui-nav layui-nav-tree leftnav">
                 <li class="layui-nav-item">
                     <a class="" href="javascript:;">文物点管理</a>
                     <dl class="layui-nav-child">
@@ -61,6 +61,12 @@
                         <dd><a href="/boss/order/product">产品订单</a></dd>
                         <dd><a href="/boss/order/act">活动报名</a></dd>
                         <dd><a href="/boss/order/donate">捐款信息</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">志愿者报名管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/boss/register/list?state=1">志愿者报名信息</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
@@ -100,7 +106,6 @@
                         <dd><a href="/boss/train/add">添加培训</a></dd>
                     </dl>
                 </li>
-
                 <li class="layui-nav-item">
                     <a class="" href="javascript:;">反馈管理</a>
                     <dl class="layui-nav-child">
@@ -108,7 +113,6 @@
                         <dd><a href="/boss/inspect/add">添加反馈</a></dd>
                     </dl>
                 </li>
-
                 <li class="layui-nav-item">
                     <a class="" href="javascript:;">证书管理</a>
                     <dl class="layui-nav-child">
@@ -123,9 +127,6 @@
                         <dd><a href="/boss/near/add">添加文物点附近</a></dd>
                     </dl>
                 </li>
-                <!--<li class="layui-nav-item"><a href="/boss/banner/list">banner管理</a></li>-->
-                <!--<li class="layui-nav-item"><a href="boss/route/list">线路管理</a></li>-->
-                <!--<li class="layui-nav-item"><a href="boss/route/list">活动管理</a></li>-->
             </ul>
         </div>
     </div>
@@ -142,10 +143,46 @@
 </div>
 <script src="/static/boss/layui.js"></script>
 <script>
+    //是否被包含,是返回true,不是返回false
+    function isContained(a, b){
+        if(!(a instanceof Array) || !(b instanceof Array)) return false;
+        if(a.length < b.length) return false;
+        var aStr = a.toString();
+        for(var i = 0, len = b.length; i < len; i++){
+            if(aStr.indexOf(b[i]) == -1) return false;
+        }
+        return true;
+    }
     //JavaScript代码区域
-    layui.use('element', function(){
+    layui.use(['element','jquery'], function(){
         var element = layui.element;
-
+        var $ = layui.jquery;
+        var _url = '{$pathInfo}';
+        var _urlArr = _url.split('/');
+        var _selected = false;
+        $('.leftnav .layui-nav-child dd a').each(function (e) {
+            var href = $(this).attr('href');
+            var hrefArr = href.split('/');
+            hrefArr.pop();
+            if (href == _url){
+                $(this).addClass('layui-this');
+                $(this).parents('li').addClass('layui-nav-itemed');
+                _selected = true;
+                return false;
+            }
+        });
+        if (!_selected){
+            $('.leftnav .layui-nav-child dd a').each(function (e) {
+                var href = $(this).attr('href');
+                var hrefArr = href.split('/');
+                hrefArr.pop();
+                if(isContained(_urlArr,hrefArr)){
+                    $(this).parents('li').find('dd').eq(0).find('a').addClass('layui-this');
+                    $(this).parents('li').addClass('layui-nav-itemed');
+                    return false;
+                }
+            });
+        }
     });
 </script>
 {block name="javascript"}{/block}

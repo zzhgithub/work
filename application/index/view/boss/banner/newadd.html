@@ -2,62 +2,69 @@
 
 {block name="body"}
 <!-- 修改添加页 关键是看有没有值传过来 -->
-<div class="container">
-    <div class="row" >
-        <div class="col-xs-6 col-md-offset-3">
-            <form class="layui-form" role="form" enctype="multipart/form-data" id="datafrom">
-                <input type="hidden" id="id" value="{$data.id}">
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="preview">预览图</label>
-                    <div class="thumbnail" id="preview">
-                        <img id="pimg" style="width: 100px;" src="{if condition='isset($data.img)'}{$data.img}{else/}/static/images/no_pic.gif{/if}">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="inputfile">图片</label>
-                    <input class="layui-input" type="file" id="inputfile">
-                    <a role="button" id="upload" href="#" class="btn layui-btn">确认上传</a>
-                </div>
-                <input type="hidden" value="{$data.img}" id="img">
-                <!-- 异步上传图片的按钮 和图片处理 -->
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="des">banner介绍</label>
-                    <div class="layui-input-block">
-                        <input type="text" value="{$data.des}" class="layui-input" id="des" placeholder="请输入介绍">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="url">跳转地</label>
-                    <div class="layui-input-block">
-                        <input type="text" value="{$data.url}" class="layui-input" id="url" placeholder="请输入跳转地址">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="sort">排序</label>
-                    <div class="layui-input-block">
-                        <input type="number" value="{$data.sort}" class="layui-input" id="sort" placeholder="请输入跳转地址">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn layui-btn" id="submit">继续</button>
-            </form>
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>添加/编辑banner</legend>
+    </fieldset>
+    <form class="layui-form" role="form" enctype="multipart/form-data" id="datafrom">
+        <input type="hidden" name="id" id="id" value="{$data.id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="preview">预览图</label>
+            <div class="thumbnail" id="preview">
+                <img id="pimg" style="width: 100px;"
+                     src="{if condition='isset($data.img)'}{$data.img}{else/}/static/images/no_pic.gif{/if}">
+            </div>
         </div>
-    </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="inputfile">图片</label>
+            <div class="layui-input-block">
+                <input class="layui-input" type="file" id="inputfile">
+                <a role="button" id="upload" href="#" class="btn layui-btn">确认上传</a>
+            </div>
+        </div>
+        <input type="hidden" name="img" value="{$data.img}" id="img" lay-verify="image">
+        <!-- 异步上传图片的按钮 和图片处理 -->
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="des">banner介绍</label>
+            <div class="layui-input-block">
+                <input type="text" name="des" value="{$data.des}" class="layui-input" id="des" placeholder="请输入介绍" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="url">跳转地</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" value="{$data.url}" class="layui-input" id="url" placeholder="请输入跳转地址" lay-verify="required">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="sort">排序</label>
+            <div class="layui-input-block">
+                <input type="number" name="sort" value="{$data.sort}" class="layui-input" id="sort" placeholder="排序">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="btn layui-btn" id="submit" lay-submit="" lay-filter="*">继续</button>
+            </div>
+        </div>
+    </form>
 </div>
 {/block}
 
 {block name="javascript"}
 <script type="application/javascript">
-    layui.use(['table','jquery'], function() {
+    layui.use(['layer', 'jquery','form'], function () {
         var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
         $("#upload").click(function () {
             //获取图片元素
             var formData = new FormData();
             formData.append('file', $('#inputfile')[0].files[0]);
             $.ajax({
-                url: "/index.php?s=helper/upload",
+                url: "/helper/upload",
                 type: "post",
                 data: formData,
                 processData: false,
@@ -65,30 +72,29 @@
                 success: function (res) {
                     $("#img").attr('value', "/uploads/" + res);
                     $("#pimg").attr("src", "/uploads/" + res);
-                    alert("上传成功");
+                    layer.msg('上传成功');
                 }
             });
         });
 
+        form.verify({
+            image: function (value) {
+                if(value === '' || value.length === 0){
+                    return '请上传图片';
+                }
+            }
+        });
 
-        $("#datafrom").submit(function () {
-            var formData = new FormData();
-            formData.append('id', $('#id').attr('value'));
-            formData.append('img', $('#img').attr('value'));
-            formData.append('url', $("#url")[0].value);
-            formData.append('des', $("#des")[0].value);
-            formData.append('sort', $("#sort")[0].value);
-            $.ajax({
-                url: "/index.php?s=boss/banner/save",
-                type: "post",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (res) {
-                    alert(res);
-                    window.history.back(-1);
+        form.on('submit(*)', function(data){
+            $.post("/boss/banner/save",data.field,function(res){
+                layer.msg(res.msg);
+                if (res.code===0){
+                    setTimeout(function () {
+                        location.href = '/boss/banner/list';
+                    },2000);
                 }
             });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
     });
 </script>

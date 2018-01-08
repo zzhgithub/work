@@ -4,24 +4,34 @@
 <div class="container">
     <div class="row" >
         <div class="col-xs-6 col-md-offset-3">
-            <form class="center-block" role="form" enctype="multipart/form-data" id="datafrom">
-                <a href="/index.php?s=boss/point/banner/list/{$data.id}" class="btn layui-btn" role="button">
+            <form class="layui-form" enctype="multipart/form-data" id="datafrom">
+                <a href="/boss/point/banner/list/{$data.id}" class="btn layui-btn" style="margin: 10px 30px;">
                     编辑文物点详情的banner
                 </a>
-                <input type="hidden" id="id" value="{$data.id}">
-                <div class="form-group">
-                    <label class="" for="des">文物点描述</label>
-                    <input type="text" value="{$data.des}" class="form-control" id="des" placeholder="请输入文物点描述">
+                <input type="hidden" id="id" name="id" value="{$data.id}">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">文物点描述</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="des" id="des" lay-verify="required" autocomplete="off" placeholder="请输入文物点描述" class="layui-input" value="{$data.des}">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="" for="x">百度地图x坐标</label>
-                    <input type="text" value="{$data.x}" class="form-control" id="x" placeholder="请输入文物点描述">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">百度地图经度坐标</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="x" id="x" lay-verify="required" autocomplete="off" placeholder="请输入文物点经度" class="layui-input" value="{$data.x}">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="" for="y">百度地图y坐标</label>
-                    <input type="text" value="{$data.y}" class="form-control" id="y" placeholder="请输入文物点描述">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">百度地图纬度坐标</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="y" id="y" lay-verify="required" autocomplete="off" placeholder="请输入文物点纬度" class="layui-input" value="{$data.y}">
+                    </div>
                 </div>
-                <button type="submit" class="btn layui-btn" id="submit">继续</button>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="btn layui-btn" id="submit" lay-submit="" lay-filter="*">继续</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -30,25 +40,21 @@
 
 {block name="javascript"}
 <script type="application/javascript">
-    layui.use(['table','jquery'], function() {
+    layui.use(['jquery','layer','form'], function() {
         var $ = layui.jquery;
-        $("#datafrom").submit(function () {
-            var formData = new FormData();
-            formData.append('id', $('#id').attr('value'));
-            formData.append('des', $("#des")[0].value);
-            formData.append('x', $("#x")[0].value);
-            formData.append('y', $("#y")[0].value);
-            $.ajax({
-                url: "/index.php?s=boss/point/detail/save",
-                type: "post",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (res) {
-                    alert(res);
-                    window.history.back(-1);
+        var layer = layui.layer;
+        var form = layui.form;
+
+        form.on('submit(*)', function(data){
+            $.post("/boss/point/detail/save",data.field,function(res){
+                layer.msg(res.msg);
+                if (res.code===0){
+                    setTimeout(function () {
+                        window.history.back(-1);
+                    },2000);
                 }
             });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
     });
 </script>

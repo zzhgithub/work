@@ -1,62 +1,18 @@
 {extend name="boss/public/layout"/}
 
 {block name="body"}
-<div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1" style=" ">
+<div style="width: 98%;margin: 10px auto;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>产品订单</legend>
+    </fieldset>
+    <div class="layui-form layui-border-box layui-table-view" lay-filter="LAY-table-1">
     <div class="layui-table-box">
-        <!--<div class="layui-table-header">-->
-            <!--<table cellspacing="0" cellpadding="0" border="0" class="layui-table">-->
-                <!--<thead>-->
-                <!--<tr>-->
-                    <!--<th data-field="order_no">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span><span-->
-                                <!--class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i-->
-                                <!--class="layui-edge layui-table-sort-desc"></i></span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="orderItemObj">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-orderItemObj"><span>产品名</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="img">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-img"><span>产品图</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="price">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-price"><span>产品下单价</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="count">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-count"><span>产品数量</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="total_price">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-total_price"><span>订单总价</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="name">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-name"><span>订单姓名</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="phone">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-phone"><span>订单电话</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="address">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-address"><span>订单地址</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="create_time">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-create_time"><span>订单时间</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="transaction_id">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-transaction_id"><span>微信交易单号</span></div>-->
-                    <!--</th>-->
-                    <!--<th data-field="11">-->
-                        <!--<div class="layui-table-cell laytable-cell-1-11" align="center"><span>操作</span></div>-->
-                    <!--</th>-->
-                <!--</tr>-->
-                <!--</thead>-->
-            <!--</table>-->
-        <!--</div>-->
         <div class="layui-table-body layui-table-main">
             <table cellspacing="0" cellpadding="0" border="0" class="layui-table">
                 <thead>
                 <tr>
                     <th data-field="order_no">
-                        <div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span><span
-                                class="layui-table-sort layui-inline"><i class="layui-edge layui-table-sort-asc"></i><i
-                                class="layui-edge layui-table-sort-desc"></i></span></div>
+                        <div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span></div>
                     </th>
                     <th data-field="orderItemObj">
                         <div class="layui-table-cell laytable-cell-1-orderItemObj"><span>产品名</span></div>
@@ -100,45 +56,37 @@
                 {volist name="orderList" id="order"}
                 <tr data-index="{$key}" class="">
                     <td data-field="order_no">
-                        <div class="layui-table-cell laytable-cell-1-order_no">{$order.order_no}</div>
+                        <div class="layui-table-cell laytable-cell-1-order_no" data-item="{:count($order.orderItems)}">{$order.order_no}</div>
                     </td>
                     <td data-field="orderItemObj">
-                        <div class="layui-table-cell laytable-cell-1-orderItemObj">
-                            <table>
-                                {volist name="order.orderItems" id="product"}
-                                <tr>
-                                    <td style="border: none;">{$product.name}</td>
-                                </tr>
-                                {/volist}
-                            </table>
-                        </div>
+                            {volist name="order.orderItems" id="product"}
+                            <div class="layui-table-cell laytable-cell-1-orderItemObj">{$product.name}</div>
+                            {/volist}
                     </td>
                     <td data-field="img">
-                        <div class="layui-table-cell laytable-cell-1-img">
-                            <a href="{$order.order_no}" target="_blank">点击查看</a>
-                        </div>
+                        {volist name="order.orderItems" id="product"}
+                            <div class="layui-table-cell laytable-cell-1-img">
+                                <a href="{$product.img}" target="_blank">点击查看</a>
+                            </div>
+                        {/volist}
                     </td>
                     <td data-field="price">
-                        <div class="layui-table-cell laytable-cell-1-price">
-                            <table>
-                                {volist name="order.orderItems" id="product"}
-                                <tr>
-                                    <td style="border: none;">￥{$product.price}</td>
-                                </tr>
-                                {/volist}
-                            </table>
-                        </div>
+                            {volist name="order.orderItems" id="product"}
+                            <div class="layui-table-cell laytable-cell-1-price">￥{$product.price}</div>
+                            {/volist}
                     </td>
                     <td data-field="count">
-                        <div class="layui-table-cell laytable-cell-1-count">
-                            <table>
-                                {volist name="order.orderItems" id="product"}
-                                <tr>
-                                    <td style="border: none;">{$product.count}</td>
-                                </tr>
-                                {/volist}
-                            </table>
-                        </div>
+                        <table>
+                            {volist name="order.orderItems" id="product"}
+                            <tr>
+                                <td style="border: none;">
+                                    <div class="layui-table-cell laytable-cell-1-count">
+                                    {$product.count}
+                                    </div>
+                                </td>
+                            </tr>
+                            {/volist}
+                        </table>
                     </td>
                     <td data-field="total_price">
                         <div class="layui-table-cell laytable-cell-1-total_price">￥{$order.total_price}</div>
@@ -177,10 +125,7 @@
                     <thead>
                     <tr>
                         <th data-field="order_no">
-                            <div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span><span
-                                    class="layui-table-sort layui-inline"><i
-                                    class="layui-edge layui-table-sort-asc"></i><i
-                                    class="layui-edge layui-table-sort-desc"></i></span></div>
+                            <div class="layui-table-cell laytable-cell-1-order_no"><span>订单号</span></div>
                         </th>
                     </tr>
                     </thead>
@@ -192,7 +137,7 @@
                     {volist name="orderList" id="order"}
                     <tr data-index="{$key}" class="">
                         <td data-field="order_no">
-                            <div class="layui-table-cell laytable-cell-1-order_no">{$order.order_no}</div>
+                            <div class="layui-table-cell laytable-cell-1-order_no" data-item="{:count($order.orderItems)}">{$order.order_no}</div>
                         </td>
                     </tr>
                     {/volist}
@@ -219,8 +164,8 @@
                     {volist name="orderList" id="order"}
                     <tr data-index="{$key}" class="">
                         <td data-field="11" align="center" data-off="true">
-                            <div class="layui-table-cell laytable-cell-1-11">
-                                <a class="btn layui-btn option" style="line-height: inherit;" lay-event="edit" data-order="{$order->order_no}">添加备注</a>
+                            <div class="layui-table-cell laytable-cell-1-11 "  data-item="{:count($order.orderItems)}">
+                                <a class="btn layui-btn option" lay-event="edit" data-order="{$order->order_no}">添加备注</a>
                             </div>
                         </td>
                     </tr>
@@ -269,7 +214,7 @@
     }
 
     .laytable-cell-1-create_time {
-        width: 160px;
+        width: 170px;
     }
 
     .laytable-cell-1-transaction_id {
@@ -281,7 +226,8 @@
     }
     </style>
 </div>
-<div id="page"></div>
+    <div id="page"></div>
+</div>
 {/block}
 
 {block name="javascript"}
@@ -291,6 +237,10 @@
         var laypage = layui.laypage;
         var layer = layui.layer;
         var $ = layui.jquery;
+        $('.laytable-cell-1-order_no,.laytable-cell-1-11').each(function (e) {
+           var items = $(this).data('item');
+            $(this).css({'height':items*38+'px','line-height':items*38+'px'});
+        });
         laypage.render({
             elem: 'page'
             ,count: {$totalSize}
@@ -316,6 +266,7 @@
                 return false;
             }
             layer.open({
+                area: ['400px', '300px'],
                 content: '<div class="layui-form-item layui-form-text"><label class="layui-form-label" style="padding: 9px 8px;text-align: left;">文本域</label><div class="layui-input-block"  style="margin-left: 0;"><textarea placeholder="备注信息" class="layui-textarea" id="option"></textarea></div></div>',
                 yes: function(index, layero){
                     var option = $('#option').val();

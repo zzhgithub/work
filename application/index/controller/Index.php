@@ -21,16 +21,16 @@ class Index extends Controller
         parent::__construct($request);
         $this->view = new View();
         $this->assign('_action','index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
+        //$openId = Session::get('openid');
+        //if (!$openId) {
+        //    if ($request->isAjax()) {
+        //        return self::response(400, '请刷新页面重新登录');
+        //    } else {
+        //        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        //        WeiXin::getOpenidAndAcessToken($url);
+        //    }
+        //}
+        //$this->openId = $openId;
     }
 
     /**
@@ -46,7 +46,7 @@ class Index extends Controller
     {
         //获取首页的banner图
         $banner = new Banner();
-        $res_banner = $banner->limit(3)->order('sort')->select();
+        $res_banner = $banner->order('sort')->select();
         $this->assign('banner',$res_banner);
 
         // 获取公告

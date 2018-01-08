@@ -33,16 +33,16 @@ class Show extends Controller
         parent::__construct($request);
         $this->view = new View();
         $this->assign('_action','index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
+        //$openId = Session::get('openid');
+        //if (!$openId) {
+        //    if ($request->isAjax()) {
+        //        return self::response(400, '请刷新页面重新登录');
+        //    } else {
+        //        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        //        WeiXin::getOpenidAndAcessToken($url);
+        //    }
+        //}
+        //$this->openId = $openId;
     }
 
     /**
@@ -143,6 +143,7 @@ class Show extends Controller
     public function pathDetail($id)
     {
         try {
+            $id = intval($id);
             $data = Route::get($id);
             $this->assign('data', $data);
             // 获文物点地址
@@ -171,6 +172,7 @@ class Show extends Controller
     public function ponitDetail($id)
     {
         try {
+            $id = intval($id);
             $base = Point::get($id);
             $this->assign('base', $base);
 
@@ -181,10 +183,10 @@ class Show extends Controller
             $list = $client->where(['pid' => $id])->select();
             $this->assign('list', $list);
 
-            $inspect = new Inspect();
-            $inspect_list = $inspect->where(['pid' => $id])
-                ->select();
-            $this->assign('inspect', $inspect_list);
+            //$inspect = new Inspect();
+            //$inspect_list = $inspect->where(['pid' => $id])
+            //    ->select();
+            //$this->assign('inspect', $inspect_list);
             $this->assign('title', $base->name);
 
             $nearcleint = new Pointnear();

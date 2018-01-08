@@ -9,5 +9,6 @@ namespace app\index\model;
 use think\Model;
 
 class Member extends Model{
-
+    protected $dateFormat = 'Y-m-d H:i:s';
+    protected $autoWriteTimestamp = 'datetime';
 }

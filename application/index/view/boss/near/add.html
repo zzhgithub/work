@@ -3,13 +3,13 @@
 {block name="body"}
 <div style="width: 98%;margin: 10px auto;">
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-        <legend>添加/编辑 附件文物点</legend>
+        <legend>添加/编辑 附近文物点</legend>
     </fieldset>
     <form class="layui-form" action="">
         <div class="layui-form-item">
             <label class="layui-form-label">文物点名称</label>
             <div class="layui-input-block">
-                <input type="text" name="name" lay-verify="name" autocomplete="off" placeholder="请输入公告标题"
+                <input type="text" name="name" lay-verify="name" autocomplete="off" placeholder="请输入文物点名称"
                        class="layui-input" value="{$near.name}" style="width: 300px;">
             </div>
         </div>
@@ -23,14 +23,14 @@
         <div class="layui-form-item">
             <label class="layui-form-label">文物点id</label>
             <div class="layui-input-block">
-                <input type="text" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入公告标题"
+                <input type="text" name="pid" lay-verify="pid" autocomplete="off" placeholder="请输入文物点id"
                        class="layui-input" value="{$near.pid}" style="width: 300px;">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">距离</label>
             <div class="layui-input-block">
-                <input type="text" name="distance" lay-verify="" autocomplete="off" placeholder="请输入外链"
+                <input type="text" name="distance" lay-verify="" autocomplete="off" placeholder="请输入距离"
                        class="layui-input" value="{$near.distance}" style="width: 300px;">
             </div>
         </div>
@@ -53,42 +53,9 @@
     layui.use(['jquery'], function () {
         $ = layui.jquery;
     });
-    layui.use(['form', 'layedit', 'layer'], function () {
-        //var layedit = layui.layedit;
+    layui.use(['form', 'layer'], function () {
         var form = layui.form;
         var layer = layui.layer;
-
-//        layedit.set({
-//            uploadImage: {
-//                url: '/boss/upload?type=product' //接口url
-//                , type: 'post' //默认post
-//            }
-//        });
-//        var editor = layedit.build('editor'); //建立编辑器
-//        form.verify({
-//            title: function (value) { //value：表单的值、item：表单的DOM对象
-//                if (/^\d+\d+\d$/.test(value)) {
-//                    return '公告标题不能全为数字';
-//                }
-//                if (value.length < 5) {
-//                    return '公告标题至少得5个字符啊';
-//                }
-//            }
-//            , des: function (value) {
-//                if (!value) {
-//                    return '请输入公告描述';
-//                }
-//                if (value.length < 20) {
-//                    return '产品描述不能少于20字';
-//                }
-//            }
-//            , content: function (value) {
-//                layedit.sync(editor);
-//                if (!value) {
-//                    return '请输入详细信息';
-//                }
-//            }
-
         form.on('submit(go)', function (data) {
 //            layedit.sync(editor);
             $.post("/boss/near/add", data.field, function (res) {

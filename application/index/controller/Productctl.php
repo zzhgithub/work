@@ -34,16 +34,16 @@ class Productctl extends Controller
     {
         parent::__construct($request);
         $this->assign('_action', 'index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
+        //$openId = Session::get('openid');
+        //if (!$openId) {
+        //    if ($request->isAjax()) {
+        //        return self::response(400, '请刷新页面重新登录');
+        //    } else {
+        //        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        //        WeiXin::getOpenidAndAcessToken($url);
+        //    }
+        //}
+        //$this->openId = $openId;
     }
 
     /**
@@ -55,7 +55,7 @@ class Productctl extends Controller
     public function productList(Request $request)
     {
         $product = new Product();
-        $list = $product->where(['state' => 1])->order('id desc')->field('id,name,img,price,store')->paginate(4);
+        $list = $product->where(['state' => 1])->order('id desc')->field('id,name,img,price,store')->paginate(8);
         $items = $list->items();
         $cart = Session::get('cart');
         $cartArr = $cart != null ? explode(',', $cart) : [];
@@ -281,7 +281,7 @@ class Productctl extends Controller
             return self::response(400, '非法请求');
         }
         // {'name': name, 'phone': phone, '__token__': token,'address':address}
-        $data = $request->post();
+        $data = $request->post('',null,'htmlspecialchars');
         if (empty($data)) {
             return self::response(400, '非法请求');
         }
@@ -318,7 +318,6 @@ class Productctl extends Controller
 
         // 先下单后减库存，30分钟失效
         // 总价
-        $idArr = array_flip(array_flip(explode(',', $data['ids'])));
         $totalPrice = 0.00;
         foreach ($carts as $cart) {
             $totalPrice += sprintf("%.2f", $cart->count * $cart->price);
@@ -389,8 +388,8 @@ class Productctl extends Controller
         if (!$request->isAjax()) {
             return self::response(400, '非法请求');
         }
-        $orderNo = $request->param('order_no');
-        $msg = $request->param('msg');
+        $orderNo = $request->param('order_no',null,'htmlspecialchars');
+        $msg = $request->param('msg',null,'htmlspecialchars');
         if (!$orderNo || !$msg) {
             return self::response(400, '非法请求');
         }

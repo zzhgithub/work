@@ -59,7 +59,7 @@
             var formData = new FormData();
             formData.append('file', $('#inputfile')[0].files[0]);
             $.ajax({
-                url: "/index.php?s=helper/upload",
+                url: "/helper/upload",
                 type: "post",
                 data: formData,
                 processData: false,
@@ -82,7 +82,7 @@
             formData.append('level', $("#level")[0].value);
             formData.append('sort', $("#sort")[0].value);
             $.ajax({
-                url: "/index.php?s=boss/point/save",
+                url: "/boss/point/save",
                 type: "post",
                 data: formData,
                 processData: false,

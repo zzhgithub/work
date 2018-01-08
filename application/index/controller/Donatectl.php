@@ -23,16 +23,16 @@ class Donatectl extends Controller
         parent::__construct($request);
         $this->view = new View();
         $this->assign('_action','index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
+        //$openId = Session::get('openid');
+        //if (!$openId) {
+        //    if ($request->isAjax()) {
+        //        return self::response(400, '请刷新页面重新登录');
+        //    } else {
+        //        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        //        WeiXin::getOpenidAndAcessToken($url);
+        //    }
+        //}
+        //$this->openId = $openId;
     }
 
     /**
@@ -45,7 +45,7 @@ class Donatectl extends Controller
     public function donateList(Request $request)
     {
         $donate = new Donate();
-        $list = $donate->where(['state' => 1])->order('id desc')->paginate(5);
+        $list = $donate->where(['state' => 1])->order('id desc')->paginate(6);
         $items = $list->items();
         $response = new \stdClass();
         if ($request->isAjax()) {
@@ -186,8 +186,8 @@ class Donatectl extends Controller
         if (!$request->isAjax()){
             return self::response(400, '非法请求');
         }
-        $orderNo = $request->param('order_no');
-        $msg = $request->param('msg');
+        $orderNo = $request->param('order_no',null,'htmlspecialchars');
+        $msg = $request->param('msg',null,'htmlspecialchars');
         if (!$orderNo || !$msg){
             return self::response(400, '非法请求');
         }
