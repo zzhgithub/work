@@ -26,12 +26,12 @@ class Person extends Controller
      * @throws \Exception
      */
     public function index(){
-        //$openId = Session::get('openid');
-        //if (!$openId) {
-        //    $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        //    WeiXin::getOpenidAndAcessToken($url);
-        //}
-        //$this->openId = $openId;
+        $openId = Session::get('openid');
+        if (!$openId) {
+            $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            WeiXin::getOpenidAndAcessToken($url);
+        }
+        $this->openId = $openId;
         $prefix = config("database.prefix");
         // 用户信息
         $user = User::get(['openid' => $this->openId]);

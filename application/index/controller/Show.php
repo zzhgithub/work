@@ -33,16 +33,16 @@ class Show extends Controller
         parent::__construct($request);
         $this->view = new View();
         $this->assign('_action','index');
-        //$openId = Session::get('openid');
-        //if (!$openId) {
-        //    if ($request->isAjax()) {
-        //        return self::response(400, '请刷新页面重新登录');
-        //    } else {
-        //        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        //        WeiXin::getOpenidAndAcessToken($url);
-        //    }
-        //}
-        //$this->openId = $openId;
+        $openId = Session::get('openid');
+        if (!$openId) {
+            if ($request->isAjax()) {
+                return self::response(400, '请刷新页面重新登录');
+            } else {
+                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+                WeiXin::getOpenidAndAcessToken($url);
+            }
+        }
+        $this->openId = $openId;
     }
 
     /**
@@ -113,7 +113,9 @@ class Show extends Controller
             $search = Request::instance()->param('search', null, 'stripslashes');
             $client = new Route();
             if ($search) {
-                $list = $client->where('name', 'like', '%' . $search . '%')->order('sort')
+                $list = $client->where('name', 'like', '%' . $search . '%')
+                    ->where('num', 'like', '%' . $search . '%')
+                    ->order('sort')
                     ->paginate(8);
             } else {
                 $list = $client->order('sort')->paginate(8);

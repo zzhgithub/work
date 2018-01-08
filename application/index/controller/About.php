@@ -16,16 +16,16 @@ class About extends Controller
     {
         parent::__construct($request);
         $this->assign('_action','about');
-        //$openId = Session::get('openid');
-        //if (!$openId) {
-        //    if ($request->isAjax()) {
-        //        return self::response(400, '请刷新页面重新登录');
-        //    } else {
-        //        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        //        WeiXin::getOpenidAndAcessToken($url);
-        //    }
-        //}
-        //$this->openId = $openId;
+        $openId = Session::get('openid');
+        if (!$openId) {
+            if ($request->isAjax()) {
+                return self::response(400, '请刷新页面重新登录');
+            } else {
+                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+                WeiXin::getOpenidAndAcessToken($url);
+            }
+        }
+        $this->openId = $openId;
     }
 
     /**
