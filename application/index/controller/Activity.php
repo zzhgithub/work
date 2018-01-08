@@ -115,7 +115,7 @@ class Activity extends Controller
                 $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id,'is_paied' => 1])->find();
             }
             if ($actRecords){
-                echo $this->fail('抱歉,你已经报过名了~','/act/list',3);
+                $this->fail('抱歉,你已经报过名了~','/act/list',3);
                 exit;
             }
             // 返回微信参数
@@ -231,7 +231,7 @@ class Activity extends Controller
                 return self::response(0, '支付创建成功', $wxPayConfig);
             }
             if ($recordsid) {
-                return self::response(0, '你的报名已成功提交，工作人员稍后和你联系！');
+                return self::response(0, "你的报名已成功提交，<br>工作人员稍后和你联系！");
             } else {
                 return self::response(400, '报名失败', ['token' => $request->token()]);
             }
@@ -326,10 +326,11 @@ class Activity extends Controller
      * @return string
      */
     private function fail($msg='',$url='',$time=3){
-        $str = '<title>信息提示</title>';
-        $str .= '<meta content="width=device-width,user-scalable=no,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" name="viewport">';
-        $str .= '<script type="text/javascript" src="/static/js/jquery-1.11.3.min.js"></script><script type="text/javascript" src="/static/js/layer/layer.js"></script>';//加载jquery和layer
-        $str .= '<script>$(function(){layer.alert("'.$msg.'", {icon: 5,time:'.$time.'*1000,offset: "auto",closeBtn: 0,title: "信息提示",btn: [],anim: 2,shade: 0});setTimeout(function(){self.location.href="'.$url.'"},'.$time.'*1000)});</script>';//主要方法
-        return $str;
+        $this->assign('title','信息提示');
+        $this->assign('msg',$msg);
+        $this->assign('url',$url);
+        $this->assign('time',$time);
+        return $this->fetch('act/notice');
+
     }
 }

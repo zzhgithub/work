@@ -1317,21 +1317,23 @@ class Boss extends Controller
             unset($data['file']);
             if (isset($data['id']) && intval($data['id'])) { // 修改
                 $data['id'] = intval($data['id']);
-                $res = $cert->save($data, ['id' => $data['id']]);
+                $cert->save($data, ['id' => $data['id']]);
             } else {              //添加
                 $cert->data($data);
                 $res = $cert->save();
             }
-            if ($res) {
-                return $this->response(0, '操作成功');
-            } else {
+            if (isset($res) && !$res) {
                 return $this->response(400, '操作失败');
             }
+            return $this->response(0, '操作成功');
         } else {
             $id = intval($request->param('id'));
             $cert = array();
             $cert = Pointnear::get($id);
             $this->assign('near', $cert);
+            if ($cert->pid){
+                $pid = $cert->pid;
+            }
             $this->assign('pid', $pid);
             $this->assign('title', '添加/修改附近文物点-' . $this->title);
             return $this->view->fetch('boss/near/add');
@@ -1460,7 +1462,11 @@ class Boss extends Controller
             $limit = $request->request('limit');
             $limit = $limit ? intval($limit) : 10;
             $actRecordsObj = new ActRecords();
-            $list = $actRecordsObj->alias('a')->order('a.id desc')->join($prefix . 'act b', 'a.act_id = b.id','LEFT')->field('a.id,a.act_id,a.order_no,a.need_pay,a.price,a.name as user,a.phone,a.transaction_id,a.create_time,b.name')->where(['a.is_paied' => 1,'a.need_pay' => 1 - $isfree])->paginate($limit);
+            if ($isfree){  // 免费活动
+                $list = $actRecordsObj->alias('a')->order('a.id desc')->join($prefix . 'act b', 'a.act_id = b.id','LEFT')->field('a.id,a.act_id,a.order_no,a.need_pay,a.price,a.name as user,a.phone,a.transaction_id,a.create_time,b.name')->where(['a.need_pay' => 0])->paginate($limit);
+            }else{          // 付费
+                $list = $actRecordsObj->alias('a')->order('a.id desc')->join($prefix . 'act b', 'a.act_id = b.id','LEFT')->field('a.id,a.act_id,a.order_no,a.need_pay,a.price,a.name as user,a.phone,a.transaction_id,a.create_time,b.name')->where(['a.is_paied' => 1,'a.need_pay' => 1])->paginate($limit);
+            }
             $response = new \stdClass();
             $response->code = 0;
             $response->count = $list->total();

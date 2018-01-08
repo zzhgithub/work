@@ -52,13 +52,15 @@
                             {/if}
                             <th lay-data="{field:'act_id', width:80}">活动ID</th>
                             <th lay-data="{field:'name', width:160}">活动名</th>
+                            {if condition="$isfree eq 0"}
                             <th lay-data="{field:'price', width:90}">报名价格</th>
+                            {/if}
                             <th lay-data="{field:'user', width:90}">报名姓名</th>
                             <th lay-data="{field:'phone', width:140}">报名电话</th>
                             {if condition="$isfree eq 0"}
                             <th lay-data="{field:'transaction_id', width:250}">微信订单号</th>
                             {/if}
-                            <th lay-data="{field:'create_time', width:150,sort: true,fixed: 'right'}">报名时间</th>
+                            <th lay-data="{field:'create_time', width:180,sort: true,fixed: 'right'}">报名时间</th>
                         </tr>
                         </thead>
                     </table>

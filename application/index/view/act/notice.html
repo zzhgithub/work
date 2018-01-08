@@ -1,0 +1,10 @@
+{extend name="public:layout"/}
+{block name="javascript"}
+<script type="text/javascript">
+    layui.use(['jquery','layer','form'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        $(function(){layer.alert("{$msg}", {icon: 5,time:{$time}*1000,offset: "auto",closeBtn: 0,title: "信息提示",btn: [],anim: 2,shade: 0});setTimeout(function(){self.location.href="{$url}"},{$time}*1000)});
+    });
+</script>
+{/block}
