@@ -11,7 +11,8 @@
 <div class="history">
     <ul>
         {volist name="list" id="vo"}
-          <li><a href="/index.php?s=point/detail/{$vo.id}"><img src="{$vo.img}"/><span>{$vo.zone} | {$vo.name}</span><img class="jewel" src="../public/images/jewel1.png"/></a></li>
+        <!--1市宝2区宝3国宝4文物点-->
+          <li><a href="/index.php?s=point/detail/{$vo.id}"><img src="{$vo.img}"/><span>{$vo.zone} | {$vo.name}</span><img class="jewel" src="/static/images/jewel{$vo.level}.png"/></a></li>
         {/volist}
     </ul>
 </div>
