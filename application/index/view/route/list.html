@@ -43,7 +43,7 @@
                             currentPage++;
                             var str = '';
                             for (var i = 0; i < data.data.length; i++) {
-                                str += '<li><a href="/index.php?s=route/detail/{$vo.id}"><img src="'+data.data[i].img+'"/><span>线路'+data.data[i].num+'   '+data.data[i].name+'</span></a></li>';
+                                str += '<li><a href="/index.php?s=route/detail/"'+data.data[i].id+'><img src="'+data.data[i].img+'"/><span>线路'+data.data[i].num+'   '+data.data[i].name+'</span></a></li>';
                             }
                             $('.history').find('ul').append(str);
                         }else{

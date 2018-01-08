@@ -125,7 +125,7 @@ class Show extends Controller
                 }
                 return self::response(400);
             }
-            $this->assign('list', $list);
+            $this->assign('list', $items);
             $this->assign('search', $search);
             $this->assign('title', '推荐线路');
             $this->assign('curPage', 1);
