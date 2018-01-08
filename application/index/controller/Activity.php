@@ -115,8 +115,7 @@ class Activity extends Controller
                 $actRecords = $actRecordsObj->where(['open_id' => $this->openId,'act_id' => $data->id,'is_paied' => 1])->find();
             }
             if ($actRecords){
-                $this->fail('抱歉,你已经报过名了~','/act/list',3);
-                exit;
+                return $this->fail('抱歉,你已经报过名了~','/act/list',3);
             }
             // 返回微信参数
             if ($data->isfree != 1) {
@@ -324,13 +323,13 @@ class Activity extends Controller
      * @param string $url
      * @param int $time
      * @return string
+     * @throws Exception
      */
     private function fail($msg='',$url='',$time=3){
         $this->assign('title','信息提示');
         $this->assign('msg',$msg);
         $this->assign('url',$url);
         $this->assign('time',$time);
-        return $this->fetch('act/notice');
-
+        return $this->view->fetch('act/notice');
     }
 }
