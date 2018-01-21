@@ -1331,7 +1331,9 @@ class Boss extends Controller
             $cert = array();
             $cert = Pointnear::get($id);
             $this->assign('near', $cert);
-            if ($cert->pid){
+            //zzh fix object problem
+            $cert_array = (array)$cert;
+            if (isset($cert_array['pid'])){
                 $pid = $cert->pid;
             }
             $this->assign('pid', $pid);
