@@ -14,6 +14,8 @@
 namespace app\index\controller;
 
 use \think\Controller;
+use \think\Session;
+use \think\View;
 use app\index\model\Config;
 use think\Request;
 
