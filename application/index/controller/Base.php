@@ -18,6 +18,7 @@ use \think\Session;
 use \think\View;
 use app\index\model\Config;
 use think\Request;
+use \app\index\service\WeiXin;
 
 class Base extends Controller
 {
