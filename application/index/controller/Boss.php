@@ -1336,6 +1336,7 @@ class Boss extends Controller
             if (isset($cert_array['pid'])){
                 $pid = $cert->pid;
             }
+            echo "<!-- ".$id."|".$id." -->";
             $this->assign('pid', $pid);
             $this->assign('title', '添加/修改附近文物点-' . $this->title);
             return $this->view->fetch('boss/near/add');
