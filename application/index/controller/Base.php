@@ -13,7 +13,7 @@
 
 namespace app\index\controller;
 
-use \think\controller;
+use \think\Controller;
 use app\index\model\Config;
 use think\Request;
 
