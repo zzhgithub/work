@@ -179,9 +179,9 @@ class Volunteer extends Base
             }
             $this->assign('list', $items);
             $this->assign('search', $search);
-            $this->assign('title', '历史建筑');
+            $this->assign('title', '巡查反馈');
             $this->assign('curPage', 1);
-            return $this->view->fetch('point/list');
+            return $this->view->fetch('volunteer/inspect_back_list');
         } catch (Exception $e) {
             return $e->getMessage();
         }
