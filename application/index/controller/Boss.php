@@ -1310,7 +1310,8 @@ class Boss extends Controller
         $pid = intval($request->param('pid'));
         if ($request->isAjax()) {
             $data = $request->post();
-            if (empty($data) || !$pid) {
+            //这里在post请求的时候不一定有pid值
+            if (empty($data)) {
                 return $this->response(400, '非法请求');
             }
             $cert = new Pointnear();
@@ -1336,7 +1337,7 @@ class Boss extends Controller
             if (isset($cert_array['pid'])){
                 $pid = $cert->pid;
             }
-            echo "<!-- ".$id."|".$id." -->";
+            echo "<!-- ".$id."|".$pid."|".json_encode($cert)." -->";
             $this->assign('pid', $pid);
             $this->assign('title', '添加/修改附近文物点-' . $this->title);
             return $this->view->fetch('boss/near/add');
