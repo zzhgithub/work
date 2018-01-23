@@ -1329,15 +1329,14 @@ class Boss extends Controller
             return $this->response(0, '操作成功');
         } else {
             $id = intval($request->param('id'));
-            $cert = array();
             $cert = Pointnear::get($id);
             $this->assign('near', $cert);
             //zzh fix object problem
-            $cert_array = (array)$cert;
-            if (isset($cert_array['pid'])){
-                $pid = $cert->pid;
-            }
-            echo "<!-- ".$id."|".$pid."|".json_encode($cert)." -->";
+            //$cert_array = (array)$cert;
+            //if (isset($cert_array['pid'])){
+            //    $pid = $cert->pid;
+            //}
+            $pid = isset($cert->pid) ? $cert->pid: $pid;
             $this->assign('pid', $pid);
             $this->assign('title', '添加/修改附近文物点-' . $this->title);
             return $this->view->fetch('boss/near/add');

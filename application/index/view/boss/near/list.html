@@ -42,7 +42,7 @@
         table.on('tool(news)', function (obj) {
             var data = obj.data;
             if (obj.event === 'del') {
-                layer.confirm('真的删除此公告吗~?', function (index) {
+                layer.confirm('真的删除此记录吗~?', function (index) {
                     $.post("/boss/point/near/del", {id: data.id}, function (res) {
                         layer.msg(res.msg);
                         if (res.code === 0) {
