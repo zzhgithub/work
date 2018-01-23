@@ -2,30 +2,14 @@
 namespace app\index\controller;
 
 use app\index\model\Config;
-use \think\Controller;
 use think\Request;
-use \app\index\service\WeiXin;
-use \think\Session;
 
-class About extends Controller
+class About extends Base
 {
-    protected $view;
-    protected $openId;
-
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->assign('_action','about');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
     }
 
     /**

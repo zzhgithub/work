@@ -1595,4 +1595,8 @@ class Boss extends Controller
         }
         return self::response(0,'操作成功');
     }
+
+    public function _empty(){
+        $this->redirect('/boss/index');
+    }
 }

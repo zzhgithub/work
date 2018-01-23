@@ -3,36 +3,19 @@
 namespace app\index\controller;
 
 use app\index\model\DonateRecords;
-use \think\Controller;
 use think\Request;
-use think\View;
 use app\index\model\Donate;
 use \app\index\service\WeiXin;
-use \think\Session;
 use \app\index\service\WeiXinJs;
 use think\Config;
 use app\index\model\Log;
 
-class Donatectl extends Controller
+class Donatectl extends Base
 {
-    protected $openId;
-    protected $view;
-
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
-        $this->view = new View();
         $this->assign('_action','index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
     }
 
     /**

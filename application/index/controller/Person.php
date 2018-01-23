@@ -12,26 +12,20 @@ use app\index\model\DonateRecords;
 use app\index\model\Order;
 use app\index\model\OrderItem;
 use app\index\model\User;
-use \think\Controller;
-use \app\index\service\WeiXin;
-use \think\Session;
 
-class Person extends Controller
+class Person extends Base
 {
-    protected $openId;
-
+    public function __construct(Request $request = null)
+    {
+        parent::__construct($request);
+        $this->assign('_action','ucenter');
+    }
     /**
      * 个人中心
      * @return mixed
      * @throws \Exception
      */
     public function index(){
-        $openId = Session::get('openid');
-        if (!$openId) {
-            $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-            WeiXin::getOpenidAndAcessToken($url);
-        }
-        $this->openId = $openId;
         $prefix = config("database.prefix");
         // 用户信息
         $user = User::get(['openid' => $this->openId]);
@@ -58,7 +52,6 @@ class Person extends Controller
         $this->assign('actList',$actList);
         $this->assign('orderList',$orderList);
         $this->assign('donateList',$donateList);
-        $this->assign('_action','ucenter');
         $this->assign('title','个人中心');
         return $this->fetch('ucenter/index');
     }

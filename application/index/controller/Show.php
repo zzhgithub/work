@@ -9,40 +9,21 @@ namespace app\index\controller;
  * Date: 2017/11/19
  * Time: 下午5:06
  */
-use app\index\model\Inspect;
 use app\index\model\Point;
 use app\index\model\Pointbanner;
 use app\index\model\Pointdetail;
 use app\index\model\Pointnear;
 use app\index\model\Route;
 use app\index\model\Routepoint;
-use think\Controller;
 use think\Exception;
 use think\Request;
-use think\View;
-use \app\index\service\WeiXin;
-use \think\Session;
 
-class Show extends Controller
+class Show extends Base
 {
-    protected $view;
-    protected $openId;
-
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
-        $this->view = new View();
         $this->assign('_action','index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
     }
 
     /**

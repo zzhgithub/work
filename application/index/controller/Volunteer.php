@@ -18,29 +18,14 @@ use \app\index\model\Pointdetail;
 use \app\index\model\TrainContent;
 use \think\Exception;
 use \think\Request;
-use \think\Controller;
 use \think\Validate;
-use \app\index\service\WeiXin;
-use \think\Session;
 
-class Volunteer extends Controller
+class Volunteer extends Base
 {
-    protected $openId;
-
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->assign('_action','index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
     }
 
     /**

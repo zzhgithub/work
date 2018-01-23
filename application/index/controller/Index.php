@@ -5,32 +5,14 @@ use \app\index\model\Act;
 use \app\index\model\Banner;
 use \app\index\model\Product;
 use \app\index\model\News;
-use \app\index\service\WeiXin;
-use \think\Controller;
 use \think\Request;
-use \think\Session;
-use \think\View;
 
-class Index extends Controller
+class Index extends Base
 {
-    protected $view;
-    protected $openId;
-
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
-        $this->view = new View();
         $this->assign('_action','index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
     }
 
     /**
@@ -65,21 +47,5 @@ class Index extends Controller
         $this->assign('title', '重庆老街');
         $this->assign('productList', $items);
         return $this->view->fetch('index/index');
-    }
-
-    /**
-     * 异步返回
-     * @param $code
-     * @param string $msg
-     * @param array $data
-     * @return \think\response\Json
-     */
-    private static function response($code, $msg = '', $data = [])
-    {
-        $response = new \stdClass();
-        $response->code = $code;
-        $response->data = $data;
-        $response->msg = $msg;
-        return json($response);
     }
 }

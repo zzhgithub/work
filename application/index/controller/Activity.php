@@ -14,33 +14,16 @@ use app\index\model\ActRecords;
 use app\index\model\Log;
 use app\index\service\WeiXinJs;
 use think\Config;
-use think\Controller;
 use think\Exception;
 use think\Request;
-use think\View;
 use \app\index\service\WeiXin;
-use \think\Session;
 
-class Activity extends Controller
+class Activity extends Base
 {
-    protected $view;
-    protected $openId;
-
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
-        $this->view = new View();
         $this->assign('_action', 'index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
     }
 
     /**

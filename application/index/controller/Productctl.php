@@ -16,7 +16,6 @@ use app\index\model\Order;
 use app\index\model\OrderItem;
 use \app\index\model\ProductContent;
 use \app\index\model\ProductImg;
-use \think\Controller;
 use \think\Request;
 use \app\index\model\Product;
 use \think\Session;
@@ -25,25 +24,12 @@ use \app\index\service\WeiXinJs;
 use think\Config;
 use app\index\model\Log;
 
-class Productctl extends Controller
+class Productctl extends Base
 {
-    protected $view;
-    protected $openId;
-
     public function __construct(Request $request = null)
     {
         parent::__construct($request);
         $this->assign('_action', 'index');
-        $openId = Session::get('openid');
-        if (!$openId) {
-            if ($request->isAjax()) {
-                return self::response(400, '请刷新页面重新登录');
-            } else {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                WeiXin::getOpenidAndAcessToken($url);
-            }
-        }
-        $this->openId = $openId;
     }
 
     /**

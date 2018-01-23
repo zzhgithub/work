@@ -131,4 +131,8 @@ class BossLogin extends Controller
             return '用户名不能包含特殊字符';
         }
     }
+
+    public function _empty(){
+        $this->redirect('/boss/login');
+    }
 }
