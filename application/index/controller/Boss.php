@@ -164,7 +164,7 @@ class Boss extends Controller
             if ($page >= $totalPage){
                 $page = $totalPage;
             }
-            $list = $pointObj->alias('a')->order('sort')->join($prefix.'zone b','a.zone_id = b.id','LEFT')->field('a.id,a.name,a.img,a.level,a.addr,a.sort,b.name as zone')->limit(($page-1)*$limit, $limit)->select();
+            $list = $pointObj->alias('a')->order('sort ASC,a.id DESC')->join($prefix.'zone b','a.zone_id = b.id','LEFT')->field('a.id,a.name,a.img,a.level,a.addr,a.sort,b.name as zone')->limit(($page-1)*$limit, $limit)->select();
             $this->assign('page', $page);
             $this->assign('limit', $limit);
             $this->assign('totalPage', $totalPage);
