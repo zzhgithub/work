@@ -252,25 +252,21 @@ class Boss extends Controller
             $id = (int)$inputData['id'];
             if (isset($inputData['id']) && $id > 0) {
                 $point->save($data, ['id' => $id]);
-                // update detail
-                if ($pointDetail->get($id)){
-                    $pointDetail->save($detail,['id' => $id]);
-                }else{
-                    $detail->id = $point->id;
-                    $pointDetail->data($detail);
-                    $pointDetail->save();
-                }
                 // update near
                 $pointNear->where(['pid'=>$id])->delete();
             } else {
                 $point->data($data);
                 $res = $point->save();
-                // insert detail
-                $detail->id = $point->id;
+            }
+            $id = $id ? $id:$point->id;
+            // update detail
+            if ($pointDetail->get($id)){
+                $pointDetail->save($detail,['id' => $id]);
+            }else{
+                $detail->id = $id;
                 $pointDetail->data($detail);
                 $pointDetail->save();
             }
-            $id = $id ? $id:$point->id;
             $nears = array_filter(explode(',', $inputData['nears']));
             if ($nears) {
                 $nearArr = [];
