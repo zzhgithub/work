@@ -155,6 +155,7 @@ class Boss extends Controller
     public function pointList(Request $request)
     {
         try {
+            $pointLevel = \think\Config::get('point.point_level');
             $prefix = config("database.prefix");
             $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
             $limit = 10;
@@ -171,6 +172,7 @@ class Boss extends Controller
             $this->assign('totalSize', $totalSize);
             $this->assign("title","文物点列表");
             $this->assign('list', $list);
+            $this->assign('pointLevel', $pointLevel);
             return $this->view->fetch('boss/point/list');
         } catch (Exception $e) {
             return $e->getMessage();
@@ -247,12 +249,19 @@ class Boss extends Controller
             $detail->y = $inputData['y'];
             $pointNear = new Pointnear();
             $pointDetail = new Pointdetail();
-            if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $point->save($data, ['id' => (int)$inputData['id']]);
+            $id = (int)$inputData['id'];
+            if (isset($inputData['id']) && $id > 0) {
+                $point->save($data, ['id' => $id]);
                 // update detail
-                $pointDetail->save($detail,['id' => (int)$inputData['id']]);
+                if ($pointDetail->get($id)){
+                    $pointDetail->save($detail,['id' => $id]);
+                }else{
+                    $detail->id = $point->id;
+                    $pointDetail->data($detail);
+                    $pointDetail->save();
+                }
                 // update near
-                $pointNear->where(['pid'=>(int)$inputData['id']])->delete();
+                $pointNear->where(['pid'=>$id])->delete();
             } else {
                 $point->data($data);
                 $res = $point->save();
@@ -261,7 +270,7 @@ class Boss extends Controller
                 $pointDetail->data($detail);
                 $pointDetail->save();
             }
-            $id = (int)$inputData['id'] ? (int)$inputData['id']:$point->id;
+            $id = $id ? $id:$point->id;
             $nears = array_filter(explode(',', $inputData['nears']));
             if ($nears) {
                 $nearArr = [];
