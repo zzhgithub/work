@@ -36,7 +36,7 @@ class Index extends Base
         $this->assign('news', $news);
         //活动
         $act = new Act();
-        $res_act = $act->where(['isindex'=>1])->order('sort')->select();
+        $res_act = $act->order('sort')->select();
         $this->assign('actlist',$res_act);
 
         // product

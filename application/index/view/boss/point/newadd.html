@@ -1,5 +1,34 @@
 {extend name="boss/public/layout"/}
-
+{block name="css"}
+<style>
+    .label{
+        padding: 5px;
+        position: relative;
+        background: #736565;
+        color: #fff;
+        margin-right: 20px;
+        margin-top: 10px;
+        display: inline-block;
+    }
+    .label .close{
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        top:-9px;
+        right: -9px;
+        border-radius: 100%;
+        background: #e4aabb;
+        display: block;
+        text-align: center;
+        color: #fff;
+        line-height: 1;
+    }
+    .label .close:hover{
+        background: #ef4a4a;
+        cursor: pointer;
+    }
+</style>
+{/block}
 {block name="body"}
 <!-- 修改添加页 关键是看有没有值传过来 -->
 <div style="width: 98%;margin: 10px auto;">
@@ -16,7 +45,7 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label" for="inputfile">图片</label>
+            <label class="layui-form-label" for="inputfile">封面图片</label>
             <div class="layui-input-block">
                 <input class="layui-input" type="file" id="inputfile">
                 <a role="button" id="upload" href="#" class="btn layui-btn">确认上传</a>
@@ -34,9 +63,12 @@
 
         <div class="layui-form-item">
             <label class="layui-form-label" for="zone">区</label>
-            <div class="layui-input-block">
-                <input type="text" name="zone" value="{$data.zone}" class="layui-input" id="zone" placeholder="请输入区"
-                       lay-verify="required">
+            <div class="layui-input-inline">
+                <select name="zone_id" id="zone" lay-verify="required">
+                    {volist name="zones" id="zone"}
+                    <option value="{$zone.id}" {if condition="$data.zone_id eq $zone.id" }selected{/if}>{$zone.name}</option>
+                    {/volist}
+                </select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -51,16 +83,56 @@
             <label class="layui-form-label" for="level">文物点等级</label>
             <div class="layui-input-inline">
                 <select name="level" id="level" lay-verify="required">
-                    <option value="1" {if condition="$data.level eq 1" }selected{
-                    /if}>市宝</option>
-                    <option value="2" {if condition="$data.level eq 2" }selected{
-                    /if}>区宝</option>
-                    <option value="3" {if condition="$data.level eq 3" }selected{
-                    /if}>国宝</option>
-                    <option value="4" {if condition="$data.level eq 4" }selected{
-                    /if}>文物点</option>
+                    {volist name="pointLevel" id="level"}
+                    <option value="{$key}" {if condition="$data.level eq $key" }selected{/if}>{$level}</option>
+                    {/volist}
                 </select>
-                <span>(1市宝 2区宝 3国宝 4文物点)</span>
+                <span>(1国保 2市保 3区保 4优秀建筑 5其他)</span>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">文物点描述</label>
+            <div class="layui-input-block">
+                <textarea id="editor" style="display: none;" name="des" lay-verify="content">{$detail.des}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">百度地图经度坐标</label>
+            <div class="layui-input-block">
+                <input type="text" name="x" id="x" lay-verify="required" autocomplete="off" placeholder="请输入文物点经度" class="layui-input" value="{$detail.x}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">百度地图纬度坐标</label>
+            <div class="layui-input-block">
+                <input type="text" name="y" id="y" lay-verify="required" autocomplete="off" placeholder="请输入文物点纬度" class="layui-input" value="{$detail.y}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="points">附近文物点</label>
+            <div class="layui-input-block">
+                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                    <div id="nears">
+                        {volist name="nears" id="near"}
+                        <span class="label">
+                            <label>{$near.name}</label>
+                            <a class="close" title="删除" data-id="{$near.nid}" onclick="delNear(this)">x</a>
+                        </span>
+                        {/volist}
+                    </div>
+                </blockquote>
+                <div class="layui-input-inline" id="points">
+                    <select>
+                        {volist name="points" id="point"}
+                        {if condition="$point.id neq $data.id"}
+                        <option value="{$point.id}">{$point.name}</option>
+                        {/if}
+                        {/volist}
+                    </select>
+                </div>
+                <input type="hidden" name="nears" value="{$nearIdStr}"/>
             </div>
         </div>
 
@@ -72,7 +144,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button type="button" class="btn layui-btn" id="submit" lay-submit="" lay-filter="*">继续</button>
+                <button type="button" class="btn layui-btn" id="submit" lay-submit="" lay-filter="*">提交</button>
             </div>
         </div>
     </form>
@@ -81,10 +153,35 @@
 
 {block name="javascript"}
 <script type="application/javascript">
-    layui.use(['jquery', 'layer', 'form'], function () {
-        var $ = layui.jquery;
+    var nears = '{$nearIdStr}';
+    var $;
+    function delNear(obj){
+        var nearId = $(obj).data('id');
+        var nearIdArr =[];
+        if (nears.length>0){
+            nearIdArr = nears.split(',');
+        }
+        for (var i=0;i<nearIdArr.length;i++){
+            if (nearIdArr[i] == nearId){
+                nearIdArr.splice(i, 1);
+                break;            }
+        }
+        nears = nearIdArr.join().toString();
+        $('input[name=nears]').val(nears);
+        $(obj).parent('span').remove();
+    }
+    layui.use(['jquery', 'layer', 'layedit', 'form'], function () {
+        $ = layui.jquery;
         var layer = layui.layer;
         var form = layui.form;
+        var layedit = layui.layedit;
+        layedit.set({
+            uploadImage: {
+                url: '/boss/upload?type=point' //接口url
+                , type: 'post' //默认post
+            }
+        });
+        var editor = layedit.build('editor'); //建立编辑器
 
         $("#upload").click(function () {
             //获取图片元素
@@ -114,9 +211,18 @@
                     return '请上传图片';
                 }
             }
+            , content: function (value) {
+                value = layedit.getContent(editor);
+                $('#editor').val(value);
+                layedit.sync(editor);
+                if (!value) {
+                    return '请输入详细信息';
+                }
+            }
         });
 
         form.on('submit(*)', function (data) {
+            layedit.sync(editor);
             $.post("/boss/point/save", data.field, function (res) {
                 layer.msg(res.msg);
                 if (res.code === 0) {
@@ -126,6 +232,27 @@
                 }
             });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        $('#points .layui-anim-upbit dd').on('click',function(){
+            var nearIdArr = [];
+            if (nears.length>0){
+                nearIdArr = nears.split(',');
+            }
+            var nearId = $(this).attr('lay-value');
+            for(var i=0;i<nearIdArr.length;i++){
+                if (nearIdArr[i] == nearId){
+                    return false;
+                }
+            }
+            if (nears.length > 0){
+                nears += ',' + nearId;
+            }else{
+                nears += nearId;
+            }
+            $('input[name=nears]').val(nears);
+            var str = '<span class="label"><label>' + $(this).html() +'</label><a class="close" title="删除" data-id="'+nearId+'" onclick="delNear(this)">x</a></span>';
+            $('#nears').append(str);
         });
     });
 </script>

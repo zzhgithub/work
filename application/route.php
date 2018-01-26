@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 return [
-    'home'=>'index/index/index',//首页入口
+    'home' => 'index/index/index',//首页入口
     'point/list' => 'index/show/historyStruct',//历史建筑 (文物点)
     'point/detail/:id' => 'index/show/ponitDetail',//文物点 详情
     'route/list' => 'index/show/pathList',//推荐路线列表
@@ -57,8 +57,8 @@ return [
     'boss/index' => 'index/boss/index',//后台首页
 
     'boss/banner/list' => 'index/boss/bannerList',//banner 列表
-    'boss/banner/add'  => 'index/boss/bannerAddOrModify',//banner添加页
-    'boss/banner/mod/:id'  => 'index/boss/bannerAddOrModify',//banner修改页
+    'boss/banner/add' => 'index/boss/bannerAddOrModify',//banner添加页
+    'boss/banner/mod/:id' => 'index/boss/bannerAddOrModify',//banner修改页
     'boss/banner/save' => 'index/boss/bannerSave',//banner的保存和更新
     'boss/banner/del/:id' => 'index/boss/bannerDel',//banner删除
 
@@ -75,7 +75,7 @@ return [
     'boss/point/banner/add/:pid' => 'index/boss/pointBannerAddOrSave', // 文物点banner 添加
     'boss/point/banner/mod/:id' => 'index/boss/pointBannerAddOrSave',  // 文物点banner 修改
     'boss/point/banner/save' => 'index/boss/pointBannerSave',//文物点banner ajax保存
-    'boss/point/banner/del/:id/pid/:pid'=>'index/boss/pointBannerDell', // 文物点banner 删除
+    'boss/point/banner/del/:id/pid/:pid' => 'index/boss/pointBannerDell', // 文物点banner 删除
 
 
     //推荐路线
@@ -92,7 +92,7 @@ return [
     'boss/route/pdel/:id/rid/:rid' => 'index/boss/routepointDell',//删除推荐路线的文物点
 
     //活动
-    'boss/act/list' =>'index/boss/actList',
+    'boss/act/list' => 'index/boss/actList',
     'boss/act/add' => 'index/boss/actAddOrSave',//添加
     'boss/act/mod/:id' => 'index/boss/actAddOrSave',//修改
     'boss/act/save' => 'index/boss/actSave',//ajax 保存添加
@@ -109,61 +109,61 @@ return [
     /**
      * 捐款
      */
-    'boss/donate/list' =>'index/boss/donateList',
-    'boss/donate/add' =>'index/boss/donateSave',
-    'boss/donate/mod/:id' =>'index/boss/donateSave',
-    'boss/donate/state' =>'index/boss/donateState',
-    'boss/upload' =>'index/boss/upload',
+    'boss/donate/list' => 'index/boss/donateList',
+    'boss/donate/add' => 'index/boss/donateSave',
+    'boss/donate/mod/:id' => 'index/boss/donateSave',
+    'boss/donate/state' => 'index/boss/donateState',
+    'boss/upload' => 'index/boss/upload',
 
     /**
      * 文创产品
      */
-    'boss/product/list' =>'index/boss/productList',
-    'boss/product/add' =>'index/boss/productSave',
-    'boss/product/mod/:id' =>'index/boss/productSave',
-    'boss/product/state' =>'index/boss/productState',
-    'boss/productimg/del' =>'index/boss/productImgDel',
+    'boss/product/list' => 'index/boss/productList',
+    'boss/product/add' => 'index/boss/productSave',
+    'boss/product/mod/:id' => 'index/boss/productSave',
+    'boss/product/state' => 'index/boss/productState',
+    'boss/productimg/del' => 'index/boss/productImgDel',
 
     /**
      * 公告管理
      */
-    'boss/news/list' =>'index/boss/newsList',
-    'boss/news/add' =>'index/boss/newsSave',
-    'boss/news/mod/:id' =>'index/boss/newsSave',
-    'boss/news/del' =>'index/boss/newsDel',
+    'boss/news/list' => 'index/boss/newsList',
+    'boss/news/add' => 'index/boss/newsSave',
+    'boss/news/mod/:id' => 'index/boss/newsSave',
+    'boss/news/del' => 'index/boss/newsDel',
 
     /**
      * 关于我们
      */
-    'boss/about' =>'index/boss/about',
+    'boss/about' => 'index/boss/about',
 
     /**
      * 反馈管理
      */
     'boss/inspect/list' => 'index/boss/InspectList',
-    'boss/inspect/add' =>'index/boss/inspectSave',
-    'boss/inspect/mod/:id' =>'index/boss/inspectSave',
-    'boss/inspect/del'=>'index/boss/inspectDel',
+    'boss/inspect/add' => 'index/boss/inspectSave',
+    'boss/inspect/mod/:id' => 'index/boss/inspectSave',
+    'boss/inspect/del' => 'index/boss/inspectDel',
     /**
      * 培训管理
      */
-    'boss/train/catelist' =>'index/boss/catelist',
-    'boss/train/cateadd' =>'index/boss/catesave',
-    'boss/train/catemod/:id' =>'index/boss/catesave',
-    'boss/train/catedel' =>'index/boss/catedel',
+    'boss/train/catelist' => 'index/boss/catelist',
+    'boss/train/cateadd' => 'index/boss/catesave',
+    'boss/train/catemod/:id' => 'index/boss/catesave',
+    'boss/train/catedel' => 'index/boss/catedel',
 
-    'boss/train/list' =>'index/boss/trainlist',
-    'boss/train/add' =>'index/boss/trainsave',
-    'boss/train/mod/:id' =>'index/boss/trainsave',
-    'boss/train/del' =>'index/boss/traindel',
+    'boss/train/list' => 'index/boss/trainlist',
+    'boss/train/add' => 'index/boss/trainsave',
+    'boss/train/mod/:id' => 'index/boss/trainsave',
+    'boss/train/del' => 'index/boss/traindel',
 
     /**
      * 证书管理
      */
-    'boss/cert/list' =>'index/boss/certList',
-    'boss/cert/add' =>'index/boss/certSave',
-    'boss/cert/mod/:id' =>'index/boss/certSave',
-    'boss/cert/del' =>'index/boss/certDel',
+    'boss/cert/list' => 'index/boss/certList',
+    'boss/cert/add' => 'index/boss/certSave',
+    'boss/cert/mod/:id' => 'index/boss/certSave',
+    'boss/cert/del' => 'index/boss/certDel',
 
     /**
      * 附近文物点管理
@@ -175,19 +175,26 @@ return [
     /**
      * 登录 登出
      */
-    'boss/login' =>'index/BossLogin/login',
-    'boss/logout' =>'index/BossLogin/logout',
-    'boss/verify' =>'index/BossLogin/verify',
-    'boss/modify' =>'index/boss/modify',
+    'boss/login' => 'index/BossLogin/login',
+    'boss/logout' => 'index/BossLogin/logout',
+    'boss/verify' => 'index/BossLogin/verify',
+    'boss/modify' => 'index/boss/modify',
 
     /**
      * 订单相关
      */
-    'boss/order/product' =>'index/boss/proOrder',
-    'boss/order/act' =>'index/boss/actOrder',
-    'boss/order/donate' =>'index/boss/donOrder',
-    'boss/order/attention' =>'index/boss/addOrderAttention',
+    'boss/order/product' => 'index/boss/proOrder',
+    'boss/order/act' => 'index/boss/actOrder',
+    'boss/order/donate' => 'index/boss/donOrder',
+    'boss/order/attention' => 'index/boss/addOrderAttention',
 
-    'boss/register/list' =>'index/boss/registerList',
-    'boss/register/pass' =>'index/boss/registerPass'
+    'boss/register/list' => 'index/boss/registerList',
+    'boss/register/pass' => 'index/boss/registerPass',
+
+    /**
+     * 区域管理
+     */
+    'boss/zone/list' => 'index/boss/zoneList',
+    'boss/zone/add' => 'index/boss/zoneSave',
+    'boss/zone/mod/:id' => 'index/boss/zoneSave',
 ];

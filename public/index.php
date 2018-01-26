@@ -17,5 +17,9 @@ define('APP_PATH', __DIR__ . '/../application/');
 try{
     require __DIR__ . '/../thinkphp/start.php';
 }catch (Exception $e){
-    header('Location:/');
+    if (strpos($_SERVER['PATH_INFO'],'boss')){
+        header('Location:/boss/index');
+    }else{
+        header('Location:/');
+    }
 }

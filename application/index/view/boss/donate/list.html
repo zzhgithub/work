@@ -19,10 +19,10 @@
                         <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
                         <th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
                         <th lay-data="{field:'name', width:160}">捐款名称</th>
+                        <th lay-data="{field:'link', width:160,templet:'#linkTpl2'}">捐款链接</th>
                         <th lay-data="{field:'img', width:160, sort: true,templet:'#imgTpl'}">封面</th>
                         <th lay-data="{field:'sort', width:80}">排序</th>
                         <th lay-data="{field:'create_time', width:160,sort: true}">添加时间</th>
-                        <th lay-data="{field:'update_time', width:160, sort: true}">更新时间</th>
                         <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barDonate'}">操作</th>
                     </tr>
                     </thead>
@@ -34,6 +34,9 @@
                 <script type="text/html" id="imgTpl">
                     <a href="{{d.img}}" target="_blank" style="text-decoration:underline;">点击查看</a>
                 </script>
+                <script type="text/html" id="linkTpl">
+                    <a href="{{d.link}}" target="_blank" style="text-decoration:underline;">点击查看</a>
+                </script>
             </div>
             <div class="layui-tab-item">
                 <table class="layui-table" lay-data="{ url:'/boss/donate/list?state=0',page:true,id:'idDonate2'}" lay-filter="donete" >
@@ -42,10 +45,10 @@
                         <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
                         <th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
                         <th lay-data="{field:'name', width:160}">捐款名称</th>
+                        <th lay-data="{field:'link', width:160,templet:'#linkTpl2'}">捐款链接</th>
                         <th lay-data="{field:'img', width:160, sort: true,templet:'#imgTpl2'}">封面</th>
                         <th lay-data="{field:'sort', width:80}">排序</th>
                         <th lay-data="{field:'create_time', width:160,sort: true}">添加时间</th>
-                        <th lay-data="{field:'update_time', width:160, sort: true}">更新时间</th>
                         <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#barDonate2'}">操作</th>
                     </tr>
                     </thead>
@@ -56,6 +59,9 @@
                 </script>
                 <script type="text/html" id="imgTpl2">
                     <a href="{{d.img}}" target="_blank" style="text-decoration:underline;">点击查看</a>
+                </script>
+                <script type="text/html" id="linkTpl2">
+                    <a href="{{d.link}}" target="_blank" style="text-decoration:underline;">点击查看</a>
                 </script>
             </div>
         </div>

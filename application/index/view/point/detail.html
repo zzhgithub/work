@@ -3,32 +3,11 @@
 <div class="address">
     <div class="ground">
         <b>
-            {switch name="base.level" }
-            {case value="1"}市宝{/case}
-            {case value="2"}区宝{/case}
-            {case value="3"}国宝{/case}
-            {case value="4"}文物点{/case}
-            {default /}文物点
-            {/switch}
-
+            {$level[$base.level]}
             ｜ </b>
         <span>{$base.name}</span><dt>[{$base.zone}]</dt>
     </div>
     <p>地址：{$base.addr}</p>
-</div>
-<div class="partner">
-    <div class="partner_nei">
-        <ul class="swiper-wrapper">
-            {volist name="list" id="vo1"}
-            <li class="swiper-slide"><a href="{$vo1.url}"><img src="{$vo1.img}" width="100%"/><dt><span>{$vo1.des}</span></dt></a></li>
-            {/volist}
-        </ul>
-        <!--结束切换内容-->
-        <div class="live_partner">
-            <div class="live_partn"></div>
-        </div>
-    </div>
-</div>
 </div>
 <!--内容-->
 <div class="tube">
@@ -43,7 +22,7 @@
 </div>
 <div class="tube_xq">
     {volist name="nearlist" id="vo3"}
-    <a href="/point/detail/{$vo3.nid}">· {$vo3.name}<span>(距离{$vo3.distance})</span></a>
+    <a href="/point/detail/{$vo3.nid}">· {$vo3.name}<span></span></a>
     {/volist}
 </div>
 <div class="tube_notr">

@@ -37,6 +37,8 @@
                 <li class="layui-nav-item">
                     <a class="" href="javascript:;">文物点管理</a>
                     <dl class="layui-nav-child">
+                        <dd><a href="/boss/zone/list">区域列表</a></dd>
+                        <dd><a href="/boss/zone/add">添加区域</a></dd>
                         <dd><a href="/boss/point/list">文物点列表</a></dd>
                         <dd><a href="/boss/point/add">添加文物点</a></dd>
                     </dl>
@@ -152,6 +154,7 @@
         var $ = layui.jquery;
         var _url = '{$pathInfo}';
         var _urlArr = _url.split('/');
+        _urlArr.shift();
         var _selected = false;
         $('.leftnav .layui-nav-child dd a').each(function (e) {
             var href = $(this).attr('href');
@@ -169,8 +172,10 @@
                 var href = $(this).attr('href');
                 var hrefArr = href.split('/');
                 hrefArr.pop();
+                hrefArr.shift();
                 if(isContained(_urlArr,hrefArr)){
-                    $(this).parents('li').find('dd').eq(0).find('a').addClass('layui-this');
+                    //$(this).parents('li').find('dd').eq(0).find('a').addClass('layui-this');
+                    $(this).addClass('layui-this');
                     $(this).parents('li').addClass('layui-nav-itemed');
                     return false;
                 }

@@ -32,8 +32,10 @@ use app\index\model\Routepoint;
 use app\index\model\News;
 use app\index\model\TrainCate;
 use app\index\model\TrainContent;
+use app\index\model\Zone;
 use think\Controller;
 use think\Exception;
+use think\exception\DbException;
 use think\Request;
 use think\Session;
 use think\View;
@@ -150,10 +152,10 @@ class Boss extends Controller
     }
 
     // 获取文物点列表
-
     public function pointList(Request $request)
     {
         try {
+            $prefix = config("database.prefix");
             $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
             $limit = 10;
             $pointObj = new Point();
@@ -162,7 +164,7 @@ class Boss extends Controller
             if ($page >= $totalPage){
                 $page = $totalPage;
             }
-            $list = $pointObj->order('sort')->limit(($page-1)*$limit, $limit)->select();
+            $list = $pointObj->alias('a')->order('sort')->join($prefix.'zone b','a.zone_id = b.id','LEFT')->field('a.id,a.name,a.img,a.level,a.addr,a.sort,b.name as zone')->limit(($page-1)*$limit, $limit)->select();
             $this->assign('page', $page);
             $this->assign('limit', $limit);
             $this->assign('totalPage', $totalPage);
@@ -178,6 +180,24 @@ class Boss extends Controller
     public function pointAddOrModify($id = null)
     {
         try {
+            $pointLevel = \think\Config::get('point.point_level');
+            $zones = Zone::all();
+            $detail = Pointdetail::get($id);
+            $ponitNearObj = new Pointnear();
+            $prefix = config("database.prefix");
+            $nears = $ponitNearObj->alias('a')->join($prefix.'point b','a.nid = b.id','LEFT')->where(['pid'=>$id])->field('nid,b.name')->select();
+            $nearIdStr = '';
+            if ($nears){
+                $nearIdArr = [];
+                foreach ($nears as $near){
+                    $nearIdArr[] = $near->nid;
+                }
+                $nearIdStr = implode(',',$nearIdArr);
+            }
+            $points = Point::all(function($query){
+                $query->field('id,name')->order('id DESC');
+            });
+
             if ($id == null) {
                 //如果这里id没有传过来就是说明 是 添加
                 $this->assign('title', '添加文物点');
@@ -188,6 +208,12 @@ class Boss extends Controller
                 $res = Point::get(intval($id));
                 $this->assign('data', $res);
             }
+            $this->assign('pointLevel', $pointLevel);
+            $this->assign('zones', $zones);
+            $this->assign('detail', $detail);
+            $this->assign('nears', $nears);
+            $this->assign('points', $points);
+            $this->assign('nearIdStr', $nearIdStr);
             return $this->view->fetch('boss/point/newadd');
         } catch (Exception $e) {
             return $e->getMessage();
@@ -199,24 +225,51 @@ class Boss extends Controller
     {
         try {
             $inputData = $request->param('',null,'htmlspecialchars');
-            $banner = new Point();
+            $point = new Point();
             $data = new \stdClass();
+            $detail = new \stdClass();
             $data->img = $inputData['img'];
             $data->name = $inputData['name'];
             $data->addr = $inputData['addr'];
             $data->level = $inputData['level'];
-            $data->zone = $inputData['zone'];
+            $data->zone_id = (int)$inputData['zone_id'];
+            $zone = Zone::get($data->zone_id);
+            $data->zone = $zone->name;
             foreach ((array)$data as $v){
                 if (!$v){
                     return self::response(400,'请输入完整信息');
                 }
             }
             $data->sort = $inputData['sort'];
+
+            $detail->des = $_POST['des'];
+            $detail->x = $inputData['x'];
+            $detail->y = $inputData['y'];
+            $pointNear = new Pointnear();
+            $pointDetail = new Pointdetail();
             if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $banner->save($data, ['id' => (int)$inputData['id']]);
+                $point->save($data, ['id' => (int)$inputData['id']]);
+                // update detail
+                $pointDetail->save($detail,['id' => (int)$inputData['id']]);
+                // update near
+                $pointNear->where(['pid'=>(int)$inputData['id']])->delete();
             } else {
-                $banner->data($data);
-                $res = $banner->save();
+                $point->data($data);
+                $res = $point->save();
+                // insert detail
+                $detail->id = $point->id;
+                $pointDetail->data($detail);
+                $pointDetail->save();
+            }
+            $id = (int)$inputData['id'] ? (int)$inputData['id']:$point->id;
+            $nears = array_filter(explode(',', $inputData['nears']));
+            if ($nears) {
+                $nearArr = [];
+                foreach ($nears as $k => $value) {
+                    $nearArr[$k]['nid'] = $value;
+                    $nearArr[$k]['pid'] = $id;
+                }
+                $pointNear->saveAll($nearArr);
             }
             if(isset($res) && !$res){
                 return self::response(400,'操作失败');
@@ -600,18 +653,12 @@ class Boss extends Controller
             $data->des = $inputData['des'];
             $data->zone = $inputData['zone'];
             $data->img = $inputData['img'];
-            foreach ((array)$data as $v){
+            $data->link = $inputData['link'];
+            foreach ($data as $v){
                 if (!$v){
                     return self::response(400,'请输入必填信息');
                 }
             }
-            $data->isfree = $inputData['isfree'];
-            $data->cost = $inputData['cost'];
-            if (!$data->isfree && !$data->cost){
-                return self::response(400,'请输入报名费');
-            }
-            $data->isindex = $inputData['isindex'];
-            $data->sort = $inputData['sort'];
             if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
                 $banner->save($data, ['id' => (int)$inputData['id']]);
             } else {
@@ -1601,5 +1648,73 @@ class Boss extends Controller
 
     public function _empty(){
         $this->redirect('/boss/index');
+    }
+
+    // 文物点区域管理
+    public function zoneList(Request $request)
+    {
+        if ($request->isAjax()) {
+            $limit = $request->request('limit');
+            $limit = $limit ? intval($limit) : 10;
+            $zone = new Zone();
+            $response = new \stdClass();
+            $response->code = 0;
+            $response->count = 0;
+            $response->msg = '';
+            $response->data = array();
+            try {
+                $list = $zone->order('id desc')->paginate($limit);
+            } catch (DbException $e) {
+                $response->code = 400;
+                $response->msg = $e->getMessage();
+            }
+            if (!empty($list)) {
+                $response->code = 0;
+                $response->count = $list->total();
+                $response->data = $list->items();
+            }
+            return json($response);
+        }
+        $this->assign('title', '区域管理-' . $this->title);
+        try {
+            return $this->view->fetch('boss/zone/list');
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    // 区域添加和编辑
+    public function zoneSave(Request $request)
+    {
+        try {
+            if ($request->isAjax()) {
+                $data = $request->post('',null,'htmlspecialchars');
+                if (empty($data)) {
+                    return $this->response(400, '非法请求');
+                }
+                $zone = new Zone();
+                $res =  true;
+                if (isset($data['id']) && intval($data['id'])) { // 修改
+                    $data['id'] = intval($data['id']);
+                    $zone->save($data, ['id' => $data['id']]);
+                } else {              //添加
+                    $zone->data($data);
+                    $res = $zone->save();
+                }
+                if ($res) {
+                    return $this->response(0, '操作成功');
+                } else {
+                    return $this->response(400, '操作失败');
+                }
+            } else {
+                $id = intval($request->param('id'));
+                $zone = Zone::get($id);
+                $this->assign('zone', $zone);
+                $this->assign('title', '添加/修改区域-' . $this->title);
+                return $this->view->fetch('boss/zone/add');
+            }
+        } catch (DbException $e) {
+            return $e->getMessage();
+        }
     }
 }

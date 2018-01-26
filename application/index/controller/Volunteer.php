@@ -19,6 +19,7 @@ use \app\index\model\TrainContent;
 use \think\Exception;
 use \think\Request;
 use \think\Validate;
+use \think\config;
 
 class Volunteer extends Base
 {
@@ -210,6 +211,8 @@ class Volunteer extends Base
         $inspect_Client = new Inspect();
         $inspect = $inspect_Client->where(['pid'=>$id])->select();
 
+        $levelArr = Config::get('point.point_level');
+        $this->assign('level',$levelArr);
         $this->assign("inspect",$inspect);
         $this->assign('list', $list);
         $this->assign('title', $base->name.'-巡查反馈');

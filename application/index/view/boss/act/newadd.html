@@ -36,39 +36,15 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label" for="isfree">是否公益</label>
-            <div class="layui-input-inline">
-                <select name="isfree" id="isfree" lay-verify="required">
-                    <option value="0" {if condition="$data.isfree eq 0"}selected{/if}>付费</option>
-                    <option value="1" {if condition="$data.isfree eq 1"}selected{/if}>公益</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label" for="cost">报名费</label>
+            <label class="layui-form-label" for="link">活动报名链接</label>
             <div class="layui-input-block">
-                <input type="text" name="cost" value="{$data.cost}" class="layui-input" id="cost" placeholder="请输入报名费" lay-verify="cost">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label" for="isindex">是否首页推荐</label>
-            <div class="layui-input-inline">
-                <select name="isindex" id="isindex" lay-verify="required">
-                    <option value="1" {if condition="$data.isindex eq 1"}selected{/if}>是</option>
-                    <option value="0" {if condition="$data.isindex eq 0"}selected{/if}>否</option>
-                </select>
+                <input type="text" name="link" value="{$data.link}" class="layui-input" id="link" placeholder="请输入活动报名链接" lay-verify="link">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label" for="zone">区域</label>
             <div class="layui-input-block">
                 <input type="text" name="zone" value="{$data.zone}" class="layui-input" id="zone" placeholder="请输入区域" lay-verify="required">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label" for="sort">排序</label>
-            <div class="layui-input-block">
-                <input type="number" name="sort" value="{$data.sort}" class="layui-input" id="sort" placeholder="排序">
             </div>
         </div>
         <div class="layui-form-item">
@@ -107,10 +83,9 @@
             });
         });
         form.verify({
-            cost: function(value){ //value：表单的值、item：表单的DOM对象
-                var isfree = $('#isfree').val();
-                if(value <= 0 && Number(isfree) == 0){
-                    return '请输入报名费';
+            link: function(value){
+                if(value <= 0){
+                    return '请输入活动报名链接';
                 }
             }
             ,image: function (value) {

@@ -40,8 +40,8 @@ class Base extends Controller
         $this->openId = $openId;
         if (!$request->isAjax()){
             $this->view = new View();
-            $config = Config::get(1);
-            $this->assign('tel',$config->tel);
+            //$config = Config::get(1);
+            //$this->assign('tel',$config->tel);
         }
     }
 

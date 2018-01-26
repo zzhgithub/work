@@ -15,6 +15,7 @@ use app\index\model\Pointdetail;
 use app\index\model\Pointnear;
 use app\index\model\Route;
 use app\index\model\Routepoint;
+use think\Config;
 use think\Exception;
 use think\Request;
 
@@ -38,12 +39,7 @@ class Show extends Base
             $search = Request::instance()->param('search', null, 'stripslashes');
             $point = new Point();
             if ($search) {
-                $levelArr = [
-                    '市宝' => 1,
-                    '区宝' => 2,
-                    '国宝' => 3,
-                    '文物点' => 4
-                ];
+                $levelArr = array_flip(Config::get('point.point_level'));
                 if (key_exists($search, $levelArr)) {
                     $list = $point->where('name', 'like', '%' . $search . '%')
                         ->whereOr('zone', 'like', '%' . $search . '%')
@@ -161,19 +157,15 @@ class Show extends Base
 
             $ext = Pointdetail::get($id);
             $this->assign('ext', $ext);
-
-            $client = new Pointbanner();
-            $list = $client->where(['pid' => $id])->select();
-            $this->assign('list', $list);
-
-            //$inspect = new Inspect();
-            //$inspect_list = $inspect->where(['pid' => $id])
-            //    ->select();
-            //$this->assign('inspect', $inspect_list);
             $this->assign('title', $base->name);
 
+            $levelArr = Config::get('point.point_level');
+            $this->assign('level',$levelArr);
+
+            $prefix = config("database.prefix");
             $nearcleint = new Pointnear();
-            $near = $nearcleint->where(['pid'=>$id])->select();
+            $near = $nearcleint->alias('a')->join($prefix . 'point b',
+                'a.nid = b.id', 'LEFT')->where(['pid'=>$id])->field('a.nid,b.name')->select();
             $this->assign("nearlist",$near);
 
             return $this->view->fetch('point/detail');
