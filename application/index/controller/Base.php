@@ -33,7 +33,7 @@ class Base extends Controller
         $openId = Session::get('openid');
         try {
             $user = Member::get(['uid' => WeiXin::getUserIdByOpenid($openId)]);
-            $this->userPass = $user->state == 1 ? true : false;
+            $this->userPass = isset($this->userPass) && $user->state == 1 ? true : false;
             if (!$openId) {
                 if ($request->isAjax()) {
                     return self::response(400, '请刷新页面重新登录');
