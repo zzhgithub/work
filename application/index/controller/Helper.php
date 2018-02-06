@@ -128,8 +128,10 @@ class Helper extends Controller
                 //没有数据进行更新
                 $client->data($user)->save();
             }
+            $uid = $res->id ? $res->id: $client->id;
             //设置登录的cookie
             Session::set("openid", $userObj->openid);
+            Session::set("uid", $uid);
         }
         $from = Request::instance()->get('from','','htmlspecialchars');
         $this->redirect($from ? $from : '/');

@@ -466,6 +466,20 @@ class Boss extends Controller
     public function routeAddOrSave($id = null)
     {
         try {
+            $routePointObj = new Routepoint();
+            $prefix = config("database.prefix");
+            $nears = $routePointObj->alias('a')->join($prefix.'point b','a.pid = b.id','LEFT')->where(['rid'=>$id])->field('a.pid,b.name')->select();
+            $nearIdStr = '';
+            if ($nears){
+                $nearIdArr = [];
+                foreach ($nears as $near){
+                    $nearIdArr[] = $near->pid;
+                }
+                $nearIdStr = implode(',',$nearIdArr);
+            }
+            $points = Point::all(function($query){
+                $query->field('id,name')->order('id DESC');
+            });
             //
             if ($id != null) {
                 $data = Route::get((int)$id);
@@ -475,6 +489,10 @@ class Boss extends Controller
                 $this->assign('title', '推荐路线添加');
                 $this->assign('data', null);
             }
+            $this->assign('nearIdStr', $nearIdStr);
+            $this->assign('points', $points);
+            $this->assign('nears', $nears);
+
             return $this->view->fetch('boss/route/newadd');
         } catch (Exception $e) {
             return $e->getMessage();
@@ -486,7 +504,7 @@ class Boss extends Controller
     {
         try {
             $inputData = $request->param('',null,'htmlspecialchars');
-            $banner = new Route();
+            $route = new Route();
             $data = new \stdClass();
             $data->img = $inputData['img'];
             $data->des = $inputData['des'];
@@ -499,11 +517,26 @@ class Boss extends Controller
                 }
             }
             $data->sort = $inputData['sort'];
-            if (isset($inputData['id']) && (int)$inputData['id'] > 0) {
-                $banner->save($data, ['id' => (int)$inputData['id']]);
+            $id = (int)$inputData['id'];
+            $routePoint = new Routepoint();
+            if (isset($inputData['id']) && $id > 0) {
+                $route->save($data, ['id' => $id]);
+                $routePoint->where(['rid' => $id])->delete();
             } else {
-                $banner->data($data);
-                $res = $banner->save();
+                $route->data($data);
+                $res = $route->save();
+            }
+            $id = $id ? $id: $route->id;
+            $nears = array_filter(explode(',', $inputData['nears']));
+            if ($nears) {
+                $nearArr = [];
+                foreach ($nears as $k => $value) {
+                    if ($value && $id){
+                        $nearArr[$k]['pid'] = (int)$value;
+                        $nearArr[$k]['rid'] = $id;
+                    }
+                }
+                $routePoint->saveAll($nearArr);
             }
             if(isset($res) && !$res){
                 return self::response(400,'操作失败');

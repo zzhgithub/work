@@ -32,7 +32,12 @@
                 <input type="text" name="phone" value=""/></li>
             <li>
                 <dt>职业 <b>*</b></dt>
-                <input type="text" name="career" value=""/></li>
+                <input type="text" name="career" value=""/>
+            </li>
+            <li>
+                <dt>通讯地址 <b>*</b></dt>
+                <input type="text" name="address" value="" placeholder="通讯地址"/>
+            </li>
             <li><p class="cause">请问是什么原因使得你期望加入我们？<b>*</b></p><textarea name="reason"></textarea></li>
             <li>
                 <p>请问您是从何处知晓我们？<b>*</b></p>
@@ -170,6 +175,7 @@
             var gender = $('input[name="gender"]').val();
             var id_cards = $('input[name="id_cards"]').val();
             var email = $('input[name="email"]').val();
+            var address = $('input[name="address"]').val();
             var phone = $('input[name="phone"]').val();
             var career = $('input[name="career"]').val();
             var token = $('input[name="__token__"]').val();
@@ -202,6 +208,10 @@
             }
             if (!career || career.length < 2) {
                 parent.layer.alert("请输入正确的职业", {icon: 5});
+                return false;
+            }
+            if (!address || address.length < 2) {
+                parent.layer.alert("请输入正确的通讯地址", {icon: 5});
                 return false;
             }
             if (!reason || reason.length < 10) {

@@ -47,6 +47,7 @@ class Volunteer extends Base
                 'email' => 'email',
                 'phone' => 'require',
                 'career' => 'require',
+                'address' => 'require',
                 'reason' => 'require',
                 'from' => 'require'
             ], [
@@ -57,6 +58,7 @@ class Volunteer extends Base
                     'email' => '邮箱格式错误',
                     'phone.require' => '手机必须',
                     'career.require' => '职业必须',
+                    'address.require' => '通讯地址必须',
                     'reason.require' => '加入原因必须',
                     'from.require' => '知晓来源必须',
                 ]

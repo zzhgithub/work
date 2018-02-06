@@ -13,10 +13,10 @@
 
 namespace app\index\controller;
 
+use app\index\model\Member;
 use \think\Controller;
 use \think\Session;
 use \think\View;
-use app\index\model\Config;
 use think\Request;
 use \app\index\service\WeiXin;
 
@@ -24,11 +24,13 @@ class Base extends Controller
 {
     protected $openId;
     protected $view;
-
+    protected $userPass;
     public function __construct(Request $request)
     {
         parent::__construct($request);
         $openId = Session::get('openid');
+        $user = Member::get(Session::get('uid'));
+        $this->userPass = $user->state == 1 ? true : false;
         if (!$openId) {
             if ($request->isAjax()) {
                 return self::response(400, '请刷新页面重新登录');
@@ -40,6 +42,7 @@ class Base extends Controller
         $this->openId = $openId;
         if (!$request->isAjax()){
             $this->view = new View();
+            $this->assign('userPass',$this->userPass);
             //$config = Config::get(1);
             //$this->assign('tel',$config->tel);
         }
