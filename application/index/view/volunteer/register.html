@@ -5,16 +5,16 @@
         <ul>
             <li>
                 <dt>姓名<b>*</b></dt>
-                <input type="text" name="name" value=""/>
+                <input type="text" name="name" value="{$user.name}"/>
             </li>
             <li>
                 <dt>姓别<b>*</b></dt>
                 <div class="sex">
-                    <label class="radio-inline"><input name="gender" value="1" type="radio" id="1" checked="checked">
+                    <label class="radio-inline"><input name="gender" value="1" type="radio" id="1" {if condition="$user.gender eq 1"}checked="checked"{/if}>
                         <ins for="1"></ins>
                         <div class="opt">男</div>
                     </label>
-                    <label class="radio-inline"><input name="gender" value="0" type="radio" id="2">
+                    <label class="radio-inline"><input name="gender" value="0" type="radio" id="2" {if condition="$user.gender eq 2"}checked="checked"{/if}>
                         <ins for="2"></ins>
                         <div class="opt">女</div>
                     </label>
@@ -22,65 +22,70 @@
             </li>
             <li>
                 <dt>身份证号码<b>*</b></dt>
-                <input type="text" name="id_cards" value=""/>
+                <input type="text" name="id_cards" value="{$user.id_cards}"/>
             </li>
             <li>
                 <dt>邮箱 <b>*</b></dt>
-                <p>活动通知主要通过邮箱发送，请仔细核对</p><input name="email" type="text" value=""/></li>
+                <p>活动通知主要通过邮箱发送，请仔细核对</p><input name="email" type="text" value="{$user.email}"/></li>
             <li>
                 <dt>联系方式 <b>*</b></dt>
-                <input type="text" name="phone" value=""/></li>
+                <input type="text" name="phone" value="{$user.phone}"/></li>
             <li>
                 <dt>职业 <b>*</b></dt>
-                <input type="text" name="career" value=""/>
+                <input type="text" name="career" value="{$user.career}"/>
             </li>
             <li>
                 <dt>通讯地址 <b>*</b></dt>
-                <input type="text" name="address" value="" placeholder="通讯地址"/>
+                <input type="text" name="address" value="{$user.address}" placeholder="通讯地址"/>
             </li>
-            <li><p class="cause">请问是什么原因使得你期望加入我们？<b>*</b></p><textarea name="reason"></textarea></li>
+            <li><p class="cause">请问是什么原因使得你期望加入我们？<b>*</b></p><textarea name="reason">{$user.reason}</textarea></li>
             <li>
                 <p>请问您是从何处知晓我们？<b>*</b></p>
                 <div class="pick">
-                    <input class="checkbox" name="know" type="checkbox" value="网站" id="checkbox_a1">
+                    <input class="checkbox" name="know[]" type="checkbox" value="网站" id="checkbox_a1">
                     <label for="checkbox_a1"></label>网站
                 </div>
                 <div class="pick">
-                    <input class="checkbox" name="know" type="checkbox" value="报纸、杂志" id="checkbox_a2">
+                    <input class="checkbox" name="know[]" type="checkbox" value="报纸、杂志" id="checkbox_a2">
                     <label for="checkbox_a2"></label>报纸、杂志
                 </div>
                 <div class="pick">
-                    <input class="checkbox" name="know" type="checkbox" value="微博" id="checkbox_a3">
+                    <input class="checkbox" name="know[]" type="checkbox" value="微博" id="checkbox_a3">
                     <label for="checkbox_a3"></label>微博
                 </div>
                 <div class="pick">
-                    <input class="checkbox" name="know" type="checkbox" value="微信朋友圈" id="checkbox_a4">
+                    <input class="checkbox" name="know[]" type="checkbox" value="微信朋友圈" id="checkbox_a4">
                     <label for="checkbox_a4"></label>微信朋友圈
                 </div>
                 <div class="pick">
-                    <input class="checkbox" name="know" type="checkbox" value="微信群" id="checkbox_a5">
+                    <input class="checkbox" name="know[]" type="checkbox" value="微信群" id="checkbox_a5">
                     <label for="checkbox_a5"></label>微信群
                 </div>
                 <div class="pick">
-                    <input class="checkbox" name="know" type="checkbox" value="朋友推荐" id="checkbox_a6">
+                    <input class="checkbox" name="know[]" type="checkbox" value="朋友推荐" id="checkbox_a6">
                     <label for="checkbox_a6"></label>朋友推荐
                 </div>
                 <div class="pick">
-                    <input class="checkbox" name="know" type="checkbox" value="其他" id="checkbox_a7">
+                    <input class="checkbox" name="know[]" type="checkbox" value="其他" id="checkbox_a7">
                     <label for="checkbox_a7"></label>其他
                 </div>
-                <input class="enter" value=""/>
+                <input class="enter" value="{$otherFrom}"/>
                 <input type="hidden" name="from" class="from"/>
             </li>
         </ul>
         {:token()}
+        {if condition="$user.name neq ''"}
+        <input class="loginsub" type="button" value="修改"/>
+        {else/}
         <input class="loginsub" type="button" value="注册"/>
+        {/if}
     </form>
 </div>
 {/block}
 {block name="javascript"}
 <script src="/static/js/layer/layer.js"></script>
 <script type="text/javascript">
+    var _from = '{$user.from}';
     var Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1];    // 加权因子
     var ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2];            // 身份证验证位值.10代表X
     function IdCardValidate(idCard) {
@@ -167,6 +172,18 @@
 
     var flag = true;
     $(document).ready(function () {
+        if (_from.length > 0){
+            var _fromArr = _from.split('|');
+            $("input[name='know[]']").each(function () {
+                for (var i=0; i<_fromArr.length; i++){
+                    if ($(this).val() == _fromArr[i]){
+                        $(this).attr("checked",true);
+                        break;
+                    }
+                }
+            });
+        }
+
         $(".loginsub").click(function () {
             if (!flag){
                 return false;
@@ -219,14 +236,14 @@
                 return false;
             }
 
-            if ($("input[name='know']:checked").size() == 0) {
+            if ($("input[name='know[]']:checked").size() == 0) {
                 if ($(".enter").val() == "") {
                     parent.layer.alert("请选择知晓来源", {icon: 5});
                     return false;
                 }
             }
             var from_arr = [];
-            $("input[name='know']:checked").each(function () {
+            $("input[name='know[]']:checked").each(function () {
                 from_arr.push($(this).val());
             });
             var from = from_arr.join('|');

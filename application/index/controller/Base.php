@@ -31,6 +31,7 @@ class Base extends Controller
     {
         parent::__construct($request);
         $openId = Session::get('openid');
+        //$openId = 'o-EEJxIw2bBxT6cEboZr5uxn_9_0';
         try {
             $user = Member::get(['uid' => WeiXin::getUserIdByOpenid($openId)]);
             $this->userPass = $user != null && $user->state == 1 ? true : false;
