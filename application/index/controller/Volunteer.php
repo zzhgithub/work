@@ -90,9 +90,9 @@ class Volunteer extends Base
                     return self::response(400, '注册失败', ['token' => $request->token()]);
                 }
             }
-            $user = Member::get($uid);
+            $user = Member::get(['uid' => $uid]);
             $otherFrom = '';
-            if ($user->from){
+            if ($user != null && $user->from){
                 $fromArr = explode('|',$user->from);
                 if (isset($fromArr[count($fromArr)-2]) && $fromArr[count($fromArr)-2] == '其他'){
                     $otherFrom = end($fromArr);
