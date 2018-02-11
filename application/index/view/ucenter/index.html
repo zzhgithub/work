@@ -1,30 +1,38 @@
-{extend name="public:layout"/}
-{block name="body"}
+{extend name="public:layout"/} {block name="body"}
 
 <!--个人中心-->
 <div class="user_roar">
-    <img src="{$user.headimgurl}" width="65"/>
+    <div class="change_mesg">
+        <!--链接到注册时填写信息页面-->
+        <a href="">
+            <img src="{$user.headimgurl}" width="65" />
+            <i>修改信息</i>
+        </a>
+    </div>
+
     <dt>微信昵称：{$user.nickname}</dt>
 </div>
 <!--我参与的活动-->
 <div class="doing">
     <div class="doing_gd">我参与的活动</div>
     <ul>
-        {volist name="actList" id="act"}
-        {if condition="$act.need_pay eq 1"}
-                {if condition="$act.is_paied eq 1"}
-                <li>
-                    <a href="/act/detail/{$act.id}"><img src="{$act.img}"/><h4>{$act.name}</h4></a>
-                    <p>{$act.des}</p>
-                </li>
-                {/if}
-            {else/}
-            <li>
-                <a href="/act/detail/{$act.id}"><img src="{$act.img}"/><h4>{$act.name}</h4></a>
-                <p>{$act.des}</p>
-            </li>
-        {/if}
-        {/volist}
+        {volist name="actList" id="act"} {if condition="$act.need_pay eq 1"} {if condition="$act.is_paied eq 1"}
+        <li>
+            <a href="/act/detail/{$act.id}">
+                <img src="{$act.img}" />
+                <h4>{$act.name}</h4>
+            </a>
+            <p>{$act.des}</p>
+        </li>
+        {/if} {else/}
+        <li>
+            <a href="/act/detail/{$act.id}">
+                <img src="{$act.img}" />
+                <h4>{$act.name}</h4>
+            </a>
+            <p>{$act.des}</p>
+        </li>
+        {/if} {/volist}
     </ul>
 </div>
 <!--我的订单-->
@@ -36,7 +44,7 @@
         <li>
             <a href="/product/detail/{$product.pro_id}">
                 <dt>
-                    <img src="{$product.img}"/>
+                    <img src="{$product.img}" />
                 </dt>
                 <div class="shop_nei">
                     <h4>{$product.name}</h4>
@@ -49,29 +57,175 @@
     </ul>
     {/volist}
 </div>
+<!--我的证书，链接到证书列表页-->
+<div class="my_honer">
+    <div class="doing_gd">我的证书</div>
+    <ul class="clearfix ">
+        <li class="honer_item">
+            <a href="">
+                <img src="./img/build.png">
+                <div class="txt-over-two">【证书】我的证书</div>
+            </a>
+        </li>
+        <li class="honer_item">
+            <a href="">
+                <img src="./img/build.png">
+                <div class="txt-over-two">【证书】我的证书</div>
+            </a>
+        </li>
+        <li class="honer_item">
+            <a href="">
+                <img src="./img/build.png">
+                <div class="txt-over-two">【证书】我的证书</div>
+            </a>
+        </li>
+    </ul>
+</div>
+<!--我的反馈-->
+<div class="my_word">
+    <div class="doing_gd">我的反馈</div>
+    <ul>
+        <li class="clearfix">
+            <img src="./img/build.png">
+            <div class="word_detail">
+                公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计
+            </div>
+        </li>
+    </ul>
+</div>
+<style>
+    .change_mesg {
+        margin-left: 32px;
+        margin-top: 28px;
+        float: left;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .change_mesg img {
+        margin: 0;
+        float: none;
+    }
+
+    .change_mesg i {
+        font-size: 12px;
+        color: #fff;
+        font-style: normal;
+        background: #b08832cf;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        text-align: center;
+        height: 25px;
+        line-height: 25px;
+    }
+
+    .user_roar dt {
+        margin-left: 125px;
+        display: block;
+        float: none;
+    }
+
+    .clearfix:after {
+        content: ".";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden
+    }
+
+    .clearfix {
+        *height: 1%
+    }
+
+    .my_honer,
+    .my_word {
+        overflow: hidden;
+        margin: 2%;
+        background: #FFF;
+        border-radius: 5px;
+        padding: 0 5px;
+    }
+
+    .my_honer li {
+        width: 33.3%;
+        margin-top: 2%;
+        text-align: center;
+        display: inline-block;
+        float: left;
+    }
+
+    .my_honer ul {
+        padding-bottom: 10px;
+        border-top: 1px solid #eeeeee;
+    }
+
+    .my_honer li img {
+        margin-bottom: 10px;
+        width: 80%;
+        display: block;
+        margin: auto;
+        max-height: 110px;
+    }
+
+    .my_honer li div {
+        height: 34px;
+        font-size: 13px;
+        text-align: left;
+    }
+
+    .txt-over-two {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .my_word ul {
+        padding-bottom: 10px;
+        border-top: 1px solid #eeeeee;
+    }
+
+    .my_word li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eeeeee;
+    }
+
+    .my_word li img {
+        float: left;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 2px solid #a47801;
+        margin: 0 10px;
+    }
+</style>
 <!--我的捐款-->
 <div class="donate_user">
     <div class="doing_gd">我的捐款</div>
     <ul>
         {volist name="donateList" id="donate"}
-        <li><b>{:date('Y-m-d',strtotime($donate.create_time))}</b><h5>{$donate.name}</h5><span>金额：￥{$donate.money}</span></li>
+        <li>
+            <b>{:date('Y-m-d',strtotime($donate.create_time))}</b>
+            <h5>{$donate.name}</h5>
+            <span>金额：￥{$donate.money}</span>
+        </li>
         {/volist}
     </ul>
 </div>
-{/block}
-
-{block name="javascript"}
+{/block} {block name="javascript"}
 <script type="text/javascript">
-    var tube=$(".about_nei").height();
-    if(tube>110){
-        $(".about_nei").css("height","110");
+    var tube = $(".about_nei").height();
+    if (tube > 110) {
+        $(".about_nei").css("height", "110");
     }
-    $(".tube_not").click(function(){
-        $(".about_nei").css("height","100%");
+    $(".tube_not").click(function () {
+        $(".about_nei").css("height", "100%");
         $(".tube_not").hide();
     });
-    $(".doing_gd").click(function(){
+    $(".doing_gd").click(function () {
         $(this).parent().find("ul").toggle();
     });
-</script>
-{/block}
+</script> {/block}
