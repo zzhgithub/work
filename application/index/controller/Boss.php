@@ -237,6 +237,7 @@ class Boss extends Controller
             $data->zone_id = (int)$inputData['zone_id'];
             $zone = Zone::get($data->zone_id);
             $data->zone = $zone->name;
+            $data->number = $inputData['number'];
             foreach ((array)$data as $v){
                 if (!$v){
                     return self::response(400,'请输入完整信息');

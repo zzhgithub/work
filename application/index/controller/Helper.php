@@ -11,11 +11,12 @@ namespace app\index\controller;
  */
 
 use app\index\model\ActRecords;
-use app\index\model\Config;
 use app\index\model\DonateRecords;
 use app\index\model\Order;
 use app\index\model\User;
 use app\index\service\WeiXin;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use think\Controller;
 use think\Exception;
 use think\Request;
