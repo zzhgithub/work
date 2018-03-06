@@ -19,7 +19,7 @@
         "php": ">=5.4.0",
         "topthink/framework": "~5.0.0",
         "topthink/think-captcha":"*",
-        "phpoffice/PhpSpreadsheet":"*"
+        "phpoffice/phpexcel":"*"
     },
     "autoload": {
         "psr-4": {
