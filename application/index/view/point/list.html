@@ -2,7 +2,7 @@
 {block name="body"}
 <!--搜索-->
 <div class="search">
-    <form method="post">
+    <form method="post" action="/index.php?s=point/list">
         <input type="text" placeholder="请输入名称/级别/区位进行搜索" name="search" value="{$search}"/>
         <button type="submit"></button>
     </form>
@@ -11,7 +11,7 @@
 <div class="history">
     <ul>
         {volist name="list" id="vo"}
-        <!--1市宝2区宝3国宝4文物点-->
+        <!--1国保 2市保 3区保 4优秀建筑 5其他-->
           <li><a href="/index.php?s=point/detail/{$vo.id}"><img src="{$vo.img}"/><span>{$vo.zone} | {$vo.name}</span><img class="jewel" src="/static/images/jewel{$vo.level}.png"/></a></li>
         {/volist}
     </ul>

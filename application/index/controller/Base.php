@@ -27,13 +27,15 @@ class Base extends Controller
     protected $openId;
     protected $view;
     protected $userPass;
+    protected $uid;
     public function __construct(Request $request)
     {
         parent::__construct($request);
         $openId = Session::get('openid');
         //$openId = 'o-EEJxIw2bBxT6cEboZr5uxn_9_0';
         try {
-            $user = Member::get(['uid' => WeiXin::getUserIdByOpenid($openId)]);
+            $this->uid = WeiXin::getUserIdByOpenid($openId)?:0;
+            $user = Member::get(['uid' => $this->uid]);
             $this->userPass = $user != null && $user->state == 1 ? true : false;
             if (!$openId) {
                 if ($request->isAjax()) {

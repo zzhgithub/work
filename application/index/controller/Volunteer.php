@@ -230,6 +230,32 @@ class Volunteer extends Base
     public function inspectBackDetail($id)
     {
         $id = intval($id);
+        $request = Request::instance();
+        if ($request->isAjax()){
+            $_data = $request->post('',null,'htmlspecialchars');
+            $data = [
+                'msg' => $_data['msg'],
+                '__token__' => $_data['__token__']
+            ];
+            $validate = new Validate([
+                'msg' => 'require|max:500|token',
+            ], [
+                'msg.require' => '请输入反馈信息']
+            );
+            if (!$validate->check($data)) {
+                return self::response(400, $validate->getError());
+            }
+            $data['uid'] = $this->uid;
+            $data['pid'] = $id;
+            $data['des'] = $data['msg'];
+            unset($data['__token__'],$data['msg']);
+            $inspect = new Inspect();
+            $res = $inspect->data($data)->save();
+            if (!$res){
+                return self::response(400, '巡查留言提交失败');
+            }
+            return self::response(0, '巡查留言已提交！');
+        }
         $base = Point::get($id);
         $this->assign('base', $base);
 
@@ -240,12 +266,16 @@ class Volunteer extends Base
         $list = $client->where(['pid' => $id])->select();
 
         $inspect_Client = new Inspect();
-        $inspect = $inspect_Client->where(['pid' => $id])->select();
+        $prefix = config("database.prefix");
+        $inspect = $inspect_Client->alias('a')->join($prefix . 'user b',
+            'a.uid = b.id', 'LEFT')->field('a.des,b.nickname,b.headimgurl')->where(['a.pid' => $id,'a.state' => 1])->select();
 
         $levelArr = Config::get('point.point_level');
         $this->assign('level', $levelArr);
         $this->assign("inspect", $inspect);
         $this->assign('list', $list);
+        $this->assign('id', $id);
+        $this->assign('token', Request::instance()->token());
         $this->assign('title', $base->name . '-巡查反馈');
         //巡查反馈页
 

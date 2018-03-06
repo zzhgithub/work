@@ -12,19 +12,24 @@
             <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
             <th lay-data="{field:'id', width:80, sort: true, fixed: true}">ID</th>
             <th lay-data="{field:'nickname', width:160}">昵称</th>
-            <th lay-data="{field:'img', width:160,templet:'#imgTpl'}">头像</th>
+            <th lay-data="{field:'headimgurl', width:160,templet:'#imgTpl'}">头像</th>
             <th lay-data="{field:'pid', width:160}">文物点id</th>
-            <th lay-data="{field:'des', width:160}">反馈介绍</th>
-            <th lay-data="{fixed: 'right', width:180, align:'center', toolbar: '#barNews'}">操作</th>
+            <th lay-data="{field:'des', width:160}">反馈信息</th>
+            <th lay-data="{fixed: 'right', align:'center', toolbar: '#barNews'}">操作</th>
         </tr>
         </thead>
     </table>
     <script type="text/html" id="barNews">
+        {{#  if(d.state == 1){ }}
+        <a class="btn layui-btn" style="line-height: inherit;" lay-event="pass">取消审核</a>
+        {{#  } else { }}
+        <a class="btn layui-btn" style="line-height: inherit;" lay-event="pass">审核通过</a>
+        {{#  } }}
         <a class="btn layui-btn" style="line-height: inherit;" lay-event="edit">编辑</a>
         <a class="btn layui-btn layui-btn-danger" style="line-height: inherit;" lay-event="del">删除</a>
     </script>
     <script type="text/html" id="imgTpl">
-        <a href="{{d.img}}" target="_blank" style="text-decoration:underline;">点击查看</a>
+        <a href="{{d.headimgurl}}" target="_blank" style="text-decoration:underline;">点击查看</a>
     </script>
 </div>
 {/block}
@@ -51,6 +56,16 @@
                     });
                     layer.close(index);
                 });
+            }else if (obj.event === 'pass'){
+                $.post("/boss/inspect/pass",{id:data.id},function(res){
+                    layer.msg(res.msg);
+                    if (res.code===0){
+                        setTimeout(function () {
+                            location.reload();
+                        },1000);
+                    }
+                });
+                layer.close(index);
             } else if (obj.event === 'edit') {
                 location.href = '/boss/inspect/mod/' + data.id;
             }

@@ -15,6 +15,7 @@ use app\index\model\Pointdetail;
 use app\index\model\Pointnear;
 use app\index\model\Route;
 use app\index\model\Routepoint;
+use app\index\model\Zone;
 use think\Config;
 use think\Exception;
 use think\Request;
@@ -36,22 +37,31 @@ class Show extends Base
     {
         //默认情况没有查询条件
         try {
-            $search = Request::instance()->param('search', null, 'stripslashes');
+            $prefix = config("database.prefix");
             $point = new Point();
-            if ($search) {
-                $levelArr = array_flip(Config::get('point.point_level'));
-                if (key_exists($search, $levelArr)) {
-                    $list = $point->where('name', 'like', '%' . $search . '%')
-                        ->whereOr('zone', 'like', '%' . $search . '%')
-                        ->whereOr('level', $levelArr[$search])
-                        ->paginate(8);
+            $zoneId = (int)$request->get('cate');
+            $search = Request::instance()->param('search', null, 'stripslashes');
+            if($zoneId) {
+                $list  = $point->alias('a')->join($prefix . 'zone b',
+                    'a.zone_id = b.id', 'LEFT')->where(['a.zone_id' => $zoneId])->field('a.id,a.zone_id,a.name,a.number,a.img,a.level,a.addr,b.name as zone')->paginate(8);
+            }else{
+                if ($search) {
+                    $levelArr = array_flip(Config::get('point.point_level'));
+                    if (key_exists($search, $levelArr)) {
+                        $list = $point->alias('a')->join($prefix . 'zone b',
+                            'a.zone_id = b.id', 'LEFT')->where('a.name', 'like', '%' . $search . '%')
+                            ->whereOr('b.name', 'like', '%' . $search . '%')
+                            ->whereOr('a.level', $levelArr[$search])
+                            ->field('a.id,a.zone_id,a.name,a.number,a.img,a.level,a.addr,b.name as zone')->paginate(8);
+                    } else {
+                        $list = $point->alias('a')->join($prefix . 'zone b',
+                            'a.zone_id = b.id', 'LEFT')->where('a.name', 'like', '%' . $search . '%')
+                            ->whereOr('b.name', 'like', '%' . $search . '%')
+                            ->field('a.id,a.zone_id,a.name,a.number,a.img,a.level,a.addr,b.name as zone')->paginate(8);
+                    }
                 } else {
-                    $list = $point->where('name', 'like', '%' . $search . '%')
-                        ->whereOr('zone', 'like', '%' . $search . '%')
-                        ->paginate(8);
+                    $list = $point->paginate(8);
                 }
-            } else {
-                $list = $point->paginate(8);
             }
             $items = $list->items();
             if ($request->isAjax()) {
@@ -65,6 +75,23 @@ class Show extends Base
             $this->assign('title', '历史建筑');
             $this->assign('curPage', 1);
             return $this->view->fetch('point/list');
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * 获取文物点区域信息
+     * @param Request $request
+     * @return string
+     */
+    public function historyZone(Request $request)
+    {
+        try {
+            $zones = Zone::all();
+            $this->assign('zones', $zones);
+            $this->assign('title', '历史建筑');
+            return $this->view->fetch('classify/classify');
         } catch (Exception $e) {
             return $e->getMessage();
         }

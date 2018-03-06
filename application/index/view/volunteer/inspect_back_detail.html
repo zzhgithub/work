@@ -17,9 +17,9 @@
 <!--巡查留言-->
 <div class="live_message">
         <h4>巡查留言</h4>
-        <textarea placeholder="请输入巡查留言"></textarea>
+        <textarea placeholder="请输入巡查留言" id="msg"></textarea>
         <div class="button_mesg">
-                <a href="javascript:;" class="up_message">提交留言</a>
+                <a href="javascript:void(0);" class="up_message">提交留言</a>
          </div>
     </div>
     <style>
@@ -64,39 +64,54 @@
     <h4>巡查反馈：</h4>
     {volist name="inspect" id="vo2"}
     <div class="inspect_list">
-        <dt><img src="{$vo2.img}"/><em>{$vo2.nickname}</em></dt>
+        <dt><img src="{$vo2.headimgurl}"/><em>{$vo2.nickname}</em></dt>
         <p>{$vo2.des}</p>
     </div>
     {/volist}
 </div>
 {/block}
 {block name="javascript"}
-<script src="/static/js/swiper.min.js" type="text/javascript"></script>
-
+<script src="/static/js/layer/layer.js"></script>
 <script type="text/javascript">
     $(function(){
-
-        var gao=$(".partner ul li img").height();
-        if(gao!=0){
-            $(".partner").height(gao);
-            $(".partner_nei").height(gao);
-        }
-        var Swiper1 = $('.partner_nei').swiper({
-            loop: true,
-            slidesPerView : 1,
-            autoplay : 3000,//自动播放
-            speed:800,//切换速度
-            pagination : '.live_partner',//轮播分页
-            autoplayDisableOnInteraction : false
-        });
-        //更多
-        var tube=$(".tube").height();
-        if(tube>200){
-            $(".tube").css("height","200");
-        }
-        $(".tube_not").click(function(){
-            $(".tube").css("height","100%");
-            $(".tube_not").hide();
+        var isPass = {$userPass};
+        var flag = true;
+        var token = '{$token}';
+        $('.up_message').on('click',function(){
+            if (!flag){
+                return false;
+            }
+            if (!isPass){
+                parent.layer.alert("抱歉，您还不是志愿者", {icon: 5});
+                return false;
+            }
+            var msg = $('#msg').val();
+            if (msg.length == 0 ){
+                parent.layer.alert("请输入巡查留言", {icon: 5});
+                return false;
+            }
+            //  提交表单信息
+            $.ajax({
+                type: 'post',
+                url: "/inspect/back/detail/{$id}",
+                data: {msg:msg,__token__:token},
+                dataType: "json",
+                beforeSend: function () {
+                    flag = false;
+                },
+                success: function (data) {
+                    flag = true;
+                    parent.layer.alert(data.msg);
+                    if (data.code === 0) {
+                        $('#msg').val('');
+                    }else{
+                        return false;
+                    }
+                },
+                error:function (res) {
+                    parent.layer.alert('服务有误');
+                }
+            });
         });
     })
 </script>

@@ -1,83 +1,16 @@
 {extend name="public:layout"/}
-
 {block name="body"}
-<!--搜索-->
-<div class="search">
-    <form method="post" action="/point/list">
-        <input type="text" placeholder="请输入名称/级别/区位进行搜索" name="search" value=""/>
-        <button type="submit"></button>
-    </form>
-</div>
-<!--banner-->
-<div class="partner">
-    <div class="partner_nei">
-        <ul class="swiper-wrapper">
-            {volist name="banner" id="vo1"}
-            <li class="swiper-slide"><a href="{$vo1.url}"><img src="{$vo1.img}" width="100%"/>
-                <dt><span>{$vo1.des}</span></dt>
-            </a></li>
-            {/volist}
-        </ul>
-        <!--结束切换内容-->
-        <div class="live_partner">
-            <div class="live_partn"></div>
-        </div>
-    </div>
-</div>
-</div>
-<!--公告滚动-->
-<div class="scroll">
-    <ul class="swiper-wrapper">
-        {volist name="news" id="new"}
-        <li class="swiper-slide"><a href='{if condition="$new.url neq ''"}{$new.url}{/if}'>{$new.title}</a></li>
-        {/volist}
-    </ul>
-</div>
-<!--导航菜单-->
-<div class="nav_tow">
-    <ul>
-        <li><a href="/index.php?s=point/list">历史建筑</a></li>
-        <li><a href="/index.php?s=route/list">推荐路线</a></li>
-        <li><a href="#">任务点打卡</a></li>
-        <li><a href="/index.php?s=register">个人注册</a></li>
-        <li><a href="/index.php?s=inspect/back/list">巡查反馈</a></li>
-        <li><a href="/index.php?s=donate/list">我要捐款</a></li>
-    </ul>
-</div>
     <!--文物点分类菜单-->
     <div class="kinds clearfix ">
       <h4>景点分区</h4>
       <ul>
+          {volist name="zones" id="vo"}
           <li>
-              <a href="history.html">
-                  <img src="./img/build.png"> 沙坪坝区
+              <a href="/index.php?s=point/list&cate={$vo.id}">
+                  <img src="{$vo.img}">{$vo.name}
               </a>
           </li>
-          <li>
-              <a href="route.html">
-                  <img src="./img/build.png"> 江北区
-              </a>
-          </li>
-          <li>
-              <a href="#">
-                  <img src="./img/build.png"> 渝中区
-              </a>
-          </li>
-          <li>
-              <a href="#">
-                  <img src="./img/build.png"> 渝中区
-              </a>
-          </li>
-          <li>
-              <a href="#">
-                  <img src="./img/build.png"> 渝中区
-              </a>
-          </li>
-          <li>
-              <a href="#">
-                  <img src="./img/build.png"> 渝中区
-              </a>
-          </li>
+          {/volist}
       </ul>
   </div>
   <style>

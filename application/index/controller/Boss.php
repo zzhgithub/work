@@ -1054,7 +1054,9 @@ class Boss extends Controller
             $limit = $request->request('limit');
             $limit = $limit ? intval($limit) : 10;
             $news = new Inspect();
-            $list = $news->order('id desc')->paginate($limit);
+            $prefix = config("database.prefix");
+            $list = $news->alias('a')->join($prefix . 'user b',
+                'a.uid = b.id', 'LEFT')->order('a.id desc')->field('a.id,a.pid,a.des,a.state,b.nickname,b.headimgurl')->paginate($limit);
             $response = new \stdClass();
             $response->code = 0;
             $response->count = $list->total();
@@ -1078,6 +1080,15 @@ class Boss extends Controller
             if (empty($data)) {
                 return $this->response(400, '非法请求');
             }
+            // 判断志愿者id 和 文物点id
+            $member = Member::get(['uid' => (int)$data['uid'],'state' => 1]);
+            $point = Point::get(['id' => (int)$data['pid']]);
+            if (empty($member)){
+                return $this->response(400, '志愿者：'. $data['uid'].'，不存在');
+            }
+            if (empty($point)){
+                return $this->response(400, '文物点：'. $data['uid'].'，不存在');
+            }
             $news = new Inspect();
             unset($data['file'], $data['content'], $data['imgs']);
             $res =  true;
@@ -1100,6 +1111,22 @@ class Boss extends Controller
             $this->assign('title', '添加/修改反馈-' . $this->title);
             return $this->view->fetch('boss/inspect/add');
         }
+    }
+
+    public function inspectPass(Request $request){
+        if (!$request->isAjax()){
+            return self::response(400,'非法请求');
+        }
+        $id = (int)$request->post('id');
+        if (!$id){
+            return self::response(400,'非法请求');
+        }
+        $inspectObj = new Inspect();
+        $res = $inspectObj->save(['state' => ['exp', '1-state']],['id'=>$id]);
+        if (!$res){
+            return self::response(400,'操作失败');
+        }
+        return self::response(0,'操作成功');
     }
 
     public function inspectDel($id){
@@ -1646,7 +1673,7 @@ class Boss extends Controller
             $limit = $request->request('limit');
             $limit = $limit ? intval($limit) : 10;
             $memberObj = new Member();
-            $list = $memberObj->order('id desc')->where(['`state`' => $state])->field('id,name,gender,id_cards,email,phone,career,reason,from,create_time')->paginate($limit);
+            $list = $memberObj->order('id desc')->where(['`state`' => $state])->field('id,uid,name,gender,id_cards,email,phone,career,reason,from,create_time')->paginate($limit);
             $response = new \stdClass();
             $response->code = 0;
             $response->count = $list->total();
@@ -1692,30 +1719,22 @@ class Boss extends Controller
     // 文物点区域管理
     public function zoneList(Request $request)
     {
-        if ($request->isAjax()) {
-            $limit = $request->request('limit');
-            $limit = $limit ? intval($limit) : 10;
-            $zone = new Zone();
-            $response = new \stdClass();
-            $response->code = 0;
-            $response->count = 0;
-            $response->msg = '';
-            $response->data = array();
-            try {
-                $list = $zone->order('id desc')->paginate($limit);
-            } catch (DbException $e) {
-                $response->code = 400;
-                $response->msg = $e->getMessage();
-            }
-            if (!empty($list)) {
-                $response->code = 0;
-                $response->count = $list->total();
-                $response->data = $list->items();
-            }
-            return json($response);
-        }
-        $this->assign('title', '区域管理-' . $this->title);
         try {
+            $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
+            $limit = 10;
+            $client = new Zone();
+            $totalSize = $client->count();
+            $totalPage = ceil($totalSize / $limit);
+            if ($page >= $totalPage){
+                $page = $totalPage;
+            }
+            $list = $client->order('id DESC')->limit(($page-1)*$limit, $limit)->select();
+            $this->assign('page', $page);
+            $this->assign('limit', $limit);
+            $this->assign('totalPage', $totalPage);
+            $this->assign('totalSize', $totalSize);
+            $this->assign('list', $list);
+            $this->assign('title', '区域管理-' . $this->title);
             return $this->view->fetch('boss/zone/list');
         } catch (Exception $e) {
             return $e->getMessage();
@@ -1733,6 +1752,7 @@ class Boss extends Controller
                 }
                 $zone = new Zone();
                 $res =  true;
+                unset($data['file']);
                 if (isset($data['id']) && intval($data['id'])) { // 修改
                     $data['id'] = intval($data['id']);
                     $zone->save($data, ['id' => $data['id']]);
@@ -1750,7 +1770,11 @@ class Boss extends Controller
                 $zone = Zone::get($id);
                 $this->assign('zone', $zone);
                 $this->assign('title', '添加/修改区域-' . $this->title);
-                return $this->view->fetch('boss/zone/add');
+                try {
+                    return $this->view->fetch('boss/zone/add');
+                } catch (Exception $e) {
+                    return $e->getMessage();
+                }
             }
         } catch (DbException $e) {
             return $e->getMessage();

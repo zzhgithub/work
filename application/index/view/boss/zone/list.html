@@ -6,31 +6,58 @@
         <legend>区域管理</legend>
         <a href="/boss/zone/add" class="btn layui-btn" role="button" style="float: right;margin-right: 20px;">添加</a>
     </fieldset>
-    <table class="layui-table" lay-data="{ url:'/boss/zone/list',page:true,id:'idZone'}"
-           lay-filter="zone">
+    <table class="table layui-table">
         <thead>
         <tr>
-            <th lay-data="{field:'id', width:60, sort: true}">ID</th>
-            <th lay-data="{field:'name', width:400}">区域名</th>
-            <th lay-data="{width:160, align:'center', toolbar: '#barzone'}">操作</th>
+            <th>ID</th>
+            <th>区域名</th>
+            <th width="110">封面图片</th>
+            <th>操作</th>
         </tr>
         </thead>
+        <tbody>
+        {volist name="list" id="vo"}
+        <tr>
+            <td>{$vo.id}</td>
+            <td>{$vo.name}</td>
+            <td>
+                <div class="thumbnail">
+                    <img src="{$vo.img}">
+                </div>
+            </td>
+            <td>
+                <a href="/boss/zone/mod/{$vo.id}" class="btn layui-btn" role="button">
+                    修改
+                </a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
     </table>
-    <script type="text/html" id="barzone">
-        <a class="btn layui-btn" style="line-height: inherit;" lay-event="edit">编辑</a>
-    </script>
+    <div id="page"></div>
 </div>
 {/block}
 
 {block name="javascript"}
 <script>
-    layui.use(['table', 'jquery'], function () {
-        var table = layui.table;
-        //监听工具条
-        table.on('tool(zone)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'edit') {
-                location.href = '/boss/zone/mod/' + data.id;
+    layui.use(['laypage'], function () {
+        //自定义首页、尾页、上一页、下一页文本
+        var laypage = layui.laypage;
+        laypage.render({
+            elem: 'page'
+            ,count: {$totalSize}
+            ,limit: {$limit}
+            ,first: '首页'
+            ,last: '尾页'
+            ,prev: '<em>←</em>'
+            ,next: '<em>→</em>'
+            ,curr: {$page}
+            ,jump: function(obj, first){
+                //obj包含了当前分页的所有参数，比如：
+                //首次不执行
+                if(!first){
+                    location.href = '/boss/zone/list?page=' + obj.curr
+                }
             }
         });
     });
