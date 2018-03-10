@@ -223,10 +223,13 @@ class Productctl extends Base
     {
         $carts = self::getCart();
         if ($request->isGet()) {
-            $totalPrice = 0.00;
+            $totalPrice = $cost = 0.00;
             if ($carts) {
                 foreach ($carts as $cart) {
+                    // 商品总价
                     $totalPrice += sprintf("%.2f", $cart->count * $cart->price);
+                    // 运费总价
+                    $cost += sprintf("%.2f", $cart->count * $cart->cost);
                 }
             }
             $accessToken = WeiXin::getAccessToken();
@@ -242,6 +245,7 @@ class Productctl extends Base
             $this->assign('title', '文创产品购物车');
             $this->assign('referer', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/product/list');
             $this->assign('totalPrice', sprintf("%.2f", $totalPrice));
+            $this->assign('cost', sprintf("%.2f", $cost));
             return $this->fetch('product/pay');
         }
         // 异步请求
@@ -304,9 +308,12 @@ class Productctl extends Base
 
         // 先下单后减库存，30分钟失效
         // 总价
-        $totalPrice = 0.00;
+        $totalPrice = $cost = 0.00;
         foreach ($carts as $cart) {
+            // 产品总价
             $totalPrice += sprintf("%.2f", $cart->count * $cart->price);
+            // 运费总价
+            $cost += sprintf("%.2f", $cart->count * $cart->cost);
         }
 
         // 创建订单
@@ -314,7 +321,9 @@ class Productctl extends Base
         $orderObj->order_no = WeiXin::createOrderNo(WeiXin::ORDER_PRODUCT);
         $orderObj->user_id = WeiXin::getUserIdByOpenid($this->openId);
         $orderObj->open_id = $this->openId;
-        $orderObj->total_price = $totalPrice;
+        $orderObj->cost = $cost;
+        $orderObj->goods_price = $totalPrice;
+        $orderObj->total_price = $totalPrice + $cost;
         $orderObj->name = $data['name'];
         $orderObj->phone = $data['phone'];
         $orderObj->address = $data['address'];

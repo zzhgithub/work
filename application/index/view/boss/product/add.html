@@ -115,6 +115,12 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">运费设置</label>
+            <div class="layui-input-block">
+                <input type="number" name="cost" lay-verify="required" autocomplete="off" placeholder="请输入运费" class="layui-input" value="{$product.cost}" style="width: 200px;" onkeypress="return noNumbers(event)">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <div class="layui-input-block">
                 {if condition="$product.id gt 0"}
                 <input type="hidden" name="id" value="{$product.id}">

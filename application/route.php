@@ -166,6 +166,9 @@ return [
     'boss/cert/add' => 'index/boss/certSave',
     'boss/cert/mod/:id' => 'index/boss/certSave',
     'boss/cert/del' => 'index/boss/certDel',
+    'boss/cert/award' => 'index/boss/certAward',
+    'boss/cert/awardcancel' => 'index/boss/certAward',
+    'boss/certaward/list' => 'index/boss/certAwardList',
 
     /**
      * 附近文物点管理

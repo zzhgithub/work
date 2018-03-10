@@ -14,6 +14,7 @@ use app\index\model\ActRecords;
 use app\index\model\Admin;
 use app\index\model\Banner;
 use app\index\model\Cert;
+use app\index\model\CertRecords;
 use app\index\model\Donate;
 use app\index\model\DonateRecords;
 use app\index\model\Inspect;
@@ -34,6 +35,8 @@ use app\index\model\TrainCate;
 use app\index\model\TrainContent;
 use app\index\model\Zone;
 use think\Controller;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
 use think\Exception;
 use think\exception\DbException;
 use think\Request;
@@ -1390,6 +1393,77 @@ class Boss extends Controller
         return $this->response(0, '删除成功');
     }
 
+    // 颁发/取消 证书
+    public function certAward(Request $request)
+    {
+        if (!$request->isAjax() || !$request->isPost()) {
+            return $this->response(400, '非法请求');
+        }
+        $option = intval($request->param('option'));
+        $uid = intval($request->param('uid'));
+        $certId = intval($request->param('certId'));
+        if (!isset($option) || !$uid || !$certId){
+            return $this->response(400, '非法请求');
+        }
+        $data = [
+            'uid' => $uid,
+            'cert_id' => $certId
+        ];
+        if (Member::get(['uid' => $uid, 'state' => 1]) == null){
+            return $this->response(400, '志愿者不存在');
+        }
+        $certRecords = new CertRecords();
+        if ($option == 0) { // 取消证书
+            $msg = '取消';
+            $res = $certRecords->where($data)->delete();
+        } else {              //添加
+            if ($certRecords->where($data)->find()){
+                return $this->response(400, '已经颁发过证书');
+            }
+            $msg = '颁发';
+            $certRecords->data($data);
+            try{
+                $res = $certRecords->save();
+            }catch (\Exception $e){
+                return $this->response(400, $e->getMessage());
+            }
+        }
+        if (!$res) {
+            return $this->response(400, $msg.'失败');
+        }
+        return $this->response(0, $msg.'成功');
+    }
+
+    // 已颁发证书列表
+    public function certAwardList(Request $request)
+    {
+        $certRecordsObj = new CertRecords();
+        $prefix = config("database.prefix");
+        $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
+        $limit = 10;
+        $totalSize = $certRecordsObj->count();
+        $totalPage = ceil($totalSize / $limit);
+        if ($page >= $totalPage){
+            $page = $totalPage;
+        }
+        $list = null;
+        try {
+            $list = $certRecordsObj->alias('a')->order('a.id DESC')->join($prefix . 'member b', 'a.uid = b.uid',
+                'LEFT')->join($prefix . 'cert c', 'a.cert_id = c.id',
+                'LEFT')->field('a.id,a.cert_id,a.create_time,b.uid,b.name,c.img,c.num,c.des')->limit(($page - 1) * $limit, $limit)->select();
+        } catch (DataNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
+        } catch (DbException $e) {
+        }
+        $this->assign('page', $page);
+        $this->assign('limit', $limit);
+        $this->assign('totalPage', $totalPage);
+        $this->assign('totalSize', $totalSize);
+        $this->assign("title","证书颁发记录");
+        $this->assign('list', $list);
+        return $this->fetch('boss/cert/awardlist');
+    }
+
     public function nearList(Request $request)
     {
         $pid = $request->param('pid');
@@ -1538,14 +1612,16 @@ class Boss extends Controller
         $prefix = config("database.prefix");
         $page = intval($request->request('page')) ? intval($request->get('page')) : 1;
         $limit = 10;
-        // 查询订单 付款成功的订单
+
+        // 根据状态查询订单
+        $state = $request->request('state') ? intval($request->request('state')) : 0;
         $orderObj = new Order();
-        $totalSize = $orderObj->where(['is_paied' => 1])->count();
+        $totalSize = $orderObj->where(['is_paied' => $state])->count();
         $totalPage = ceil($totalSize / $limit);
         if ($page >= $totalPage){
             $page = $totalPage;
         }
-        $orderList = $orderObj->where(['is_paied' => 1])->order('id DESC')->field('order_no,total_price,total_price,name,phone,address,option,transaction_id,create_time')->limit(($page - 1) * $limit, $limit)->select();
+        $orderList = $orderObj->where(['is_paied' => $state])->order('id DESC')->field('order_no,cost,goods_price,total_price,name,phone,address,option,transaction_id,create_time')->limit(($page - 1) * $limit, $limit)->select();
         if ($orderList) {
             foreach ($orderList as $order) {
                 $orderItemObj = new OrderItem();
@@ -1560,6 +1636,7 @@ class Boss extends Controller
         $this->assign('totalSize', $totalSize);
         $this->assign('orderList', $orderList);
         $this->assign('title', '产品订单-' . $this->title);
+        $this->assign('state', $state);
         return $this->fetch('boss/order/product');
     }
 

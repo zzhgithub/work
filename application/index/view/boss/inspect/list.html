@@ -47,7 +47,7 @@
         table.on('tool(news)', function (obj) {
             var data = obj.data;
             if (obj.event === 'del') {
-                layer.confirm('您真的删除此产品吗？', function (index) {
+                layer.confirm('您真的删除此反馈吗？', function (index) {
                     $.post("/boss/inspect/del", {id: data.id}, function (res) {
                         layer.msg(res.msg);
                         if (res.code === 0) {

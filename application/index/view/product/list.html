@@ -6,6 +6,13 @@
           name="viewport"/>
     <title>{$title}</title>
     <link href="/static/css/style.css" type="text/css" rel="stylesheet"/>
+    <style>
+        .count span.pay{
+            width: 35px;
+            height: inherit;
+            border-radius: inherit;
+        }
+    </style>
 </head>
 <body class="light">
 {include file="public/header" /}
@@ -16,6 +23,7 @@
         <li><a href="/product/detail/{$product.id}"><img src="{$product.img}" width="100%"/><h5>{$product.name}</h5></a>
             <b>￥{$product.price}</b>
             <div class="count" data-count="{$product.count}" data-store="{$product.store}" data-id="{$product.id}" data-price="{$product.price}">
+                <span class="pay" onclick="pay(this)">购买</span>
                 <span class="count_ji" onclick="reduceCart(this)">-</span><i></i><span class="count_jia" onclick="addCart(this)">+</span>
             </div>
         </li>
@@ -255,6 +263,32 @@
         });
         getCart(false);
     });
+
+    // 直接购买
+    function pay(obj) {
+        var countObj = $(obj).parent('.count');
+        if (1 > countObj.data('store')) {
+            alert('库存不足');
+            return false;
+        }
+        // 请求服务
+        $.ajax({
+            type: 'post',
+            url: "/product/addcart",
+            data: {'id': countObj.data('id'), 'num': 1},
+            dataType: "json",
+            success: function (data) {
+                if (data.code === 0) {
+                    location.href = '/product/order';
+                }else{
+                    alert(data.msg);
+                }
+            },
+            error: function (res) {
+                alert('服务器开小差了');
+            }
+        });
+    }
 </script>
 </body>
 </html>

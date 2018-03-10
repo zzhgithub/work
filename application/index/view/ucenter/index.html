@@ -6,7 +6,7 @@
         <!--链接到注册时填写信息页面-->
         <a href="">
             <img src="{$user.headimgurl}" width="65" />
-            <i>修改信息</i>
+            <!--<i>修改信息</i>-->
         </a>
     </div>
 
@@ -61,36 +61,28 @@
 <div class="my_honer">
     <div class="doing_gd">我的证书</div>
     <ul class="clearfix ">
+        {volist name="certRecords" id="cert"}
         <li class="honer_item">
-            <a href="">
-                <img src="./img/build.png">
-                <div class="txt-over-two">【证书】我的证书</div>
+            <a href="/index.php?s=certificate">
+                <img src="{$cert.img}">
+                <div class="txt-over-two">【证书】{$cert.num}</div>
             </a>
         </li>
-        <li class="honer_item">
-            <a href="">
-                <img src="./img/build.png">
-                <div class="txt-over-two">【证书】我的证书</div>
-            </a>
-        </li>
-        <li class="honer_item">
-            <a href="">
-                <img src="./img/build.png">
-                <div class="txt-over-two">【证书】我的证书</div>
-            </a>
-        </li>
+        {/volist}
     </ul>
 </div>
 <!--我的反馈-->
 <div class="my_word">
     <div class="doing_gd">我的反馈</div>
     <ul>
+        {volist name="inspect" id="back"}
         <li class="clearfix">
-            <img src="./img/build.png">
+            <img src="{$user.headimgurl}">
             <div class="word_detail">
-                公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计公司logo企业标志设计商标logo设计
+                {$back.des}
             </div>
         </li>
+        {/volist}
     </ul>
 </div>
 <style>
@@ -228,4 +220,5 @@
     $(".doing_gd").click(function () {
         $(this).parent().find("ul").toggle();
     });
-</script> {/block}
+</script>
+{/block}

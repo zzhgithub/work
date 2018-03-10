@@ -289,7 +289,7 @@ border-radius: 5px;display: inline-block;position: relative;  margin-bottom:0px;
 .shop_list .count .count_ji{ display:block;}
 /*--产品内容--*/
 .product_nei{ overflow:hidden; margin:10px 0; padding:0 2%;}
-.product_title{ overflow:hidden; width:76%; float:left;}
+.product_title{ overflow:hidden; width:61%; float:left;}
 .product_title h4{ color:#4d341c; font-weight:500;overflow:hidden;white-space: nowrap;text-overflow:ellipsis; margin-bottom:5px; width:100%; font-size:14px;}
 .product_title b{ color:#a37700; font-size:13px; font-weight:500;}
 .product_nei .count{ margin-top:10px;}

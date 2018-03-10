@@ -11,18 +11,19 @@
         <tr>
             <th lay-data="{field:'id', width:60, sort: true, fixed: true}">ID</th>
             <th lay-data="{field:'num', width:180}">编号</th>
-            <th lay-data="{field:'des', width:400}" >要求描述</th>
+            <th lay-data="{field:'des', width:400}">要求描述</th>
             <th lay-data="{field:'img', width:200,templet: '#imgTpl'}">图片</th>
-            <th lay-data="{fixed: 'right', width:180, align:'center', toolbar: '#barNews'}">操作</th>
+            <th lay-data="{fixed: 'right', width:280, align:'center', toolbar: '#barNews'}">操作</th>
         </tr>
         </thead>
     </table>
     <script type="text/html" id="barNews">
         <a class="btn layui-btn" style="line-height: inherit;" lay-event="edit">编辑</a>
+        <a class="btn layui-btn" style="line-height: inherit;" lay-event="award">颁发证书</a>
         <a class="btn layui-btn layui-btn-danger" style="line-height: inherit;" lay-event="del">删除</a>
     </script>
     <script type="text/html" id="imgTpl">
-       <a href="{{d.img}}" target="_blank" style="text-decoration:underline;">点击查看</a>
+        <a href="{{d.img}}" target="_blank" style="text-decoration:underline;">点击查看</a>
     </script>
 </div>
 {/block}
@@ -51,6 +52,38 @@
                 });
             } else if (obj.event === 'edit') {
                 location.href = '/boss/cert/mod/' + data.id;
+            } else if (obj.event === 'award') {
+                layer.open({
+                    title: '颁发证书'
+                    , area: ['400px', '160px']
+                    , content: '<div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label">志愿者id:</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <input type="number" name="uid" id="uid" lay-verify="required" autocomplete="off" class="layui-input" placeholder="志愿者id">\n' +
+                    '    </div>\n' +
+                    '  </div>'
+                    , btn: ['确定', '取消']
+                    , btn1: function (index, layero) {
+                        var uid = $('#uid').val();
+                        var certId = data.id;
+                        if (uid.length == 0 || uid == ''){
+                            layer.msg('请输入志愿者id');
+                            return false;
+                        }
+                        $.post("/boss/cert/award", {'option': 1, 'certId': certId, 'uid': uid}, function (r) {
+                            layer.msg(r.msg);
+                        });
+                        //按钮【按钮一】的回调
+                    }
+                    , btn2: function (index, layero) {
+                        //按钮【按钮二】的回调
+                        // return false; // 开启该代码可禁止点击该按钮关闭
+                    }
+                    , cancel: function () {
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    }
+                });
             }
         });
     });
