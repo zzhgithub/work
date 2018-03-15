@@ -50,7 +50,7 @@ class Person extends Base
         $orderObj = new Order();
         // $orderList = $orderObj->order('id DESC')->where(['open_id'=>$this->openId,'is_paied' => 1])->whereOr(['open_id'=>$this->openId,'is_paied' => 0,'is_update' => 0])->field('order_no')->select();
         $sql = "SELECT `order_no`,`is_paied` FROM `ly_order` WHERE  (`open_id` = '$this->openId'  AND `is_paied` = 1) OR (`open_id` = '$this->openId'  AND `is_paied` = 0  AND `is_update` = 0) ORDER BY id DESC";
-        $orderList = $orderObj->query($sql);
+        $orderList = collection($orderObj->query($sql))->toArray();
         $notPaied = false;
         if ($orderList) {
             foreach ($orderList as $order) {
