@@ -41,12 +41,12 @@
     {:token()}
     {volist name="orderList" id="order"}
     <ul>
-        {if condition="$order.is_paied eq 0"}
+        {if condition="$order['is_paied'] eq 0"}
         <li>
             <a href="javascript:void(0);" title="点击付款" class="notPay" data-order="{$order.order_no}">未付款</a>
         </li>
         {/if}
-        {volist name="order.orderItems" id="product"}
+        {volist name="order['orderItems']" id="product"}
         <li>
             <a href="/product/detail/{$product.pro_id}">
                 <dt>
