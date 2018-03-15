@@ -52,7 +52,7 @@ class Person extends Base
             $query->where(['open_id'=>$this->openId,'is_paied' => 1]);
         })->whereOr(function ($query) {
             $query->where(['open_id'=>$this->openId,'is_paied' => 0,'is_update' => 0]);
-        })->field('order_no')->select();
+        })->field('order_no,is_paied')->select();
         //$sql = "SELECT `order_no`,`is_paied` FROM `ly_order` WHERE  (`open_id` = '$this->openId'  AND `is_paied` = 1) OR (`open_id` = '$this->openId'  AND `is_paied` = 0  AND `is_update` = 0) ORDER BY id DESC";
         //$orderList = $orderObj->query($sql);
         $notPaied = false;
