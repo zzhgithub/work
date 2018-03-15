@@ -8,7 +8,7 @@
             <li data-id="{$cart.id}"><h5>{$cart.name}</h5><b>￥{$cart.price}</b><span>X{$cart.count}</span></li>
             {/volist}
         </ul>
-        <div class="totalr">共￥{$totalPrice}</div>
+        <div class="totalr">运费:{$cost},共￥{$totalPrice + $cost}</div>
     </div>
     <div class="product_info">
         <div class="product_ls"><label>姓名：</label><input type="text" value="" name="name"/></div>
