@@ -179,7 +179,7 @@ class Productctl extends Base
                 }
                 // 查询产品信息
                 $product = new Product();
-                $products = $product->where('id', 'exp', ' IN (' . implode(',', $ids) . ') ')->where(['state' => 1])->field('id,name,img,price,store')->select();
+                $products = $product->where('id', 'exp', ' IN (' . implode(',', $ids) . ') ')->where(['state' => 1])->field('id,name,img,cost,price,store')->select();
                 if ($products) {
                     foreach ($products as $k=>&$product) {
                         if ($count[$product->id] <= $product->store){
