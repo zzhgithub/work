@@ -54,14 +54,14 @@ class Person extends Base
         $notPaied = false;
         if ($orderList) {
             foreach ($orderList as $order) {
-                if ($order->is_paied == 0) {
+                if ($order['is_paied'] == 0) {
                     $notPaied = true;
                 }
                 $orderItemObj = new OrderItem();
                 $orderItems = $orderItemObj->alias('a')->order('a.id DESC')->join($prefix . 'product b',
                     'a.pro_id = b.id',
-                    'LEFT')->field('a.count,a.price,a.pro_id,b.name,b.img')->where(['a.order_no' => $order->order_no])->select();
-                $order->orderItems = $orderItems;
+                    'LEFT')->field('a.count,a.price,a.pro_id,b.name,b.img')->where(['a.order_no' => $order['order_no']])->select();
+                $order['orderItems'] = $orderItems;
             }
         }
         // 捐款
