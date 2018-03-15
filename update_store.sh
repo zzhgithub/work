@@ -1,3 +1,3 @@
 #!/bin/sh
-cd /data/work/
+cd /var/www/html/ke/website/laojie/
 php think updateStore
