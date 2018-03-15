@@ -243,7 +243,6 @@
     });
 
     var flag = true;
-    var referer = '{$referer}';
     $('.notPay').on('click',function () {
         if (!flag){
             return false;
@@ -291,17 +290,11 @@
                             //支付取消
                             $.post("/product/fail", {'order_no':order,'msg':'cancel'}, function (r) {
                                 parent.layer.alert('支付取消');
-                                setTimeout(function () {
-                                    location.href = referer;
-                                },1000);
                             });
                         },
                         fail: function(res){       // 支付失败回调函数
                             $.post("/product/fail", {'order_no':order,'msg':'fail'}, function (r) {
                                 parent.layer.alert('支付失败');
-                                setTimeout(function () {
-                                    location.href = referer;
-                                },1000);
                             });
                         }
                     });
