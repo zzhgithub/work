@@ -38,8 +38,14 @@
 <!--我的订单-->
 <div class="order">
     <div class="doing_gd">我的订单</div>
+    {:token()}
     {volist name="orderList" id="order"}
     <ul>
+        {if condition="$order.is_paied eq 0"}
+        <li>
+            <a href="javascript:void(0);" title="点击付款" class="notPay" data-order="{$order.order_no}">未付款</a>
+        </li>
+        {/if}
         {volist name="order.orderItems" id="product"}
         <li>
             <a href="/product/detail/{$product.pro_id}">
@@ -208,6 +214,8 @@
     </ul>
 </div>
 {/block} {block name="javascript"}
+<script src="/static/js/layer/layer.js"></script>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js" charset="UTF-8"></script>
 <script type="text/javascript">
     var tube = $(".about_nei").height();
     if (tube > 110) {
@@ -219,6 +227,89 @@
     });
     $(".doing_gd").click(function () {
         $(this).parent().find("ul").toggle();
+    });
+    wx.config({
+        appId: '{$jsApi->appId}', // 必填，公众号的唯一标识
+        timestamp: {$jsApi->timestamp}, // 必填，生成签名的时间戳
+        nonceStr: '{$jsApi->nonceStr}', // 必填，生成签名的随机串
+        signature: '{$jsApi->signature}',// 必填，签名，见附录1
+        jsApiList: ['chooseWXPay'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    });
+    wx.ready(function(){
+        // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+    });
+    wx.error(function(res){
+        // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+    });
+
+    var flag = true;
+    var referer = '{$referer}';
+    $('.notPay').on('click',function () {
+        if (!flag){
+            return false;
+        }
+        var token = $('input[name="__token__"]').val();
+        var orderNo = $(this).data('order');
+        if (!token) {
+            layer.alert('页面异常');
+            return false;
+        }
+        if (!orderNo || orderNo.length == 0) {
+            layer.alert('非法请求');
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            url: "/person/pay",
+            data: {'order': orderNo, '__token__': token},
+            dataType: "json",
+            beforeSend: function () {
+                flag = false;
+            },
+            success: function (data) {
+                flag = true;
+                if(data.data.token != 'undefined' && data.data.token != ''){
+                    $('input[name="__token__"]').val(data.data.token);
+                }
+                if(data.code === 0){
+                    var order = data.data.order_no;
+                    // 付费
+                    wx.chooseWXPay({
+                        timestamp: data.data.timeStamp, // 支付签名时间戳
+                        nonceStr: data.data.nonceStr, // 支付签名随机串，不长于32 位
+                        package: data.data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                        signType: data.data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                        paySign: data.data.paySign, // 支付签名
+                        success: function (res) {
+                            //支付成功
+                            parent.layer.alert('购买成功');
+                            setTimeout(function () {
+                                location.href = '/ucenter';
+                            },1000);
+                        },
+                        cancel: function (res) {
+                            //支付取消
+                            $.post("/product/fail", {'order_no':order,'msg':'cancel'}, function (r) {
+                                parent.layer.alert('支付取消');
+                                setTimeout(function () {
+                                    location.href = referer;
+                                },1000);
+                            });
+                        },
+                        fail: function(res){       // 支付失败回调函数
+                            $.post("/product/fail", {'order_no':order,'msg':'fail'}, function (r) {
+                                parent.layer.alert('支付失败');
+                                setTimeout(function () {
+                                    location.href = referer;
+                                },1000);
+                            });
+                        }
+                    });
+                }else{
+                    parent.layer.alert(data.msg);
+                }
+            }
+        });
     });
 </script>
 {/block}

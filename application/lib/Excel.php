@@ -13,10 +13,6 @@
 
 namespace app\lib;
 
-use PhpOffice\PhpSpreadsheet\Exception;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xls\BIFFwriter;
-
 class Excel
 {
     const CELL_DATATYPE_STRING = 's';
@@ -64,35 +60,33 @@ class Excel
      * 导出到Excel
      * @param array $data
      * @param array $cellDataType
-     * @return bool
+     * @return bool|string
      */
-    public function exportExcel($data = array(), $cellDataType = array())
+    public function exportExcel($data = array(),$cellDataType = array())
     {
         if (!$data || count($data) > self::MAX_ROW_NUM) {
             return false;
         }
+        //获得execl列
+        $cells = $this->_getColumnNumber();
+        $objPHPExcel = new \PHPExcel();
+
+        if ($this->excelCreator) {
+            $objPHPExcel->getProperties()->setCreator($this->excelCreator); //创建人
+            $objPHPExcel->getProperties()->setLastModifiedBy($this->excelCreator); //最后修改人
+        }
+        if ($this->excelTitle) {
+            $objPHPExcel->getProperties()->setTitle($this->excelTitle); //标题
+        }
+        if ($this->excelSubject) {
+            $objPHPExcel->getProperties()->setSubject($this->excelSubject); //主题
+        }
+        if ($this->excelDescription) {
+            $objPHPExcel->getProperties()->setDescription($this->excelDescription); //描述
+        }
+
         try {
-            //获得execl列
-            $cells = $this->_getColumnNumber();
-
-            $objPHPExcel = new Spreadsheet();
-            if ($this->excelCreator) {
-                $objPHPExcel->getProperties()->setCreator($this->excelCreator); //创建人
-                $objPHPExcel->getProperties()->setLastModifiedBy($this->excelCreator); //最后修改人
-            }
-            if ($this->excelTitle) {
-                $objPHPExcel->getProperties()->setTitle($this->excelTitle); //标题
-            }
-            if ($this->excelSubject) {
-                $objPHPExcel->getProperties()->setSubject($this->excelSubject); //主题
-            }
-            if ($this->excelDescription) {
-                $objPHPExcel->getProperties()->setDescription($this->excelDescription); //描述
-            }
-
-
             $objPHPExcel->setActiveSheetIndex(0);
-
             $objActSheet = $objPHPExcel->getActiveSheet();
 
             //第二维数组中元素下标
@@ -114,23 +108,22 @@ class Excel
             } else {
                 $rowStart = 0;
             }
-
             //遍历内容
-            //foreach ($data as $rowKey => $row) {
-            //    $j = 0;
-            //    foreach ($attrNames as $attr) {
-            //        $cell = $cells[$j] . ($i + 1);
-            //        $cvalue = $data[$rowKey][$attr];
-            //        if (array_key_exists($attr, $cellDataType)) {
-            //            $objActSheet->setCellValueExplicit($cell, $cvalue, $cellDataType[$attr]);
-            //        } else {
-            //            $objActSheet->setCellValue($cell, $cvalue);
-            //        }
-            //
-            //        $j++;
-            //    }
-            //    $i++;
-            //}
+            /* foreach ($data as $rowKey => $row) {
+              $j = 0;
+              foreach ($attrNames as $attr) {
+              $cell = $cells[$j] . ($i + 1);
+              $cvalue = $data[$rowKey][$attr];
+              if (array_key_exists($attr, $cellDataType)) {
+              $objActSheet->setCellValueExplicit($cell, $cvalue, $cellDataType[$attr]);
+              } else {
+              $objActSheet->setCellValue($cell, $cvalue);
+              }
+
+              $j++;
+              }
+              $i++;
+              } */
 
             $colNo = 0;
             foreach ($attrNames as $attr) {
@@ -162,23 +155,30 @@ class Excel
             } else {
                 $file_name = date('YmdHis') . str_pad(mt_rand(0, 99), 2, 0, STR_PAD_LEFT);
             }
-            $objWriter = new BIFFwriter($objPHPExcel);
+            $objWriter = new \PHPExcel_Writer_Excel5($objPHPExcel);
             header('Content-Type: application/vnd.ms-excel');
             header('Content-Disposition: attachment;filename="' . $file_name . '.xls"');
             header('Cache-Control: max-age=0');
             $objWriter->save("php://output");
-        } catch (Exception $e) {
+            return null;
+        } catch (\PHPExcel_Exception $e) {
+            return "Caught Exception ('{$e->getMessage()}')\n{$e}\n";
         }
     }
 
     /**
      * 设置Reader
      * @param $type
+     * @return string
      */
     private function setReader($type)
     {
-        include_once 'excel/PHPExcel/IOFactory.php';
-        $this->reader = PHPExcel_IOFactory::createReader($type);
+        try {
+            $this->reader = \PHPExcel_IOFactory::createReader($type);
+        } catch (\PHPExcel_Reader_Exception $e) {
+            return "Caught Exception ('{$e->getMessage()}')\n{$e}\n";
+        }
+        return null;
     }
 
     /**
@@ -210,7 +210,6 @@ class Excel
      */
     public function importExcel($path = '', $rowRange = array(), $columnRange = array())
     {
-        include_once 'excel/PHPExcel/IOFactory.php';
         $pathinfo = pathinfo($path);
         if ($pathinfo['extension'] == 'xlsx') {
             $type = self::TYPE_2007;
@@ -243,7 +242,6 @@ class Excel
         if (isset($rowRange[1]) && $rowRange[1] >= 0 && $rowCount > $rowRange[1]) {
             $rowCount = $rowRange[1] + 1;
         }
-//		pf($rowNo.'--'.$rowCount);
         //获取列的范围
         if (isset($columnRange[0])) {
             if (is_string($columnRange[0])) {
@@ -278,7 +276,6 @@ class Excel
                 for ($colNo = $min_column_index; $colNo <= $colCount; $colNo++) {
                     $val = $sheet->getCellByColumnAndRow($colNo, 1)->getValue();
                     $title[$colNo] = $val;
-//					pf($colNumber[$colNo].$rowNo.":".$val);
                 }
             }
         }
@@ -293,7 +290,6 @@ class Excel
                 } else {
                     $data2[] = $val;
                 }
-//				pf($colNumber[$colNo].$rowNo.":".$val);
             }
             $data[] = $data2;
         }
@@ -323,7 +319,8 @@ class Excel
      * 导出Excel（多张worksheet）
      * @param array $data
      * @param array $cellDataType
-     * @return bool
+     * @return bool|null
+     * @throws \PHPExcel_Exception
      */
     public function exportMultiSheetExcel($data = array(), $cellDataType = array())
     {
@@ -333,8 +330,7 @@ class Excel
         //获得execl列
         $cells = $this->_getColumnNumber();
 
-        include_once 'excel/PHPExcel.php';
-        $objPHPExcel = new PHPExcel();
+        $objPHPExcel = new \PHPExcel();
         if ($this->excelCreator) {
             $objPHPExcel->getProperties()->setCreator($this->excelCreator); //创建人
             $objPHPExcel->getProperties()->setLastModifiedBy($this->excelCreator); //最后修改人
@@ -345,18 +341,6 @@ class Excel
         if ($this->excelDescription) {
             $objPHPExcel->getProperties()->setDescription($this->excelDescription); //描述
         }
-        //$data = array(
-        //    'sheet1' => array(
-        //        array('tab_id','server_id','service_id','title','sub_title','desc','pic','href','linkid'),
-        //        array('tab_id','server_id','service_id','title','sub_title','desc','pic','href','linkid'),
-        //        array('tab_id','server_id','service_id','title','sub_title','desc','pic','href','linkid'),
-        //    ),
-        //    'sheet2' => array(
-        //        array('tab_id','server_id','service_id','title','sub_title','desc','pic','href','linkid'),
-        //        array('tab_id','server_id','service_id','title','sub_title','desc','pic','href','linkid'),
-        //        array('tab_id','server_id','service_id','title','sub_title','desc','pic','href','linkid'),
-        //    )
-        //);
         $sheetnum = 0;
         $count = count($data);
         foreach ($data as $key => $sheet) {
@@ -383,7 +367,6 @@ class Excel
                 $i = 0;
                 foreach ($title as $attr) {
                     $cell = $cells[$i] . '1';
-//				pf($cell."=>".$attr);
                     $objActSheet->setCellValue($cell, $attr);
                     $i++;
                 }
@@ -401,7 +384,6 @@ class Excel
                 }
                 foreach ($sheet as $rowKey => $row) {
                     $cell = $cells[$colNo] . ($rowNo + 1);
-//				pf($cell."=>".$data[$rowKey][$attr]);
                     $cvalue = $sheet[$rowKey][$attr];
                     if ($columnType) {
                         $objActSheet->setCellValueExplicit($cell, $cvalue, $columnType);
@@ -425,24 +407,17 @@ class Excel
         } else {
             $file_name = date('YmdHis') . str_pad(mt_rand(0, 99), 2, 0, STR_PAD_LEFT);
         }
-        $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
+        $objWriter = new \PHPExcel_Writer_Excel5($objPHPExcel);
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $file_name . '.xls"');
         header('Cache-Control: max-age=0');
         $objWriter->save("php://output");
+        return null;
     }
 
-    /**
-     * 导入Excel（多张worksheet）
-     * @param $file
-     * @param array $rowRange
-     * @param array $columnRange
-     * @return array
-     */
-    public function importMultiSheetExcelByUpload($file, $rowRange = array(), $columnRange = array())
-    {
-        $file_types = explode(".", $file['name']);
-        $file_type = $file_types [count($file_types) - 1];
+    public function importMultiSheetExcelByUpload($file, $rowRange = array(), $columnRange = array()) {
+        $file_types = explode ( ".", $file['name'] );
+        $file_type = $file_types [count ( $file_types ) - 1];
         if ($file_type == 'xlsx') {
             $type = self::TYPE_2007;
         } else {
@@ -452,8 +427,7 @@ class Excel
         return $this->_importMultiSheetExcel($file['tmp_name'], $rowRange, $columnRange);
     }
 
-    public function _importMultiSheetExcel($path, $rowRange = array(), $columnRange = array())
-    {
+    public function _importMultiSheetExcel($path, $rowRange = array(), $columnRange = array()) {
         if (!$this->reader) {
             return false;
         }
@@ -462,7 +436,7 @@ class Excel
         $sheettitlearr = $PHPExcel->getSheetNames();
         $res = array();
 
-        for ($sheetnum = 0; $sheetnum < $count; $sheetnum++) {
+        for ($sheetnum=0;$sheetnum<$count;$sheetnum++){
             $sheettitle = $sheettitlearr[$sheetnum];
             $sheet = $PHPExcel->getSheet($sheetnum);
             $rowCount = $sheet->getHighestRow(); // 取得总行数
@@ -480,7 +454,6 @@ class Excel
             if (isset($rowRange[1]) && $rowRange[1] >= 0 && $rowCount > $rowRange[1]) {
                 $rowCount = $rowRange[1] + 1;
             }
-//		pf($rowNo.'--'.$rowCount);
             //获取列的范围
             if (isset($columnRange[0])) {
                 if (is_string($columnRange[0])) {
@@ -515,7 +488,6 @@ class Excel
                     for ($colNo = $min_column_index; $colNo <= $colCount; $colNo++) {
                         $val = $sheet->getCellByColumnAndRow($colNo, 1)->getValue();
                         $title[$colNo] = $val;
-//					pf($colNumber[$colNo].$rowNo.":".$val);
                     }
                 }
             }
@@ -529,7 +501,6 @@ class Excel
                     } else {
                         $data2[] = $val;
                     }
-//				pf($colNumber[$colNo].$rowNo.":".$val);
                 }
                 $data[] = $data2;
             }

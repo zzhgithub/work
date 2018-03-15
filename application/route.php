@@ -31,6 +31,7 @@ return [
     'about' => 'index/about/index', //关于我们
     'certificate' => 'index/volunteer/certificate', //任务点证书
 
+    'person/pay' => 'index/person/pay',
 
     /**
      * 捐款
@@ -201,5 +202,5 @@ return [
      */
     'boss/zone/list' => 'index/boss/zoneList',
     'boss/zone/add' => 'index/boss/zoneSave',
-    'boss/zone/mod/:id' => 'index/boss/zoneSave',
+    'boss/zone/mod/:id' => 'index/boss/zoneSave'
 ];
