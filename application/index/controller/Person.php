@@ -48,20 +48,24 @@ class Person extends Base
             'LEFT')->field('a.is_paied,a.need_pay,b.id,b.name,b.img,b.des')->where(['a.open_id' => $this->openId])->select();
         // 产品订单
         $orderObj = new Order();
-        // $orderList = $orderObj->order('id DESC')->where(['open_id'=>$this->openId,'is_paied' => 1])->whereOr(['open_id'=>$this->openId,'is_paied' => 0,'is_update' => 0])->field('order_no')->select();
-        $sql = "SELECT `order_no`,`is_paied` FROM `ly_order` WHERE  (`open_id` = '$this->openId'  AND `is_paied` = 1) OR (`open_id` = '$this->openId'  AND `is_paied` = 0  AND `is_update` = 0) ORDER BY id DESC";
-        $orderList = collection($orderObj->query($sql))->toArray();
+        $orderList = $orderObj->order('id DESC')->where(function ($query) {
+            $query->where(['open_id'=>$this->openId,'is_paied' => 1]);
+        })->whereOr(function ($query) {
+            $query->where(['open_id'=>$this->openId,'is_paied' => 0,'is_update' => 0]);
+        })->field('order_no')->select();
+        //$sql = "SELECT `order_no`,`is_paied` FROM `ly_order` WHERE  (`open_id` = '$this->openId'  AND `is_paied` = 1) OR (`open_id` = '$this->openId'  AND `is_paied` = 0  AND `is_update` = 0) ORDER BY id DESC";
+        //$orderList = $orderObj->query($sql);
         $notPaied = false;
         if ($orderList) {
             foreach ($orderList as $order) {
-                if ($order['is_paied'] == 0) {
+                if ($order->is_paied == 0) {
                     $notPaied = true;
                 }
                 $orderItemObj = new OrderItem();
                 $orderItems = $orderItemObj->alias('a')->order('a.id DESC')->join($prefix . 'product b',
                     'a.pro_id = b.id',
                     'LEFT')->field('a.count,a.price,a.pro_id,b.name,b.img')->where(['a.order_no' => $order['order_no']])->select();
-                $order['orderItems'] = $orderItems;
+                $order->orderItems = $orderItems;
             }
         }
         // 捐款
