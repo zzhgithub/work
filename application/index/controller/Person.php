@@ -172,7 +172,7 @@ class Person extends Base
         $log->price = $order->total_price;
         $log->save();
         // 返回支付接口参数
-        $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街订单:' . $orderNo.'支付', $order->order_no, $order->total_price * 100,
+        $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街订单:' . $orderNo.'支付', $orderNo, $order->total_price * 100,
             $this->openId), true);
         $wxPayConfig['order_no'] = $orderNo;
         $wxPayConfig['token'] = $request->token();
