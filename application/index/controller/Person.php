@@ -95,8 +95,8 @@ class Person extends Base
             $jsApi->nonceStr = WeiXin::getNonceStr();
             $jsApi->timestamp = time();
             $jsApi->signature = WeiXin::signature($jsApiTicket, $jsApi->nonceStr, $jsApi->timestamp, $url);
+            $this->assign('jsApi', $jsApi);
         }
-        $this->assign('jsApi', $jsApi);
 
         $this->assign('user', $user);
         $this->assign('actList', $actList);

@@ -366,7 +366,7 @@ class Productctl extends Base
         // 消除购物车
         Session::set('cart',null);
         // 返回支付接口参数
-        $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街产品:' . $proName, $orderObj->order_no, $totalPrice * 100,
+        $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街产品:' . $proName, $orderObj->order_no, $orderObj->total_price * 100,
             $this->openId), true);
         $wxPayConfig['order_no'] = $orderObj->order_no;
         $wxPayConfig['token'] = $request->token();
