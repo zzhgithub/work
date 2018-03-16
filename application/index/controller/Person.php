@@ -146,7 +146,7 @@ class Person extends Base
         $order = $orderObj->where([
             'order_no' => $data['order'],
             'user_id' => $this->uid
-        ])->field('order_no,is_paied,total_price,is_update,transaction_id,create_time')->find();
+        ])->field('id,order_no,is_paied,total_price,is_update,transaction_id,create_time')->find();
 
         if (empty($order)){
             return self::response(400, '订单无效', ['token' => $request->token()]);
@@ -156,19 +156,25 @@ class Person extends Base
             return self::response(400, '订单无效', ['token' => $request->token()]);
         }
 
+        // 新建订单号，以便重新发起支付
+        $orderNo = WeiXin::createOrderNo(WeiXin::ORDER_PRODUCT);
+        if (!Order::update(['order_no' => $orderNo],['order_no' => $order->order_no]) || !OrderItem::update(['order_no'=>$orderNo],['order_no'=>$order->order_no])){
+            return self::response(400, '订单无效', ['token' => $request->token()]);
+        }
+
         // 写入日志
         $log = new Log();
-        $log->order_no = $order->order_no;
+        $log->order_no = $orderNo;
         $log->user_id = $this->uid;
         $log->open_id = $this->openId;
         $log->type = WeiXin::ORDER_PRODUCT;
-        $log->content = '重庆老街订单:' . $order->order_no . '重新发起支付';
+        $log->content = '重庆老街订单ID:' . $order->id .',order_no:'. $order->order_no .'--->'.$orderNo. '重新发起支付';
         $log->price = $order->total_price;
         $log->save();
         // 返回支付接口参数
-        $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街订单:' . $order->order_no.'支付', $order->order_no, $order->total_price * 100,
+        $wxPayConfig = json_decode(WeiXin::weiXinPayData('重庆老街订单:' . $orderNo.'支付', $order->order_no, $order->total_price * 100,
             $this->openId), true);
-        $wxPayConfig['order_no'] = $order->order_no;
+        $wxPayConfig['order_no'] = $orderNo;
         $wxPayConfig['token'] = $request->token();
         return self::response(0, '支付创建成功', $wxPayConfig);
     }
