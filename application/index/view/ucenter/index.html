@@ -228,6 +228,8 @@
     $(".doing_gd").click(function () {
         $(this).parent().find("ul").toggle();
     });
+
+    {if condition="!empty($jsApi)"}
     wx.config({
         appId: '{$jsApi->appId}', // 必填，公众号的唯一标识
         timestamp: {$jsApi->timestamp}, // 必填，生成签名的时间戳
@@ -304,5 +306,6 @@
             }
         });
     });
+    {/if}
 </script>
 {/block}
