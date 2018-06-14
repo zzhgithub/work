@@ -262,18 +262,18 @@ class Volunteer extends Base
         $ext = Pointdetail::get($id);
         $this->assign('ext', $ext);
 
-        $client = new Pointbanner();
-        $list = $client->where(['pid' => $id])->select();
+        //$client = new Pointbanner();
+        //$list = $client->where(['pid' => $id])->select();
 
         $inspect_Client = new Inspect();
         $prefix = config("database.prefix");
         $inspect = $inspect_Client->alias('a')->join($prefix . 'user b',
-            'a.uid = b.id', 'LEFT')->field('a.des,b.nickname,b.headimgurl')->where(['a.pid' => $id,'a.state' => 1])->select();
+            'a.uid = b.id', 'LEFT')->field('a.des,b.nickname,b.headimgurl')->where(['a.pid' => $id,'a.state' => 1])->order('a.id DESC')->select();
 
         $levelArr = Config::get('point.point_level');
         $this->assign('level', $levelArr);
         $this->assign("inspect", $inspect);
-        $this->assign('list', $list);
+        //$this->assign('list', $list);
         $this->assign('id', $id);
         $this->assign('token', Request::instance()->token());
         $this->assign('title', $base->name . '-巡查反馈');
